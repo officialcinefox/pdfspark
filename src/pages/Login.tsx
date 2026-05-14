@@ -2,16 +2,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Moon, Sun, Sparkles, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isRegister, setIsRegister] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  React.useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
 
   // Redirect if already logged in
   React.useEffect(() => {
@@ -25,23 +30,13 @@ export const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      if (isRegister) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-        toast.success('Registration successful! Check your email or login if email confirmation is disabled.');
-        setIsRegister(false);
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        toast.success('Logged in successfully!');
-        navigate('/dashboard');
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      toast.success('Logged in successfully!');
+      navigate('/dashboard');
     } catch (error: any) {
       toast.error(error.message || 'An error occurred');
     } finally {
@@ -70,96 +65,134 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center bg-transparent py-12 px-4 sm:px-6 lg:px-8 relative">
-      <div className="max-w-md w-full space-y-8 bg-zinc-900/50 backdrop-blur-md p-8 rounded-3xl border border-zinc-800 shadow-2xl animate-in zoom-in-95 duration-500">
-        <div>
-          <h2 className="text-center text-4xl font-black text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-20">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-red-500/20 blur-[120px] rounded-full"></div>
+        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-red-600/10 blur-[120px] rounded-full"></div>
+      </div>
+
+      {/* Theme Toggle */}
+      <div className="absolute top-8 right-8 z-20">
+        <button
+          onClick={() => setIsDark(!isDark)}
+          className="h-12 w-12 flex items-center justify-center rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] hover:scale-110 transition-all shadow-xl backdrop-blur-xl"
+        >
+          {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        </button>
+      </div>
+
+      <div className="max-w-md w-full relative z-10">
+        <div className="text-center mb-10">
+          <div className="inline-flex h-16 w-16 items-center justify-center bg-[var(--accent)] rounded-2xl text-white shadow-2xl shadow-red-500/30 mb-6 animate-bounce-slow">
+            <Sparkles className="w-8 h-8 fill-current" />
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black text-[var(--foreground)] tracking-tight">
             Admin Portal
           </h2>
-          <p className="mt-2 text-center text-sm text-zinc-400 font-medium uppercase tracking-widest">
-            Login to PDF Spark
+          <p className="mt-3 text-sm text-[var(--foreground)] opacity-50 font-bold uppercase tracking-[0.2em]">
+            Secure Access to PDF Spark
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email-address" className="sr-only">Email address</label>
-              <input
-                id="email-address"
-                type="email"
-                required
-                className="appearance-none relative block w-full px-4 py-4 border border-zinc-700 bg-zinc-800/50 placeholder-zinc-500 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent sm:text-sm transition-all"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">Password</label>
-              <input
-                id="password"
-                type="password"
-                required
-                className="appearance-none relative block w-full px-4 py-4 border border-zinc-700 bg-zinc-800/50 placeholder-zinc-500 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent sm:text-sm transition-all"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
 
-          <div className="flex items-center justify-end">
-            <button
-              type="button"
-              onClick={() => setShowForgotModal(true)}
-              className="text-xs font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
-            >
-              Forgot Password?
-            </button>
-          </div>
+        <div className="bg-[var(--surface)]/80 backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] border border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-700">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-5">
+              <div className="group">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--foreground)] opacity-40 mb-2 ml-1">Email Address</label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    required
+                    className="block w-full px-5 py-4 bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent sm:text-sm transition-all group-hover:border-[var(--foreground)]/20"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              </div>
 
-          <div>
+              <div className="group">
+                <div className="flex justify-between items-center mb-2 ml-1">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--foreground)] opacity-40">Password</label>
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotModal(true)}
+                    className="text-[10px] font-black uppercase tracking-widest text-[var(--accent)] hover:opacity-70 transition-opacity"
+                  >
+                    Forgot?
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    className="block w-full px-5 py-4 bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent sm:text-sm transition-all group-hover:border-[var(--foreground)]/20 pr-14"
+                    placeholder="••••••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[var(--foreground)] opacity-30 hover:opacity-100 transition-opacity"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-black uppercase tracking-widest rounded-xl text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 transition-all shadow-xl shadow-red-600/20 active:scale-95"
+              className="w-full flex items-center justify-center gap-3 py-4.5 px-4 border border-transparent text-sm font-black uppercase tracking-widest rounded-2xl text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--accent)] disabled:opacity-50 transition-all shadow-xl shadow-red-600/20 active:scale-[0.98] mt-8"
             >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign in'}
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                <>
+                  <ShieldCheck className="w-5 h-5" />
+                  Sign in
+                </>
+              )}
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
+
+        <p className="mt-10 text-center text-xs font-bold text-[var(--foreground)] opacity-30 uppercase tracking-widest">
+          &copy; {new Date().getFullYear()} PDF Spark Admin System
+        </p>
       </div>
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-zinc-900 border border-zinc-800 w-full max-w-sm rounded-3xl p-8 shadow-2xl">
-            <h3 className="text-2xl font-black text-white text-center mb-2">Recover Access</h3>
-            <p className="text-zinc-400 text-center text-sm mb-8 font-medium">We'll send a password reset link to your email.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-[var(--surface)] border border-[var(--border)] w-full max-w-sm rounded-[2.5rem] p-10 shadow-2xl relative">
+            <h3 className="text-2xl font-black text-[var(--foreground)] text-center mb-3">Recover Access</h3>
+            <p className="text-[var(--foreground)] opacity-50 text-center text-sm mb-8 font-medium italic">We'll send a password reset link.</p>
             
-            <form onSubmit={handleForgotPassword} className="space-y-4">
+            <form onSubmit={handleForgotPassword} className="space-y-6">
               <input 
                 type="email"
                 required
                 value={forgotEmail}
                 onChange={e => setForgotEmail(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 text-sm"
-                placeholder="Enter your email"
+                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-2xl px-5 py-4 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 text-sm transition-all"
+                placeholder="Enter your admin email"
               />
               <div className="flex gap-3">
                 <button 
                   type="button"
                   onClick={() => setShowForgotModal(false)}
-                  className="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl font-bold transition-all text-sm"
+                  className="flex-1 py-4 bg-[var(--surface-hover)] text-[var(--foreground)] rounded-2xl font-black uppercase tracking-widest text-xs transition-all"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
                   disabled={loading}
-                  className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all text-sm disabled:opacity-50"
+                  className="flex-1 py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg shadow-red-600/10 disabled:opacity-50"
                 >
-                  {loading ? 'Sending...' : 'Send Link'}
+                  {loading ? '...' : 'Send Link'}
                 </button>
               </div>
             </form>

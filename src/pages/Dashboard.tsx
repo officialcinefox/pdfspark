@@ -6,7 +6,7 @@ import { FaqManager } from '../components/admin/FaqManager';
 import { EnquiryManager } from '../components/admin/EnquiryManager';
 import { PagesManager } from '../components/admin/PagesManager';
 import { AdminManager } from '../components/admin/AdminManager';
-import { FileText, LayoutTemplate, LogOut, Settings, Globe, HelpCircle, MessageSquare, ShieldAlert, Shield } from 'lucide-react';
+import { FileText, LayoutTemplate, LogOut, Settings, Globe, HelpCircle, MessageSquare, Shield, Menu, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
@@ -18,6 +18,7 @@ export const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<Tab>('overview');
   const [unreadCount, setUnreadCount] = React.useState(0);
   const [isAuthorized, setIsAuthorized] = React.useState<boolean | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (!user) {
@@ -39,7 +40,7 @@ export const Dashboard: React.FC = () => {
       
       if (error || !data) {
         setIsAuthorized(false);
-        toast.error('Unauthorized access. Please contact the main administrator.');
+        toast.error('Unauthorized access.');
         setTimeout(() => signOut().then(() => navigate('/login')), 3000);
       } else {
         setIsAuthorized(true);
@@ -55,7 +56,6 @@ export const Dashboard: React.FC = () => {
         .from('enquiries')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'new');
-      
       if (error) throw error;
       setUnreadCount(count || 0);
     } catch (err) {
@@ -63,9 +63,9 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-  // Refresh count when activeTab changes
   React.useEffect(() => {
     fetchUnreadCount();
+    setIsMobileMenuOpen(false);
   }, [activeTab]);
 
   const handleSignOut = async () => {
@@ -80,181 +80,138 @@ export const Dashboard: React.FC = () => {
 
   if (!user || isAuthorized === null) return null;
 
-  if (isAuthorized === false) {
-    return (
-      <div className="h-screen w-full bg-black flex flex-col items-center justify-center p-8 text-center">
-        <div className="w-20 h-20 bg-red-500/10 rounded-3xl flex items-center justify-center mb-6 animate-pulse">
-          <ShieldAlert className="w-10 h-10 text-red-500" />
+  const NavButtons = () => (
+    <>
+      <button 
+        onClick={() => setActiveTab('overview')}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'overview' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+      >
+        <LayoutTemplate className="w-5 h-5" />
+        Overview
+      </button>
+      <button 
+        onClick={() => setActiveTab('pages')}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'pages' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+      >
+        <FileText className="w-5 h-5" />
+        Dynamic Pages
+      </button>
+      <button 
+        onClick={() => setActiveTab('blogs')}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'blogs' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+      >
+        <FileText className="w-5 h-5" />
+        Manage Blogs
+      </button>
+      <button 
+        onClick={() => setActiveTab('faqs')}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'faqs' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+      >
+        <HelpCircle className="w-5 h-5" />
+        Manage FAQs
+      </button>
+      <button 
+        onClick={() => setActiveTab('enquiries')}
+        className={`flex items-center justify-between w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'enquiries' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+      >
+        <div className="flex items-center gap-3">
+          <MessageSquare className="w-5 h-5" />
+          User Enquiries
         </div>
-        <h1 className="text-3xl font-black text-white mb-4">Unauthorized Access</h1>
-        <p className="text-zinc-400 max-w-md leading-relaxed">
-          Your account does not have administrator privileges. You will be redirected to the login page shortly.
-        </p>
-      </div>
-    );
-  }
+        {unreadCount > 0 && (
+          <span className={activeTab === 'enquiries' ? 'bg-white text-red-600 px-2 py-0.5 rounded-full text-[10px] font-black' : 'bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] font-black'}>
+            {unreadCount}
+          </span>
+        )}
+      </button>
+      <button 
+        onClick={() => setActiveTab('admins')}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'admins' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+      >
+        <Shield className="w-5 h-5" />
+        Manage Admins
+      </button>
+    </>
+  );
 
   return (
-    <div className="flex h-screen w-full bg-black overflow-hidden">
-      {/* Sidebar */}
-      <div className="w-64 bg-zinc-950 border-r border-zinc-800 flex flex-col">
-        <div className="p-6 border-b border-zinc-800">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Settings className="w-5 h-5 text-red-500" />
-            Admin Panel
+    <div className="flex flex-col lg:flex-row h-screen w-full bg-black overflow-hidden">
+      {/* Mobile Header */}
+      <div className="lg:hidden bg-zinc-950 border-b border-zinc-800 p-4 flex items-center justify-between">
+        <h2 className="text-xl font-black text-white flex items-center gap-2 italic">
+          <Settings className="w-5 h-5 text-red-600" />
+          ADMIN
+        </h2>
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 text-zinc-400 hover:text-white"
+        >
+          {isMobileMenuOpen ? <X /> : <Menu />}
+        </button>
+      </div>
+
+      {/* Sidebar (Desktop) */}
+      <div className={`fixed inset-0 z-50 lg:relative lg:z-auto bg-zinc-950 border-r border-zinc-800 flex flex-col w-72 transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <div className="p-8 border-b border-zinc-900 hidden lg:block">
+          <h2 className="text-2xl font-black text-white flex items-center gap-3 italic">
+            <Settings className="w-7 h-7 text-red-600" />
+            SPARK ADMIN
           </h2>
-          <p className="text-xs text-zinc-400 mt-2 truncate">{user.email}</p>
+          <p className="text-[10px] text-zinc-500 mt-4 font-black uppercase tracking-widest truncate">{user.email}</p>
         </div>
         
-        <div className="flex-1 overflow-y-auto py-4">
-          <nav className="px-4 space-y-2">
-            <button 
-              onClick={() => setActiveTab('overview')}
-              className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg font-medium transition-colors ${activeTab === 'overview' ? 'bg-red-600/10 text-red-500' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
-            >
-              <LayoutTemplate className="w-4 h-4" />
-              Overview
-            </button>
-            <button 
-              onClick={() => setActiveTab('pages')}
-              className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg font-medium transition-colors ${activeTab === 'pages' ? 'bg-red-600/10 text-red-500' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
-            >
-              <FileText className="w-4 h-4" />
-              Dynamic Pages
-            </button>
-            <button 
-              onClick={() => setActiveTab('blogs')}
-              className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg font-medium transition-colors ${activeTab === 'blogs' ? 'bg-red-600/10 text-red-500' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
-            >
-              <FileText className="w-4 h-4" />
-              Manage Blogs
-            </button>
-            <button 
-              onClick={() => setActiveTab('faqs')}
-              className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg font-medium transition-colors ${activeTab === 'faqs' ? 'bg-red-600/10 text-red-500' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
-            >
-              <HelpCircle className="w-4 h-4" />
-              Manage FAQs
-            </button>
-            <button 
-              onClick={() => setActiveTab('enquiries')}
-              className={`flex items-center justify-between w-full px-3 py-2 rounded-lg font-medium transition-colors ${activeTab === 'enquiries' ? 'bg-red-600/10 text-red-500' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
-            >
-              <div className="flex items-center gap-3">
-                <MessageSquare className="w-4 h-4" />
-                User Enquiries
-              </div>
-              {unreadCount > 0 && (
-                <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full min-w-[1.25rem] text-center">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-            <button 
-              onClick={() => setActiveTab('admins')}
-              className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg font-medium transition-colors ${activeTab === 'admins' ? 'bg-red-600/10 text-red-500' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
-            >
-              <Shield className="w-4 h-4" />
-              Manage Admins
-            </button>
-            
-            <div className="pt-4 mt-4 border-t border-zinc-800">
-              <Link to="/" className="flex items-center gap-3 px-3 py-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg font-medium transition-colors">
-                <Globe className="w-4 h-4" />
-                View Website
-              </Link>
-            </div>
-          </nav>
+        <div className="flex-1 overflow-y-auto p-6 space-y-2">
+          <NavButtons />
+          <div className="pt-6 mt-6 border-t border-zinc-900">
+            <Link to="/" className="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl font-bold transition-all">
+              <Globe className="w-5 h-5" />
+              View Website
+            </Link>
+          </div>
         </div>
 
-        <div className="p-4 border-t border-zinc-800">
+        <div className="p-6 border-t border-zinc-900">
           <button 
             onClick={handleSignOut}
-            className="flex items-center gap-2 w-full px-3 py-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg font-medium transition-colors"
+            className="flex items-center gap-3 w-full px-4 py-4 text-zinc-500 hover:text-white hover:bg-red-600 rounded-2xl font-black uppercase tracking-widest text-xs transition-all group"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
             Sign Out
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 bg-zinc-900/10 overflow-y-auto p-8">
+      <div className="flex-1 bg-[var(--background)] overflow-y-auto p-4 md:p-10">
         {activeTab === 'overview' && (
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl font-bold text-white mb-2">Dashboard</h1>
-            <p className="text-zinc-400 mb-8">Welcome back, Admin. Manage your website content from here.</p>
+          <div className="max-w-5xl mx-auto py-6">
+            <div className="mb-12">
+              <h1 className="text-4xl md:text-6xl font-black text-[var(--foreground)] mb-4 tracking-tight">System Overview</h1>
+              <p className="text-[var(--foreground)] opacity-50 text-lg font-medium">Command center for your PDF Spark environment.</p>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div 
-                onClick={() => setActiveTab('pages')}
-                className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-8 rounded-2xl hover:border-red-500/50 transition-all group cursor-pointer"
-              >
-                <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <FileText className="w-6 h-6 text-red-500" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              {[
+                { id: 'pages', title: 'Dynamic Pages', desc: 'Edit policy pages and static content.', icon: <FileText className="w-7 h-7" /> },
+                { id: 'blogs', title: 'Blog Posts', desc: 'Author and publish new articles.', icon: <FileText className="w-7 h-7" /> },
+                { id: 'faqs', title: 'User FAQs', desc: 'Manage help and support questions.', icon: <HelpCircle className="w-7 h-7" /> },
+                { id: 'enquiries', title: 'Messages', desc: 'Review user contact requests.', icon: <MessageSquare className="w-7 h-7" /> },
+              ].map((item) => (
+                <div 
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id as Tab)}
+                  className="bg-[var(--surface)] border border-[var(--border)] p-8 rounded-[2rem] hover:border-[var(--accent)] transition-all group cursor-pointer shadow-sm hover:shadow-xl hover:shadow-[var(--accent)]/5"
+                >
+                  <div className="w-14 h-14 bg-[var(--accent)]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <div className="text-[var(--accent)]">{item.icon}</div>
+                  </div>
+                  <h3 className="text-2xl font-black text-[var(--foreground)] mb-3">{item.title}</h3>
+                  <p className="text-[var(--foreground)] opacity-50 mb-8 font-medium leading-relaxed">{item.desc}</p>
+                  <div className="w-full py-4 bg-[var(--background)] border border-[var(--border)] group-hover:bg-[var(--accent)] group-hover:text-white rounded-2xl transition-all font-black uppercase tracking-widest text-[10px] text-center">
+                    Launch Manager
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Dynamic Pages</h3>
-                <p className="text-zinc-400 mb-6">Manage your Privacy Policy, Terms, About Us, and other dynamic content directly from here.</p>
-                <button className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors font-bold">
-                  Manage Pages
-                </button>
-              </div>
-              
-              <div 
-                onClick={() => setActiveTab('blogs')}
-                className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-8 rounded-2xl hover:border-red-500/50 transition-all group cursor-pointer"
-              >
-                <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <FileText className="w-6 h-6 text-red-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Blog Posts</h3>
-                <p className="text-zinc-400 mb-6">Create, edit, and publish blog articles to improve your SEO and engage your users.</p>
-                <button className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors font-bold">
-                  Manage Blogs
-                </button>
-              </div>
-
-              <div 
-                onClick={() => setActiveTab('faqs')}
-                className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-8 rounded-2xl hover:border-red-500/50 transition-all group cursor-pointer"
-              >
-                <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <HelpCircle className="w-6 h-6 text-red-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Manage FAQs</h3>
-                <p className="text-zinc-400 mb-6">Create and organize category-specific FAQs to help users find answers quickly.</p>
-                <button className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors font-bold">
-                  Manage FAQs
-                </button>
-              </div>
-
-              <div 
-                onClick={() => setActiveTab('enquiries')}
-                className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-8 rounded-2xl hover:border-red-500/50 transition-all group cursor-pointer"
-              >
-                <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <MessageSquare className="w-6 h-6 text-red-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">User Enquiries</h3>
-                <p className="text-zinc-400 mb-6">View and manage messages sent by users through the contact form.</p>
-                <button className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors font-bold">
-                  View Messages
-                </button>
-              </div>
-
-              <div 
-                onClick={() => setActiveTab('admins')}
-                className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-8 rounded-2xl hover:border-red-500/50 transition-all group cursor-pointer"
-              >
-                <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Shield className="w-6 h-6 text-red-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Admin Settings</h3>
-                <p className="text-zinc-400 mb-6">Authorize new administrators and manage system access permissions.</p>
-                <button className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors font-bold">
-                  Manage Access
-                </button>
-              </div>
+              ))}
             </div>
           </div>
         )}
@@ -267,4 +224,3 @@ export const Dashboard: React.FC = () => {
       </div>
     </div>
   );
-};

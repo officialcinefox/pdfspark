@@ -72,7 +72,7 @@ export function Home() {
       />
       <Background />
 
-      <section className="relative px-4 pt-24 pb-28 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+      <section className="relative px-4 pt-10 pb-20 sm:pt-24 sm:pb-28 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -83,39 +83,39 @@ export function Home() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center rounded-full bg-[var(--surface)]/80 px-4 py-2 text-sm font-bold text-[var(--accent)] ring-1 ring-[var(--border)] mb-8"
+            className="inline-flex items-center rounded-full bg-[var(--surface)]/80 px-4 py-2 text-[10px] sm:text-sm font-bold text-[var(--accent)] ring-1 ring-[var(--border)] mb-6 sm:mb-8"
           >
-            <Star className="w-4 h-4 mr-2 fill-current" /> Premium PDF Toolkit - 100% Private & Secure Processing
+            <Star className="w-3 h-3 sm:w-4 sm:h-4 mr-2 fill-current" /> Premium PDF Toolkit - 100% Private & Secure
           </motion.div>
 
-          <h1 className="text-5xl md:text-7xl font-black mb-8 leading-[1.1] max-w-5xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 sm:mb-8 leading-[1.1] max-w-5xl mx-auto">
             Professional PDF Tools <br className="hidden md:block" />
             <span className="text-[var(--accent)]">Simplified for Everyone.</span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-[var(--foreground)] opacity-70 max-w-3xl mx-auto mb-14 leading-relaxed">
+          <p className="text-lg sm:text-xl md:text-2xl text-[var(--foreground)] opacity-70 max-w-3xl mx-auto mb-10 sm:mb-14 leading-relaxed font-medium">
             Merge, split, compress, convert, protect, and organize PDFs with browser-first workflows and no account wall.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
             <Link
               to="/tools"
-              className="inline-flex w-full sm:w-auto h-16 items-center justify-center rounded-2xl bg-[var(--accent)] px-10 text-xl font-bold text-white hover:bg-[var(--accent-hover)] hover:scale-[1.02] transition-all"
+              className="inline-flex w-full sm:w-auto h-14 sm:h-16 items-center justify-center rounded-2xl bg-[var(--accent)] px-10 text-lg sm:text-xl font-bold text-white hover:bg-[var(--accent-hover)] hover:scale-[1.02] transition-all shadow-lg shadow-red-600/20"
             >
               Get Started Free
             </Link>
             <a
               href="#services"
-              className="group inline-flex w-full sm:w-auto h-16 items-center justify-center rounded-2xl px-10 text-xl font-bold hover:bg-[var(--surface-hover)] backdrop-blur-sm transition-colors"
+              className="group inline-flex w-full sm:w-auto h-14 sm:h-16 items-center justify-center rounded-2xl px-10 text-lg sm:text-xl font-bold hover:bg-[var(--surface-hover)] border border-[var(--border)] backdrop-blur-sm transition-colors"
             >
               Explore Services
-              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-2 transition-transform" />
+              <ArrowRight className="ml-3 w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
             </a>
           </div>
         </motion.div>
       </section>
 
-      <section id="services" className="py-28 relative overflow-hidden">
+      <section id="services" className="py-16 sm:py-28 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {TOOL_CATEGORIES.map((category) => (
             <div key={category.title} className="mb-28 last:mb-0">
@@ -171,7 +171,7 @@ export function Home() {
         </div>
       </section>
 
-      <section className="py-28 relative">
+      <section className="py-16 sm:py-28 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="glass-panel rounded-3xl p-10 md:p-16 overflow-hidden relative">
             <div className="relative z-10 text-center mb-16">
@@ -217,7 +217,7 @@ export function Home() {
         </div>
       </section>
 
-      <section className="py-28 relative">
+      <section className="py-16 sm:py-28 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -302,7 +302,7 @@ export function Home() {
         </div>
       </section>
 
-      <section className="py-28 bg-[var(--surface)]/30 backdrop-blur-sm border-y border-[var(--border)]">
+      <section className="py-16 sm:py-28 bg-[var(--surface)]/30 backdrop-blur-sm border-y border-[var(--border)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black mb-6">Common Questions</h2>
@@ -334,7 +334,7 @@ export function Home() {
         </div>
       </section>
 
-      <section className="py-28">
+      <section className="py-16 sm:py-28">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}

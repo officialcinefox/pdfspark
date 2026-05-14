@@ -36,9 +36,9 @@ export function Navbar() {
   }, [location.pathname])
 
   return (
-    <header className="sticky top-0 z-50 w-full px-3 pt-3 sm:px-4">
+    <header className="sticky top-0 z-50 w-full px-0 sm:px-3 pt-0 sm:pt-3">
       <div className="max-w-7xl mx-auto">
-        <div className="glass-panel rounded-2xl border border-[var(--border)] px-3 sm:px-5">
+        <div className="glass-panel rounded-none sm:rounded-2xl border-b sm:border border-[var(--border)] px-3 sm:px-5">
           <div className="flex h-16 items-center justify-between gap-4">
             <Link to="/" className="flex items-center gap-3 group min-w-0">
               <div className="h-10 w-10 flex items-center justify-center bg-[var(--accent)] rounded-xl text-white shadow-lg shadow-red-500/20 group-hover:scale-110 transition-transform duration-300">

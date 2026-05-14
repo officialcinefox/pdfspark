@@ -148,11 +148,11 @@
 }
 
 .section-title {
-  @apply text-4xl md:text-5xl font-bold mb-4;
+  @apply text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight;
 }
 
 .section-subtitle {
-  @apply text-lg opacity-60 max-w-2xl mx-auto mb-16;
+  @apply text-base sm:text-lg opacity-60 max-w-2xl mx-auto mb-10 sm:mb-16 font-medium;
 }
 
 /* Blog Typography Styles */
