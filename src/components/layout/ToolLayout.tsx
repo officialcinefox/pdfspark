@@ -7,6 +7,7 @@ import { Button } from '../ui/Button'
 import { TOOL_CATEGORIES } from '../../lib/toolsData'
 import { SEO } from '../SEO'
 import { cn } from '../../lib/utils'
+import { ToolIcon } from '../ui/ToolIcon'
 
 interface ToolLayoutProps {
   title: string
@@ -24,15 +25,6 @@ interface ToolLayoutProps {
   uploadDescription?: string
   files?: File[]
   setFiles?: React.Dispatch<React.SetStateAction<File[]>>
-}
-
-function renderIcon(icon: React.ReactNode, className: string) {
-  if (!React.isValidElement(icon)) return icon
-
-  const element = icon as React.ReactElement<any>
-  return React.cloneElement(element, {
-    className: cn(element.props.className, className)
-  })
 }
 
 export function ToolLayout({ 
@@ -62,7 +54,7 @@ export function ToolLayout({
   const activeCategory = TOOL_CATEGORIES.find((category) =>
     category.tools.some((tool) => tool.path === currentPath)
   )
-
+ 
   const handleUpload = (uploaded: File[]) => {
     if (maxFiles && files.length + uploaded.length > maxFiles) {
       toast.error(`Maximum ${maxFiles} files allowed`)
@@ -70,11 +62,11 @@ export function ToolLayout({
     }
     setFiles(prev => [...prev, ...uploaded])
   }
-
+ 
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index))
   }
-
+ 
   const submit = async () => {
     if (files.length === 0) return
     try {
@@ -84,7 +76,7 @@ export function ToolLayout({
       toast.error(error.message || "An error occurred during processing.")
     }
   }
-
+ 
   return (
     <div className={cn("max-w-7xl mx-auto px-4 sm:px-6 w-full pt-8 pb-24", !activeCategory && "flex flex-col items-center")}>
       <SEO 
@@ -95,8 +87,11 @@ export function ToolLayout({
       <Toaster position="bottom-center" />
       
       <div className="text-center mb-10">
-        <div className={cn("w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-5 shadow-lg", colorClass)}>
-          {renderIcon(icon, 'w-10 h-10')}
+        <div className={cn(
+          "w-20 h-20 mx-auto rounded-3xl flex items-center justify-center mb-5 transition-transform duration-500 hover:scale-110",
+          colorClass === 'bg-transparent' ? "" : cn("shadow-lg", colorClass)
+        )}>
+          <ToolIcon icon={icon} className="w-12 h-12" />
         </div>
         <h1 className="text-3xl md:text-5xl font-bold mb-3">{title}</h1>
         <p className="text-lg opacity-60 max-w-2xl mx-auto">{description}</p>
@@ -128,7 +123,7 @@ export function ToolLayout({
                         "shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300",
                         active ? "bg-[var(--accent)] text-white scale-110 shadow-lg shadow-red-500/20" : tool.color
                       )}>
-                        {renderIcon(tool.icon, 'w-5 h-5')}
+                        <ToolIcon icon={tool.icon} className="w-5 h-5" />
                       </span>
                       <span className="min-w-0">
                         <span className={cn("block text-sm font-bold truncate", active && "text-[var(--accent)]")}>{tool.title}</span>
@@ -164,7 +159,7 @@ export function ToolLayout({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-6">
                 <div className="flex items-center gap-3">
                   <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg", colorClass)}>
-                    {renderIcon(icon, 'w-6 h-6')}
+                    <ToolIcon icon={icon} className="w-6 h-6" />
                   </div>
                   <div>
                     <h2 className="font-bold">{title} Builder</h2>

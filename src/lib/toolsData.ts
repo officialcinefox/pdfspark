@@ -18,7 +18,7 @@ export interface ToolCategory {
   tools: Tool[]
 }
 
-const ICON_FRAME = 'bg-white/90 dark:bg-white/10 ring-1 ring-black/5 dark:ring-white/10'
+const ICON_FRAME = 'bg-transparent'
 
 function iconSrc(id: string) {
   return `/assets/tool-icons/${id}.png`
@@ -29,7 +29,7 @@ function toolIcon(id: string, title: string) {
     src: iconSrc(id),
     alt: '',
     'aria-hidden': true,
-    className: 'w-10 h-10 object-contain drop-shadow-sm',
+    className: 'object-contain drop-shadow-md group-hover:drop-shadow-xl transition-all duration-500',
     loading: 'lazy',
     decoding: 'async',
     title
