@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { 
   Camera, 
@@ -9,19 +9,14 @@ import {
   Trash2, 
   Download, 
   Plus, 
-  Move,
   Loader2,
   Filter,
-  FileText,
-  ChevronLeft,
-  ChevronRight,
   Sparkles,
-  Crop as CropIcon,
-  RotateCw
+  Crop as CropIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { detectDocument, transformPerspective, applyFilter, Point } from '../../lib/cv/scannerCore';
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
 import toast from 'react-hot-toast';
 import { SEO } from '../../components/SEO';
 
@@ -42,10 +37,13 @@ export const DocScanner: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [cameraFacing, setCameraFacing] = useState<'user' | 'environment'>('environment');
   
-  // Refs for processing
+  // Dimensions for cropping UI
+  const [imgDims, setImgDims] = useState({ width: 0, height: 0, naturalWidth: 1, naturalHeight: 1 });
+  
   const webcamRef = useRef<Webcam>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cropImgRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Check if OpenCV is loaded
   useEffect(() => {
@@ -58,7 +56,7 @@ export const DocScanner: React.FC = () => {
     return () => clearInterval(checkCV);
   }, []);
 
-  const handleCapture = async () => {
+  const handleCapture = () => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (!imageSrc) return;
     processNewImage(imageSrc);
@@ -81,7 +79,6 @@ export const DocScanner: React.FC = () => {
   const processNewImage = async (dataUrl: string) => {
     setIsLoading(true);
     try {
-      // Create a temporary canvas to run detection
       const img = new Image();
       img.onload = async () => {
         const canvas = document.createElement('canvas');
@@ -90,10 +87,8 @@ export const DocScanner: React.FC = () => {
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0);
         
-        // Ensure unique ID for OpenCV to read
         canvas.id = `proc-${Date.now()}`;
         document.body.appendChild(canvas);
-        
         const detection = await detectDocument(canvas.id);
         document.body.removeChild(canvas);
 
@@ -139,10 +134,8 @@ export const DocScanner: React.FC = () => {
       const ctx = canvas.getContext('2d');
       ctx?.drawImage(img, 0, 0);
 
-      // We use A4 aspect ratio for output
       const targetWidth = 1200;
       const targetHeight = 1600;
-      
       const processed = await transformPerspective(canvas, page.points, targetWidth, targetHeight);
       
       const updatedPages = [...pages];
@@ -171,19 +164,14 @@ export const DocScanner: React.FC = () => {
     setIsLoading(true);
     try {
       const pdfDoc = await PDFDocument.create();
-      
       for (const page of pages) {
         const imgBytes = await fetch(page.processed).then(res => res.arrayBuffer());
         const img = await pdfDoc.embedJpg(imgBytes);
         const pdfPage = pdfDoc.addPage([img.width, img.height]);
         pdfPage.drawImage(img, {
-          x: 0,
-          y: 0,
-          width: img.width,
-          height: img.height,
+          x: 0, y: 0, width: img.width, height: img.height,
         });
       }
-
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
@@ -191,7 +179,6 @@ export const DocScanner: React.FC = () => {
       link.href = url;
       link.download = `scanned-document-${Date.now()}.pdf`;
       link.click();
-      
       toast.success("PDF generated successfully!");
     } catch (error) {
       console.error(error);
@@ -201,58 +188,57 @@ export const DocScanner: React.FC = () => {
     }
   };
 
-  // UI Components
-  const CornerHandle = ({ point, onMove, index }: { point: Point, onMove: (p: Point) => void, index: number }) => {
-    const handleDrag = (e: React.MouseEvent | React.TouchEvent) => {
-      e.preventDefault();
-      const container = e.currentTarget.parentElement;
-      if (!container) return;
+  const updateImgDims = useCallback(() => {
+    if (cropImgRef.current) {
+      const rect = cropImgRef.current.getBoundingClientRect();
+      setImgDims({
+        width: rect.width,
+        height: rect.height,
+        naturalWidth: cropImgRef.current.naturalWidth || 1,
+        naturalHeight: cropImgRef.current.naturalHeight || 1
+      });
+    }
+  }, []);
 
-      const moveHandler = (moveEvent: any) => {
-        const rect = container.getBoundingClientRect();
-        const clientX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
-        const clientY = moveEvent.touches ? moveEvent.touches[0].clientY : moveEvent.clientY;
-        
-        const x = ((clientX - rect.left) / rect.width) * container.dataset.origW!;
-        const y = ((clientY - rect.top) / rect.height) * container.dataset.origH!;
-        
-        onMove({ x: Math.max(0, Math.min(x, Number(container.dataset.origW))), y: Math.max(0, Math.min(y, Number(container.dataset.origH))) });
-      };
+  useEffect(() => {
+    window.addEventListener('resize', updateImgDims);
+    return () => window.removeEventListener('resize', updateImgDims);
+  }, [updateImgDims]);
 
-      const upHandler = () => {
-        window.removeEventListener('mousemove', moveHandler);
-        window.removeEventListener('mouseup', upHandler);
-        window.removeEventListener('touchmove', moveHandler);
-        window.removeEventListener('touchend', upHandler);
-      };
+  const getRelativePos = (point: Point) => {
+    if (!cropImgRef.current) return { x: 0, y: 0 };
+    const rect = cropImgRef.current.getBoundingClientRect();
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!containerRect) return { x: 0, y: 0 };
 
-      window.addEventListener('mousemove', moveHandler);
-      window.addEventListener('mouseup', upHandler);
-      window.addEventListener('touchmove', moveHandler);
-      window.addEventListener('touchend', upHandler);
-    };
+    const x = (point.x / imgDims.naturalWidth) * rect.width + (rect.left - containerRect.left);
+    const y = (point.y / imgDims.naturalHeight) * rect.height + (rect.top - containerRect.top);
+    return { x, y };
+  };
 
-    return (
-      <div 
-        className="absolute w-8 h-8 -ml-4 -mt-4 bg-white border-4 border-red-500 rounded-full cursor-move z-30 flex items-center justify-center shadow-lg"
-        style={{ left: `${(point.x / Number(document.getElementById('crop-container')?.dataset.origW)) * 100}%`, top: `${(point.y / Number(document.getElementById('crop-container')?.dataset.origH)) * 100}%` }}
-        onMouseDown={handleDrag}
-        onTouchStart={handleDrag}
-      >
-        <span className="text-[10px] font-bold text-red-500">{index + 1}</span>
-      </div>
-    );
+  const handlePointMove = (index: number, clientX: number, clientY: number) => {
+    if (!cropImgRef.current || currentPageIndex === null) return;
+    const rect = cropImgRef.current.getBoundingClientRect();
+    
+    const relX = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    const relY = Math.max(0, Math.min(clientY - rect.top, rect.height));
+    
+    const x = (relX / rect.width) * imgDims.naturalWidth;
+    const y = (relY / rect.height) * imgDims.naturalHeight;
+
+    const updated = [...pages];
+    updated[currentPageIndex].points[index] = { x, y };
+    setPages(updated);
   };
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col pt-24 pb-12">
       <SEO 
         title="Smart Document Scanner - CamScanner Style"
-        description="Scan documents using your camera, auto-detect edges, and generate professional PDFs entirely in your browser. Free, secure, and fast."
+        description="Scan documents using your camera, auto-detect edges, and generate professional PDFs entirely in your browser."
       />
       
       <div className="max-w-4xl mx-auto w-full px-4 flex-1 flex flex-col">
-        {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-black text-[var(--foreground)] flex items-center gap-2">
@@ -272,7 +258,6 @@ export const DocScanner: React.FC = () => {
           )}
         </div>
 
-        {/* Loading Overlay */}
         <AnimatePresence>
           {isLoading && (
             <motion.div 
@@ -281,14 +266,12 @@ export const DocScanner: React.FC = () => {
             >
               <div className="bg-[var(--surface)] p-8 rounded-3xl text-center shadow-2xl border border-[var(--border)]">
                 <Loader2 className="w-12 h-12 text-red-500 animate-spin mx-auto mb-4" />
-                <p className="font-bold text-[var(--foreground)]">Processing Image...</p>
-                <p className="text-sm text-[var(--foreground)] opacity-50">OpenCV is working its magic</p>
+                <p className="font-bold text-[var(--foreground)]">Processing...</p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Step: Start */}
         {step === 'start' && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex-1 flex flex-col items-center justify-center py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
@@ -302,13 +285,9 @@ export const DocScanner: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-black text-[var(--foreground)] mb-2">Scan with Camera</h3>
-                  <p className="text-[var(--foreground)] opacity-50 font-medium">Use your device camera to scan pages.</p>
+                  <p className="text-[var(--foreground)] opacity-50 font-medium text-sm">Use your device camera to scan pages.</p>
                 </div>
-                {!isCVReady && (
-                  <span className="text-xs text-red-500 font-bold bg-red-500/10 px-4 py-1.5 rounded-full flex items-center gap-2">
-                    <Loader2 className="w-3 h-3 animate-spin" /> Loading Core...
-                  </span>
-                )}
+                {!isCVReady && <span className="text-xs text-red-500 font-bold">Loading Core...</span>}
               </button>
 
               <button 
@@ -321,28 +300,14 @@ export const DocScanner: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-black text-[var(--foreground)] mb-2">Upload from Gallery</h3>
-                  <p className="text-[var(--foreground)] opacity-50 font-medium">Import existing photos or documents.</p>
+                  <p className="text-[var(--foreground)] opacity-50 font-medium text-sm">Import existing photos or documents.</p>
                 </div>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleUpload} 
-                  multiple 
-                  accept="image/*" 
-                  className="hidden" 
-                />
+                <input type="file" ref={fileInputRef} onChange={handleUpload} multiple accept="image/*" className="hidden" />
               </button>
-            </div>
-            
-            <div className="mt-12 p-6 bg-red-500/5 rounded-2xl border border-red-500/10 max-w-lg text-center">
-              <p className="text-sm text-[var(--foreground)] opacity-60 italic leading-relaxed">
-                "Smart Scanner uses browser-based OpenCV.js for professional-grade document detection. No images are uploaded to any server – everything happens locally on your device."
-              </p>
             </div>
           </motion.div>
         )}
 
-        {/* Step: Camera */}
         {step === 'camera' && (
           <div className="flex-1 flex flex-col bg-black rounded-[2rem] overflow-hidden relative">
             <Webcam
@@ -352,206 +317,129 @@ export const DocScanner: React.FC = () => {
               videoConstraints={{ facingMode: cameraFacing, width: 1280, height: 720 }}
               className="w-full h-full object-cover"
             />
-            
             <div className="absolute top-6 left-6 right-6 flex justify-between">
-              <button onClick={() => setStep('start')} className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white">
-                <X />
-              </button>
-              <button 
-                onClick={() => setCameraFacing(f => f === 'user' ? 'environment' : 'user')}
-                className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white"
-              >
-                <RotateCcw />
-              </button>
+              <button onClick={() => setStep('start')} className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white"><X /></button>
+              <button onClick={() => setCameraFacing(f => f === 'user' ? 'environment' : 'user')} className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white"><RotateCcw /></button>
             </div>
-
-            <div className="absolute bottom-10 left-0 right-0 flex justify-center items-center gap-8">
+            <div className="absolute bottom-10 left-0 right-0 flex justify-center items-center">
               <div className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1">
-                <button 
-                  onClick={handleCapture}
-                  className="w-full h-full bg-white rounded-full active:scale-90 transition-transform"
-                />
+                <button onClick={handleCapture} className="w-full h-full bg-white rounded-full active:scale-90 transition-transform" />
               </div>
             </div>
           </div>
         )}
 
-        {/* Step: Crop */}
         {step === 'crop' && currentPageIndex !== null && (
           <div className="flex-1 flex flex-col gap-6">
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-4 overflow-hidden flex-1 relative">
-              <div 
-                id="crop-container"
-                className="relative mx-auto h-full flex items-center justify-center"
-                data-orig-w={1} // Placeholders, updated dynamically if needed
-                data-orig-h={1}
-              >
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-4 overflow-hidden flex-1 relative flex items-center justify-center" ref={containerRef}>
+              <div className="relative">
                 <img 
-                  id="crop-img"
+                  ref={cropImgRef}
                   src={pages[currentPageIndex].original} 
-                  className="max-h-full max-w-full object-contain"
-                  onLoad={(e) => {
-                    const img = e.currentTarget;
-                    const container = document.getElementById('crop-container');
-                    if (container) {
-                      container.dataset.origW = img.naturalWidth.toString();
-                      container.dataset.origH = img.naturalHeight.toString();
-                    }
-                  }}
+                  className="max-h-[60vh] md:max-h-[70vh] w-auto object-contain"
+                  onLoad={updateImgDims}
                 />
                 
-                {/* Overlay SVG for selection */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none z-20">
-                  <polygon 
-                    points={pages[currentPageIndex].points.map(p => {
-                      const img = document.getElementById('crop-img') as HTMLImageElement;
-                      if (!img) return '0,0';
-                      const rect = img.getBoundingClientRect();
-                      const parentRect = img.parentElement!.getBoundingClientRect();
-                      const x = (p.x / img.naturalWidth) * rect.width + (rect.left - parentRect.left);
-                      const y = (p.y / img.naturalHeight) * rect.height + (rect.top - parentRect.top);
-                      return `${x},${y}`;
-                    }).join(' ')}
-                    fill="rgba(229, 9, 20, 0.1)"
-                    stroke="rgba(229, 9, 20, 0.5)"
-                    strokeWidth="2"
-                  />
-                </svg>
+                {imgDims.width > 0 && (
+                  <>
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-20">
+                      <polygon 
+                        points={pages[currentPageIndex].points.map(p => {
+                          const pos = getRelativePos(p);
+                          return `${pos.x},${pos.y}`;
+                        }).join(' ')}
+                        fill="rgba(229, 9, 20, 0.15)"
+                        stroke="rgba(229, 9, 20, 0.6)"
+                        strokeWidth="3"
+                      />
+                    </svg>
 
-                {/* Handles */}
-                {pages[currentPageIndex].points.map((p, i) => (
-                  <CornerHandle 
-                    key={i} index={i} point={p} 
-                    onMove={(newP) => {
-                      const updated = [...pages];
-                      updated[currentPageIndex].points[i] = newP;
-                      setPages(updated);
-                    }} 
-                  />
-                ))}
+                    {pages[currentPageIndex].points.map((p, i) => {
+                      const pos = getRelativePos(p);
+                      return (
+                        <div 
+                          key={i}
+                          className="absolute w-8 h-8 -ml-4 -mt-4 bg-white border-4 border-red-500 rounded-full cursor-move z-30 flex items-center justify-center shadow-xl active:scale-125 transition-transform"
+                          style={{ left: pos.x, top: pos.y }}
+                          onMouseDown={(e) => {
+                            const move = (me: MouseEvent) => handlePointMove(i, me.clientX, me.clientY);
+                            const up = () => {
+                              window.removeEventListener('mousemove', move);
+                              window.removeEventListener('mouseup', up);
+                            };
+                            window.addEventListener('mousemove', move);
+                            window.addEventListener('mouseup', up);
+                          }}
+                          onTouchStart={(e) => {
+                            const move = (te: TouchEvent) => handlePointMove(i, te.touches[0].clientX, te.touches[0].clientY);
+                            const up = () => {
+                              window.removeEventListener('touchmove', move);
+                              window.removeEventListener('touchend', up);
+                            };
+                            window.addEventListener('touchmove', move);
+                            window.addEventListener('touchend', up);
+                          }}
+                        >
+                          <span className="text-[10px] font-bold text-red-500">{i + 1}</span>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
               </div>
             </div>
 
             <div className="flex gap-4">
-              <button 
-                onClick={() => {
-                  const updated = [...pages];
-                  updated.splice(currentPageIndex, 1);
-                  setPages(updated);
-                  setStep('start');
-                }}
-                className="flex-1 py-4 bg-[var(--surface)] text-[var(--foreground)] font-bold rounded-2xl border border-[var(--border)] flex items-center justify-center gap-2"
-              >
-                <Trash2 className="w-5 h-5" /> Cancel
-              </button>
-              <button 
-                onClick={handleCropComplete}
-                className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-red-600/20"
-              >
-                <Check className="w-5 h-5" /> Process Scan
-              </button>
+              <button onClick={() => { setPages(pages.filter((_, i) => i !== currentPageIndex)); setStep('start'); }} className="flex-1 py-4 bg-[var(--surface)] text-[var(--foreground)] font-bold rounded-2xl border border-[var(--border)] flex items-center justify-center gap-2"><Trash2 className="w-5 h-5" /> Cancel</button>
+              <button onClick={handleCropComplete} className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-red-600/20"><Check className="w-5 h-5" /> Process Scan</button>
             </div>
           </div>
         )}
 
-        {/* Step: Filter */}
         {step === 'filter' && currentPageIndex !== null && (
-          <div className="flex-1 flex flex-col gap-8">
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[2.5rem] p-8 flex-1 flex flex-col">
-              <div className="flex-1 relative rounded-2xl overflow-hidden bg-black/5 flex items-center justify-center mb-8">
-                <img 
-                  src={pages[currentPageIndex].processed} 
-                  className="max-h-full max-w-full object-contain shadow-2xl" 
-                />
+          <div className="flex-1 flex flex-col gap-6">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[2rem] p-6 flex-1 flex flex-col">
+              <div className="flex-1 relative rounded-xl overflow-hidden bg-black/5 flex items-center justify-center mb-6">
+                <img src={pages[currentPageIndex].processed} className="max-h-full max-w-full object-contain shadow-lg" />
               </div>
-
-              <div className="grid grid-cols-5 gap-3">
-                {[
-                  { id: 'original', name: 'Original' },
-                  { id: 'magic', name: 'Magic' },
-                  { id: 'enhanced', name: 'Clean' },
-                  { id: 'bw', name: 'B&W' },
-                  { id: 'grayscale', name: 'Gray' }
-                ].map(f => (
+              <div className="grid grid-cols-5 gap-2">
+                {['original', 'magic', 'enhanced', 'bw', 'grayscale'].map(f => (
                   <button 
-                    key={f.id}
-                    onClick={() => handleApplyFilter(f.id)}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl transition-all ${pages[currentPageIndex].filter === f.id ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-[var(--background)] text-[var(--foreground)] opacity-60 hover:opacity-100 border border-[var(--border)]'}`}
+                    key={f}
+                    onClick={() => handleApplyFilter(f)}
+                    className={`flex flex-col items-center gap-2 p-2 rounded-xl transition-all ${pages[currentPageIndex].filter === f ? 'bg-red-500 text-white shadow-lg' : 'bg-[var(--background)] text-[var(--foreground)] opacity-60'}`}
                   >
-                    <Filter className="w-5 h-5" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">{f.name}</span>
+                    <Filter className="w-4 h-4" />
+                    <span className="text-[8px] font-black uppercase">{f}</span>
                   </button>
                 ))}
               </div>
             </div>
-
             <div className="flex gap-4">
-              <button 
-                onClick={() => setStep('crop')}
-                className="flex-1 py-4 bg-[var(--surface)] text-[var(--foreground)] font-bold rounded-2xl border border-[var(--border)] flex items-center justify-center gap-2"
-              >
-                <CropIcon className="w-5 h-5" /> Back to Crop
-              </button>
-              <button 
-                onClick={() => setStep('list')}
-                className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-red-600/20"
-              >
-                <Check className="w-5 h-5" /> Save Page
-              </button>
+              <button onClick={() => setStep('crop')} className="flex-1 py-4 bg-[var(--surface)] text-[var(--foreground)] font-bold rounded-2xl border border-[var(--border)] flex items-center justify-center gap-2"><CropIcon className="w-5 h-5" /> Back</button>
+              <button onClick={() => setStep('list')} className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-red-600/20"><Check className="w-5 h-5" /> Save Page</button>
             </div>
           </div>
         )}
 
-        {/* Step: List (Page Management) */}
         {step === 'list' && (
           <div className="flex-1 flex flex-col gap-8 pb-20">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {pages.map((page, idx) => (
-                <motion.div 
-                  layout
-                  key={page.id}
-                  className="group relative bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-4 hover:border-red-500 transition-all"
-                >
-                  <div className="aspect-[3/4] rounded-xl overflow-hidden bg-black/5 relative mb-4">
-                    <img src={page.processed} className="w-full h-full object-contain" />
-                    <div className="absolute top-2 left-2 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px] font-black">
-                      {idx + 1}
+                <div key={page.id} className="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-3">
+                  <img src={page.processed} className="aspect-[3/4] rounded-lg object-contain mb-3 bg-black/5" />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold opacity-50">Page {idx + 1}</span>
+                    <div className="flex gap-2">
+                      <button onClick={() => { setCurrentPageIndex(idx); setStep('filter'); }} className="p-1.5 hover:bg-[var(--background)] rounded-lg opacity-60"><Filter className="w-4 h-4" /></button>
+                      <button onClick={() => { setPages(pages.filter(p => p.id !== page.id)); if (pages.length <= 1) setStep('start'); }} className="p-1.5 hover:bg-red-500/10 text-red-500 rounded-lg opacity-60"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <button 
-                      onClick={() => {
-                        setCurrentPageIndex(idx);
-                        setStep('filter');
-                      }}
-                      className="p-2 text-[var(--foreground)] opacity-40 hover:opacity-100 hover:bg-[var(--background)] rounded-xl transition-all"
-                    >
-                      <Filter className="w-4 h-4" />
-                    </button>
-                    <button 
-                      onClick={() => {
-                        const updated = [...pages];
-                        updated.splice(idx, 1);
-                        setPages(updated);
-                        if (updated.length === 0) setStep('start');
-                      }}
-                      className="p-2 text-red-500 opacity-40 hover:opacity-100 hover:bg-red-500/10 rounded-xl transition-all"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-
-              <button 
-                onClick={() => setStep('start')}
-                className="aspect-[3/4] border-2 border-[var(--border)] border-dashed rounded-3xl flex flex-col items-center justify-center gap-4 hover:border-red-500 transition-all text-[var(--foreground)] opacity-40 hover:opacity-80"
-              >
-                <div className="w-12 h-12 bg-red-500/5 rounded-2xl flex items-center justify-center">
-                  <Plus className="w-6 h-6 text-red-500" />
                 </div>
-                <span className="font-bold text-sm">Add Page</span>
+              ))}
+              <button onClick={() => setStep('start')} className="aspect-[3/4] border-2 border-[var(--border)] border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-red-500 transition-all opacity-40 hover:opacity-100">
+                <Plus className="w-6 h-6 text-red-500" />
+                <span className="text-xs font-bold">Add Page</span>
               </button>
             </div>
           </div>
