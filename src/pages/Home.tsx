@@ -6,8 +6,6 @@ import * as Accordion from '@radix-ui/react-accordion'
 import { Background } from '../components/Background'
 import { TOOL_CATEGORIES, getCategoryPath } from '../lib/toolsData'
 import { SEO } from '../components/SEO'
-import { ToolIcon } from '../components/ui/ToolIcon'
-import { cn } from '../lib/utils'
 import { supabase } from '../lib/supabase'
 
 interface FAQ {
@@ -153,11 +151,8 @@ export function Home() {
                   >
                     <Link to={tool.path} className="block h-full group">
                       <div className="tool-card h-full flex flex-col items-start glass-panel hover:bg-[var(--surface-hover)] transition-colors">
-                        <div className={cn(
-                          "rounded-2xl mb-7 transition-all duration-500 group-hover:scale-110",
-                          tool.color === 'bg-transparent' ? "p-0" : cn("p-3 shadow-inner", tool.color)
-                        )}>
-                          <ToolIcon icon={tool.icon} className="w-12 h-12" />
+                        <div className={`p-3 rounded-2xl mb-7 shadow-inner ${tool.color} group-hover:scale-105 transition-transform duration-500`}>
+                          {tool.icon}
                         </div>
                         <h3 className="text-xl font-bold mb-3">{tool.title}</h3>
                         <p className="opacity-65 text-sm leading-relaxed mb-8 flex-1">

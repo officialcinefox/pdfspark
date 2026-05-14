@@ -7,8 +7,6 @@ import {
 import { TOOL_CATEGORIES } from '../lib/toolsData'
 import { Background } from '../components/Background'
 import { SEO } from '../components/SEO'
-import { ToolIcon } from '../components/ui/ToolIcon'
-import { cn } from '../lib/utils'
 
 export function AllTools() {
   const [search, setSearch] = React.useState('')
@@ -95,11 +93,8 @@ export function AllTools() {
                   >
                     <Link to={tool.path} className="block group h-full">
                       <div className="tool-card h-full flex flex-col items-start glass-panel hover:bg-[var(--surface-hover)] transition-all duration-300">
-                        <div className={cn(
-                          "rounded-2xl mb-6 transition-all duration-500 group-hover:scale-110",
-                          tool.color === 'bg-transparent' ? "p-0" : cn("p-3 shadow-sm", tool.color)
-                        )}>
-                          <ToolIcon icon={tool.icon} className="w-10 h-10" />
+                        <div className={`p-3 rounded-2xl mb-6 shadow-sm ${tool.color} group-hover:scale-110 transition-transform`}>
+                          {tool.icon}
                         </div>
                         <h3 className="text-xl font-bold mb-2 group-hover:text-[var(--accent)] transition-colors">{tool.title}</h3>
                         <p className="opacity-60 text-sm leading-relaxed mb-6 flex-1">
