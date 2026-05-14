@@ -72,7 +72,7 @@ export function Home() {
       />
       <Background />
 
-      <section className="relative px-4 pt-10 pb-20 sm:pt-24 sm:pb-28 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+      <section className="relative px-4 pt-4 pb-12 sm:pt-24 sm:pb-28 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -123,11 +123,11 @@ export function Home() {
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="mb-14 grid gap-6 lg:grid-cols-[minmax(0,420px)_minmax(360px,540px)] lg:items-center lg:justify-between"
+                className="mb-8 lg:mb-14 grid gap-4 lg:gap-6 lg:grid-cols-[minmax(0,420px)_minmax(360px,540px)] lg:items-center lg:justify-between"
               >
                 <h2 className="section-title text-gradient mb-0">{category.title}</h2>
                 <div className="lg:text-right lg:ml-auto">
-                  <p className="text-lg opacity-65 leading-relaxed max-w-2xl lg:max-w-[540px]">
+                  <p className="text-base sm:text-lg opacity-65 leading-relaxed max-w-2xl lg:max-w-[540px]">
                     {category.homeDescription}
                   </p>
                   <Link
@@ -223,11 +223,11 @@ export function Home() {
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="mb-14 grid gap-6 lg:grid-cols-[minmax(0,420px)_minmax(360px,540px)] lg:items-center lg:justify-between"
+            className="mb-8 lg:mb-14 grid gap-4 lg:gap-6 lg:grid-cols-[minmax(0,420px)_minmax(360px,540px)] lg:items-center lg:justify-between"
           >
             <h2 className="section-title text-gradient mb-0">Latest Articles</h2>
             <div className="lg:text-right lg:ml-auto">
-              <p className="text-lg opacity-65 leading-relaxed max-w-2xl lg:max-w-xl">
+              <p className="text-base sm:text-lg opacity-65 leading-relaxed max-w-2xl lg:max-w-xl">
                 Read focused PDF tips, security notes, and workflow guides that help you finish document tasks with less friction.
               </p>
               <Link

@@ -116,7 +116,7 @@ export function Navbar() {
               transition={{ duration: 0.18 }}
               className="lg:hidden mt-2 glass-panel rounded-2xl border border-[var(--border)] p-2"
             >
-              <div className="grid gap-1">
+              <div className="grid grid-cols-2 gap-2">
                 {navLinks.map((link) => {
                   const active = isActivePath(location.pathname, link.path)
                   return (
@@ -124,7 +124,7 @@ export function Navbar() {
                       key={link.path}
                       to={link.path}
                       className={cn(
-                        'rounded-xl px-4 py-3 text-sm font-semibold transition-colors',
+                        'rounded-xl px-4 py-3 text-sm font-semibold transition-colors text-center',
                         active
                           ? 'bg-[var(--accent-soft)] text-[var(--accent)]'
                           : 'hover:bg-[var(--surface-hover)]'
@@ -134,6 +134,8 @@ export function Navbar() {
                     </Link>
                   )
                 })}
+              </div>
+              <div className="grid gap-2 mt-2">
                 {user && (
                   <Link
                     to="/dashboard"
@@ -144,7 +146,7 @@ export function Navbar() {
                 )}
                 <Link
                   to="/tools"
-                  className="mt-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-3 text-sm font-bold text-white"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-red-600/20"
                 >
                   Open Tools
                   <ArrowRight className="h-4 w-4" />

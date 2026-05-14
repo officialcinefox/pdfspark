@@ -151,52 +151,52 @@ export const AdminManager: React.FC = () => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-4xl font-bold text-white mb-2">Admin Management</h1>
-        <p className="text-zinc-400">Control who has access to the PDF Spark Dashboard</p>
+        <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">Admin Management</h1>
+        <p className="text-[var(--foreground)] opacity-60">Control who has access to the PDF Spark Dashboard</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Add New Admin */}
         <div className="lg:col-span-1">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 sticky top-8">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 sticky top-8">
             <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mb-6">
               <UserPlus className="w-6 h-6 text-red-500" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Add New Admin</h2>
-            <p className="text-sm text-zinc-500 mb-8">Type the email address of the person you want to grant admin access to.</p>
+            <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Add New Admin</h2>
+            <p className="text-sm text-[var(--foreground)] opacity-40 mb-8">Type the email address of the person you want to grant admin access to.</p>
             
             <form onSubmit={handleAddAdmin} className="space-y-4">
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-zinc-500 mb-2">Email Address</label>
+                <label className="block text-xs font-black uppercase tracking-widest text-[var(--foreground)] opacity-30 mb-2">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--foreground)] opacity-20" />
                   <input 
                     type="email"
                     required
                     value={newAdminEmail}
                     onChange={e => setNewAdminEmail(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30"
+                    className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
                     placeholder="name@gmail.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-zinc-500 mb-2">Password</label>
+                <label className="block text-xs font-black uppercase tracking-widest text-[var(--foreground)] opacity-30 mb-2">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--foreground)] opacity-20" />
                   <input 
                     type={showPass ? "text" : "password"}
                     required
                     value={newAdminPassword}
                     onChange={e => setNewAdminPassword(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-12 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30"
+                    className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl pl-10 pr-12 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
                     placeholder="Min. 6 characters"
                   />
                   <button 
                     type="button"
                     onClick={() => setShowPass(!showPass)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--foreground)] opacity-40 hover:opacity-100"
                   >
                     {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -204,15 +204,15 @@ export const AdminManager: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-zinc-500 mb-2">Confirm Password</label>
+                <label className="block text-xs font-black uppercase tracking-widest text-[var(--foreground)] opacity-30 mb-2">Confirm Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--foreground)] opacity-20" />
                   <input 
                     type={showPass ? "text" : "password"}
                     required
                     value={confirmNewAdminPassword}
                     onChange={e => setConfirmNewAdminPassword(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30"
+                    className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
                     placeholder="Repeat password"
                   />
                 </div>
@@ -220,17 +220,17 @@ export const AdminManager: React.FC = () => {
 
               <button 
                 disabled={isAdding || !newAdminEmail || !newAdminPassword}
-                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-4"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-4 shadow-lg shadow-red-600/20"
               >
                 {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                 Authorize Admin
               </button>
             </form>
 
-            <div className="mt-8 pt-8 border-t border-zinc-800">
+            <div className="mt-8 pt-8 border-t border-[var(--border)]">
               <div className="flex items-start gap-3 p-4 bg-red-500/5 rounded-xl border border-red-500/10">
                 <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-zinc-500 leading-relaxed italic">
+                <p className="text-xs text-[var(--foreground)] opacity-40 leading-relaxed italic">
                   Granting admin access allows the user to edit tools, blogs, FAQs, and manage enquiries. Be careful who you authorize.
                 </p>
               </div>
@@ -240,40 +240,40 @@ export const AdminManager: React.FC = () => {
 
         {/* Admin List */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl overflow-hidden">
-            <div className="p-6 border-b border-zinc-800 bg-zinc-900 flex justify-between items-center">
-              <h3 className="font-bold text-white flex items-center gap-2">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-[var(--border)] bg-[var(--background)] opacity-80 flex justify-between items-center">
+              <h3 className="font-bold text-[var(--foreground)] flex items-center gap-2">
                 <Shield className="w-4 h-4 text-red-500" />
                 Authorized Admin Accounts
               </h3>
-              <span className="text-xs font-bold text-zinc-500 bg-zinc-800 px-3 py-1 rounded-full">
+              <span className="text-xs font-bold text-[var(--foreground)] opacity-40 bg-[var(--background)] px-3 py-1 rounded-full border border-[var(--border)]">
                 {admins.length} Total
               </span>
             </div>
             
-            <div className="divide-y divide-zinc-800">
+            <div className="divide-y divide-[var(--border)]">
               {loading ? (
                 <div className="p-12 flex justify-center">
                   <Loader2 className="w-8 h-8 animate-spin text-red-500" />
                 </div>
               ) : admins.length === 0 ? (
-                <div className="p-12 text-center text-zinc-500 italic">No admins authorized yet.</div>
+                <div className="p-12 text-center text-[var(--foreground)] opacity-40 italic">No admins authorized yet.</div>
               ) : admins.map((admin) => (
-                <div key={admin.id} className="p-6 flex items-center justify-between group hover:bg-zinc-800/30 transition-colors">
+                <div key={admin.id} className="p-6 flex items-center justify-between group hover:bg-[var(--background)] transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 group-hover:bg-red-500/10 group-hover:text-red-500 transition-all">
+                    <div className="w-12 h-12 bg-[var(--background)] rounded-full flex items-center justify-center text-[var(--foreground)] opacity-40 group-hover:bg-red-500/10 group-hover:text-red-500 transition-all border border-[var(--border)]">
                       <User className="w-6 h-6" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-white">{admin.email}</span>
+                        <span className="font-bold text-[var(--foreground)]">{admin.email}</span>
                         {user?.email === admin.email && (
                           <span className="text-[10px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 px-2 py-0.5 rounded-md border border-red-500/20">
                             You
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-500 mt-1">
+                      <p className="text-xs text-[var(--foreground)] opacity-40 mt-1">
                         Authorized on {new Date(admin.created_at).toLocaleDateString()}
                       </p>
                     </div>

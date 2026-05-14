@@ -81,7 +81,7 @@ export const PagesManager: React.FC = () => {
         <div className="flex items-center justify-between">
           <button 
             onClick={() => setEditingPage(null)}
-            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group"
+            className="flex items-center gap-2 text-[var(--foreground)] opacity-40 hover:opacity-100 transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Back to Pages
@@ -100,24 +100,24 @@ export const PagesManager: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 space-y-6">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 space-y-6">
               <div>
-                <label className="block text-sm font-bold text-zinc-400 mb-2">Page Title</label>
+                <label className="block text-sm font-bold text-[var(--foreground)] opacity-60 mb-2">Page Title</label>
                 <input 
                   type="text"
                   value={editingPage.title}
                   onChange={e => setEditingPage({...editingPage, title: e.target.value})}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30"
+                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
                   placeholder="Page Title"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-bold text-zinc-400 mb-2">Content (HTML)</label>
+                <label className="block text-sm font-bold text-[var(--foreground)] opacity-60 mb-2">Content (HTML)</label>
                 <textarea 
                   value={editingPage.content}
                   onChange={e => setEditingPage({...editingPage, content: e.target.value})}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 font-mono text-sm h-[500px]"
+                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30 font-mono text-sm h-[500px]"
                   placeholder="Page Content"
                 />
               </div>
@@ -125,29 +125,29 @@ export const PagesManager: React.FC = () => {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 space-y-6">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 space-y-6">
+              <h3 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
                 <Globe className="w-5 h-5 text-red-500" />
                 Page Settings
               </h3>
               
               <div>
-                <label className="block text-sm font-bold text-zinc-400 mb-2">Slug</label>
-                <div className="flex items-center gap-2 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3">
-                  <span className="text-zinc-600 text-sm italic">/</span>
+                <label className="block text-sm font-bold text-[var(--foreground)] opacity-60 mb-2">Slug</label>
+                <div className="flex items-center gap-2 bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3">
+                  <span className="text-[var(--foreground)] opacity-30 text-sm italic">/</span>
                   <input 
                     type="text"
                     value={editingPage.slug}
                     onChange={e => setEditingPage({...editingPage, slug: e.target.value})}
-                    className="bg-transparent border-none p-0 text-white focus:outline-none flex-1 text-sm"
+                    className="bg-transparent border-none p-0 text-[var(--foreground)] focus:outline-none flex-1 text-sm"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-zinc-800">
+              <div className="pt-4 border-t border-[var(--border)]">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-zinc-500 italic">Last Updated</span>
-                  <span className="text-zinc-300 font-medium">
+                  <span className="text-[var(--foreground)] opacity-40 italic">Last Updated</span>
+                  <span className="text-[var(--foreground)] opacity-80 font-medium">
                     {new Date(editingPage.updated_at).toLocaleDateString()}
                   </span>
                 </div>
@@ -159,7 +159,7 @@ export const PagesManager: React.FC = () => {
                 <Eye className="w-4 h-4" />
                 Pro Tip
               </h4>
-              <p className="text-xs text-zinc-500 leading-relaxed italic">
+              <p className="text-xs text-[var(--foreground)] opacity-40 leading-relaxed italic">
                 Use HTML tags like &lt;h2&gt;, &lt;p&gt;, and &lt;ul&gt; to style your content. The frontend will render these automatically.
               </p>
             </div>
@@ -173,19 +173,19 @@ export const PagesManager: React.FC = () => {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-white mb-2">Dynamic Pages</h1>
-          <p className="text-zinc-400">Manage legal and informational pages of your toolkit</p>
+          <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">Dynamic Pages</h1>
+          <p className="text-[var(--foreground)] opacity-60">Manage legal and informational pages of your toolkit</p>
         </div>
       </div>
 
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 w-5 h-5" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--foreground)] opacity-40 w-5 h-5" />
         <input 
           type="text" 
           placeholder="Search pages by title or slug..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30"
+          className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-2xl pl-12 pr-4 py-4 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
         />
       </div>
 
@@ -195,15 +195,15 @@ export const PagesManager: React.FC = () => {
             <Loader2 className="w-8 h-8 animate-spin text-red-500" />
           </div>
         ) : filteredPages.length === 0 ? (
-          <div className="col-span-full text-center py-20 bg-zinc-900/30 rounded-3xl border border-zinc-800 border-dashed">
-            <FileText className="w-16 h-16 text-zinc-800 mx-auto mb-4" />
-            <p className="text-zinc-500 font-bold">No pages found matching your search.</p>
+          <div className="col-span-full text-center py-20 bg-[var(--surface)]/30 rounded-3xl border border-[var(--border)] border-dashed">
+            <FileText className="w-16 h-16 text-[var(--foreground)] opacity-10 mx-auto mb-4" />
+            <p className="text-[var(--foreground)] opacity-40 font-bold">No pages found matching your search.</p>
           </div>
         ) : (
           filteredPages.map((page) => (
             <div 
               key={page.id} 
-              className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl p-6 hover:border-red-500/50 transition-all group"
+              className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 hover:border-red-500/50 transition-all group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -211,16 +211,16 @@ export const PagesManager: React.FC = () => {
                 </div>
                 <button 
                   onClick={() => setEditingPage(page)}
-                  className="p-2 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+                  className="p-2 text-[var(--foreground)] opacity-40 hover:opacity-100 hover:bg-[var(--surface-hover)] rounded-lg transition-colors"
                 >
                   <Edit3 className="w-5 h-5" />
                 </button>
               </div>
-              <h3 className="text-xl font-bold text-white mb-1">{page.title}</h3>
-              <p className="text-zinc-500 text-sm mb-6 italic">/{page.slug}</p>
+              <h3 className="text-xl font-bold text-[var(--foreground)] mb-1">{page.title}</h3>
+              <p className="text-[var(--foreground)] opacity-40 text-sm mb-6 italic">/{page.slug}</p>
               
-              <div className="flex items-center justify-between pt-6 border-t border-zinc-800">
-                <div className="text-[10px] uppercase tracking-widest font-black text-zinc-600">
+              <div className="flex items-center justify-between pt-6 border-t border-[var(--border)]">
+                <div className="text-[10px] uppercase tracking-widest font-black text-[var(--foreground)] opacity-30">
                   Last updated {new Date(page.updated_at).toLocaleDateString()}
                 </div>
                 <button 

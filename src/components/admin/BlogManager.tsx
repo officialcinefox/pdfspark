@@ -33,7 +33,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
   if (!editor) return null;
 
   return (
-    <div className="flex flex-wrap gap-1 p-2 border-b border-zinc-800 bg-zinc-900 sticky top-0 z-10">
+    <div className="flex flex-wrap gap-1 p-2 border-b border-[var(--border)] bg-[var(--surface)] sticky top-0 z-10">
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('bold') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
@@ -55,7 +55,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
       >
         <UnderlineIcon size={18} />
       </button>
-      <div className="w-px h-6 bg-zinc-800 self-center mx-1" />
+      <div className="w-px h-6 bg-[var(--border)] self-center mx-1" />
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('heading', { level: 1 }) ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
@@ -184,7 +184,7 @@ export const BlogManager: React.FC = () => {
     content: '',
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none focus:outline-none min-h-[400px] p-6 text-white leading-relaxed',
+        class: 'prose dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-6 text-[var(--foreground)] leading-relaxed',
       },
     },
   });
@@ -371,23 +371,23 @@ export const BlogManager: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Editor Section */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-              <label className="block text-sm font-bold text-zinc-400 mb-2">Blog Title</label>
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+              <label className="block text-sm font-bold text-[var(--foreground)] opacity-60 mb-2">Blog Title</label>
               <input 
                 type="text" 
                 value={currentBlog?.title}
                 onChange={(e) => setCurrentBlog({ ...currentBlog, title: e.target.value })}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/50"
                 placeholder="Enter a catchy title..."
               />
             </div>
 
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
-              <label className="block text-sm font-bold text-zinc-400 p-6 pb-2">Content</label>
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-2xl">
+              <label className="block text-sm font-bold text-[var(--foreground)] opacity-60 p-6 pb-2">Content</label>
               <MenuBar editor={editor} />
               <style>{`
                 .tiptap.prose {
-                  color: #ffffff !important;
+                  color: var(--foreground) !important;
                   max-width: none;
                 }
                 .tiptap.prose p, 
@@ -396,7 +396,7 @@ export const BlogManager: React.FC = () => {
                 .tiptap.prose h3, 
                 .tiptap.prose li,
                 .tiptap.prose strong {
-                  color: #ffffff !important;
+                  color: var(--foreground) !important;
                 }
                 .tiptap.prose p {
                   opacity: 0.9;
@@ -411,27 +411,27 @@ export const BlogManager: React.FC = () => {
 
           {/* Sidebar Settings Section */}
           <div className="space-y-6">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+              <h3 className="font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
                 <Settings size={18} className="text-red-500" />
                 Settings
               </h3>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase mb-1.5">URL Slug</label>
+                  <label className="block text-xs font-bold text-[var(--foreground)] opacity-60 uppercase mb-1.5">URL Slug</label>
                   <input 
                     type="text" 
                     value={currentBlog?.slug}
                     onChange={(e) => setCurrentBlog({ ...currentBlog, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none"
+                    className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none"
                     placeholder="how-to-merge-pdf"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase mb-3">Categories (Select Multiple)</label>
-                  <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto p-2 bg-zinc-800/50 rounded-xl border border-zinc-700">
+                  <label className="block text-xs font-bold text-[var(--foreground)] opacity-60 uppercase mb-3">Categories (Select Multiple)</label>
+                  <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto p-2 bg-[var(--background)] rounded-xl border border-[var(--border)]">
                     {categories.map((cat) => (
                       <label key={cat} className="flex items-center gap-2 px-2 py-1.5 hover:bg-zinc-700/50 rounded-lg cursor-pointer transition-colors">
                         <input 
@@ -578,8 +578,8 @@ export const BlogManager: React.FC = () => {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-white mb-2">Manage Blogs</h1>
-          <p className="text-zinc-400">Total {blogs.length} articles published</p>
+          <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">Manage Blogs</h1>
+          <p className="text-[var(--foreground)] opacity-60">Total {blogs.length} articles published</p>
         </div>
         <button 
           onClick={handleCreateNew}
@@ -591,29 +591,29 @@ export const BlogManager: React.FC = () => {
 
       {/* Search and Filters */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 w-5 h-5" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--foreground)] opacity-40 w-5 h-5" />
         <input 
           type="text" 
           placeholder="Search articles by title or slug..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30"
+          className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-2xl pl-12 pr-4 py-4 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
         />
       </div>
 
       {/* Blog List Table */}
-      <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl overflow-hidden">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-zinc-800 bg-zinc-950/50">
-              <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-wider">Article</th>
-              <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-wider">Category</th>
-              <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-wider text-right">Actions</th>
+            <tr className="border-b border-[var(--border)] bg-[var(--background)] opacity-80">
+              <th className="px-6 py-4 text-xs font-bold text-[var(--foreground)] opacity-60 uppercase tracking-wider">Article</th>
+              <th className="px-6 py-4 text-xs font-bold text-[var(--foreground)] opacity-60 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-xs font-bold text-[var(--foreground)] opacity-60 uppercase tracking-wider">Category</th>
+              <th className="px-6 py-4 text-xs font-bold text-[var(--foreground)] opacity-60 uppercase tracking-wider">Date</th>
+              <th className="px-6 py-4 text-xs font-bold text-[var(--foreground)] opacity-60 uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800">
+          <tbody className="divide-y divide-[var(--border)]">
             {loading ? (
               <tr>
                 <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
@@ -631,16 +631,16 @@ export const BlogManager: React.FC = () => {
               <tr key={blog.id} className="hover:bg-zinc-800/30 transition-colors group">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-zinc-800 rounded-lg overflow-hidden shrink-0 border border-zinc-700 flex items-center justify-center">
+                    <div className="w-12 h-12 bg-[var(--background)] rounded-lg overflow-hidden shrink-0 border border-[var(--border)] flex items-center justify-center">
                       {blog.image_url ? (
                         <img src={blog.image_url} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <ImageIcon className="text-zinc-600 w-5 h-5" />
+                        <ImageIcon className="text-[var(--foreground)] opacity-20 w-5 h-5" />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <div className="font-bold text-white truncate">{blog.title}</div>
-                      <div className="text-xs text-zinc-500 truncate">/{blog.slug}</div>
+                      <div className="font-bold text-[var(--foreground)] truncate">{blog.title}</div>
+                      <div className="text-xs text-[var(--foreground)] opacity-40 truncate">/{blog.slug}</div>
                     </div>
                   </div>
                 </td>

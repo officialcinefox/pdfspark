@@ -122,17 +122,17 @@ export const EnquiryManager: React.FC = () => {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-white mb-2">User Enquiries</h1>
-          <p className="text-zinc-400">View and manage messages from your users</p>
+          <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">User Enquiries</h1>
+          <p className="text-[var(--foreground)] opacity-60">View and manage messages from your users</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative group/filter">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 w-4 h-4" />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--foreground)] opacity-40 w-4 h-4" />
             <select 
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
-              className="bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-8 py-2.5 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 appearance-none cursor-pointer"
+              className="bg-[var(--surface)] border border-[var(--border)] rounded-xl pl-10 pr-8 py-2.5 text-sm font-bold text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30 appearance-none cursor-pointer"
             >
               <option value="all">All Time</option>
               <option value="today">Today</option>
@@ -142,17 +142,17 @@ export const EnquiryManager: React.FC = () => {
               <option value="last30">Last 30 Days</option>
               <option value="custom">Custom Date</option>
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 w-4 h-4 pointer-events-none" />
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--foreground)] opacity-40 w-4 h-4 pointer-events-none" />
           </div>
 
           {dateFilter === 'custom' && (
             <div className="relative animate-in slide-in-from-right-4 duration-300">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 w-4 h-4" />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--foreground)] opacity-40 w-4 h-4" />
               <input 
                 type="date"
                 value={customStartDate}
                 onChange={(e) => setCustomStartDate(e.target.value)}
-                className="bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-red-500/30"
+                className="bg-[var(--surface)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-2.5 text-sm font-bold text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
               />
             </div>
           )}
@@ -160,13 +160,13 @@ export const EnquiryManager: React.FC = () => {
       </div>
 
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 w-5 h-5" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--foreground)] opacity-40 w-5 h-5" />
         <input 
           type="text" 
           placeholder="Search by name, email or subject..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30"
+          className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-2xl pl-12 pr-4 py-4 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
         />
       </div>
 
@@ -176,29 +176,29 @@ export const EnquiryManager: React.FC = () => {
             <Loader2 className="w-8 h-8 animate-spin text-red-500" />
           </div>
         ) : filteredEnquiries.length === 0 ? (
-          <div className="text-center py-20 bg-zinc-900/30 rounded-3xl border border-zinc-800 border-dashed">
-            <Mail className="w-16 h-16 text-zinc-800 mx-auto mb-4" />
-            <p className="text-zinc-500 font-bold">No enquiries found for this filter.</p>
+          <div className="text-center py-20 bg-[var(--surface)] rounded-3xl border border-[var(--border)] border-dashed">
+            <Mail className="w-16 h-16 text-[var(--foreground)] opacity-20 mx-auto mb-4" />
+            <p className="text-[var(--foreground)] opacity-60 font-bold">No enquiries found for this filter.</p>
           </div>
         ) : filteredEnquiries.map((enq) => (
           <div 
             key={enq.id} 
             onClick={() => enq.status === 'new' && updateStatus(enq.id, 'read')}
-            className={`bg-zinc-900/50 backdrop-blur-sm border rounded-2xl p-6 transition-all cursor-pointer group/card ${enq.status === 'new' ? 'border-red-500/40 ring-1 ring-red-500/10 shadow-[0_0_30px_rgba(239,68,68,0.05)]' : 'border-zinc-800 opacity-90'}`}
+            className={`bg-[var(--surface)] border rounded-2xl p-6 transition-all cursor-pointer group/card ${enq.status === 'new' ? 'border-red-500/40 ring-1 ring-red-500/10 shadow-[0_0_30px_rgba(239,68,68,0.05)]' : 'border-[var(--border)]'}`}
           >
             <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
               <div className="flex gap-4">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${enq.status === 'new' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-zinc-800 text-zinc-400'}`}>
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${enq.status === 'new' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-[var(--background)] text-[var(--foreground)] opacity-60'}`}>
                   {enq.status === 'new' ? <Mail size={28} /> : <MailOpen size={28} />}
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-1">{enq.subject || 'No Subject'}</h3>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-zinc-400">
-                    <span className="font-bold text-zinc-200">{enq.name}</span>
-                    <span className="w-1 h-1 bg-zinc-700 rounded-full" />
+                  <h3 className="text-xl font-bold text-[var(--foreground)] mb-1">{enq.subject || 'No Subject'}</h3>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--foreground)] opacity-60">
+                    <span className="font-bold">{enq.name}</span>
+                    <span className="w-1 h-1 bg-[var(--border)] rounded-full" />
                     <span>{enq.email}</span>
-                    <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-                    <span className="flex items-center gap-1.5"><Clock size={14} className="text-zinc-500" /> {new Date(enq.created_at).toLocaleString()}</span>
+                    <span className="w-1 h-1 bg-[var(--border)] rounded-full" />
+                    <span className="flex items-center gap-1.5"><Clock size={14} className="opacity-40" /> {new Date(enq.created_at).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -209,7 +209,7 @@ export const EnquiryManager: React.FC = () => {
                     e.stopPropagation();
                     setReplyingTo(replyingTo === enq.id ? null : enq.id);
                   }}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all ${replyingTo === enq.id ? 'bg-zinc-800 text-white' : 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white'}`}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all ${replyingTo === enq.id ? 'bg-[var(--surface-hover)] text-[var(--foreground)]' : 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white'}`}
                 >
                   <Reply size={16} />
                   {replyingTo === enq.id ? 'Close' : 'Reply'}
@@ -221,7 +221,7 @@ export const EnquiryManager: React.FC = () => {
                     e.stopPropagation();
                     updateStatus(enq.id, e.target.value);
                   }}
-                  className="bg-zinc-800 border border-zinc-700 text-xs font-black uppercase tracking-wider text-white px-4 py-2.5 rounded-xl focus:outline-none cursor-pointer"
+                  className="bg-[var(--background)] border border-[var(--border)] text-xs font-black uppercase tracking-wider text-[var(--foreground)] px-4 py-2.5 rounded-xl focus:outline-none cursor-pointer"
                 >
                   <option value="new">New</option>
                   <option value="read">Read</option>
@@ -238,7 +238,7 @@ export const EnquiryManager: React.FC = () => {
                     </button>
                     <button 
                       onClick={() => setDeletingId(null)}
-                      className="px-4 py-2.5 bg-zinc-800 text-zinc-300 text-xs font-bold rounded-xl"
+                      className="px-4 py-2.5 bg-[var(--surface-hover)] text-[var(--foreground)] opacity-60 text-xs font-bold rounded-xl"
                     >
                       Cancel
                     </button>
@@ -249,7 +249,7 @@ export const EnquiryManager: React.FC = () => {
                       e.stopPropagation();
                       setDeletingId(enq.id);
                     }}
-                    className="p-2.5 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                    className="p-2.5 text-[var(--foreground)] opacity-40 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
                   >
                     <Trash2 size={20} />
                   </button>
@@ -257,16 +257,16 @@ export const EnquiryManager: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-zinc-950/80 p-6 rounded-2xl border border-zinc-800/50 text-zinc-300 leading-relaxed whitespace-pre-wrap text-base">
+            <div className="bg-[var(--background)] p-6 rounded-2xl border border-[var(--border)] text-[var(--foreground)] opacity-80 leading-relaxed whitespace-pre-wrap text-base">
               {enq.message}
             </div>
 
             {replyingTo === enq.id && (
-              <div className="mt-6 space-y-4 pt-6 border-t border-zinc-800 animate-in slide-in-from-top-4 duration-300" onClick={e => e.stopPropagation()}>
+              <div className="mt-6 space-y-4 pt-6 border-t border-[var(--border)] animate-in slide-in-from-top-4 duration-300" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-                    <h4 className="text-sm font-black uppercase tracking-widest text-zinc-500">Compose Reply</h4>
+                    <h4 className="text-sm font-black uppercase tracking-widest text-[var(--foreground)] opacity-40">Compose Reply</h4>
                   </div>
                   {enq.status === 'replied' && (
                     <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-green-500 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
@@ -278,12 +278,12 @@ export const EnquiryManager: React.FC = () => {
                   placeholder="Type your professional reply here..."
                   value={replyText[enq.id] || ''}
                   onChange={(e) => setReplyText({...replyText, [enq.id]: e.target.value})}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl px-5 py-4 text-white text-base focus:outline-none focus:ring-2 focus:ring-red-500/30 min-h-[150px] transition-all"
+                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-2xl px-5 py-4 text-[var(--foreground)] text-base focus:outline-none focus:ring-2 focus:ring-red-500/30 min-h-[150px] transition-all"
                 />
                 <div className="flex justify-end gap-3">
                   <button 
                     onClick={() => setReplyingTo(null)}
-                    className="px-6 py-3 bg-zinc-800 text-zinc-300 rounded-xl font-bold text-sm hover:bg-zinc-700 transition-all"
+                    className="px-6 py-3 bg-[var(--surface-hover)] text-[var(--foreground)] opacity-60 rounded-xl font-bold text-sm hover:opacity-100 transition-all"
                   >
                     Discard
                   </button>
