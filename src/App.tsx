@@ -24,6 +24,7 @@ const LockTool = React.lazy(() => import('./pages/tools/Lock').then((module) => 
 const UnlockTool = React.lazy(() => import('./pages/tools/Unlock').then((module) => ({ default: module.UnlockTool })))
 const ImageToPdfTool = React.lazy(() => import('./pages/tools/ImageToPdf').then((module) => ({ default: module.ImageToPdfTool })))
 const GenericPdfTool = React.lazy(() => import('./pages/tools/GenericPdfTool').then((module) => ({ default: module.GenericPdfTool })))
+const DocScanner = React.lazy(() => import('./pages/tools/DocScanner').then((module) => ({ default: module.DocScanner })))
 const Login = React.lazy(() => import('./pages/Login').then((module) => ({ default: module.Login })))
 const Dashboard = React.lazy(() => import('./pages/Dashboard').then((module) => ({ default: module.Dashboard })))
 const ResetPassword = React.lazy(() => import('./pages/ResetPassword').then((module) => ({ default: module.ResetPassword })))
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="tool/lock" element={page(<LockTool />)} />
           <Route path="tool/unlock" element={page(<UnlockTool />)} />
           <Route path="tool/image-to-pdf" element={page(<ImageToPdfTool />)} />
+          <Route path="tool/scan-document" element={page(<DocScanner />)} />
           <Route path="tool/:toolId" element={page(<GenericPdfTool />)} />
         </Route>
         <Route path="login" element={page(<Login />)} />

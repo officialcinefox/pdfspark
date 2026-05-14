@@ -55,6 +55,7 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
     description: 'Organize, optimize, and manage your PDF pages with ease.',
     homeDescription: 'Organize and control PDF pages with clean workflows for merging, splitting, rotating, and preparing documents for sharing.',
     tools: [
+      tool('scan-document', 'Smart Scanner', 'Scan documents with camera & auto-detect edges.'),
       tool('merge', 'Merge PDF', 'Combine multiple PDFs into one unified document.'),
       tool('split', 'Split PDF', 'Extract pages or split a PDF into multiple files.'),
       tool('compress', 'Compress PDF', 'Reduce file size while maintaining high quality.'),
