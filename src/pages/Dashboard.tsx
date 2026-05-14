@@ -6,7 +6,7 @@ import { FaqManager } from '../components/admin/FaqManager';
 import { EnquiryManager } from '../components/admin/EnquiryManager';
 import { PagesManager } from '../components/admin/PagesManager';
 import { AdminManager } from '../components/admin/AdminManager';
-import { FileText, LayoutTemplate, LogOut, Settings, Globe, HelpCircle, MessageSquare, Shield, Menu, X } from 'lucide-react';
+import { FileText, LayoutTemplate, LogOut, Settings, Globe, HelpCircle, MessageSquare, Shield, Menu, X, Sun, Moon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
@@ -19,6 +19,11 @@ export const Dashboard: React.FC = () => {
   const [unreadCount, setUnreadCount] = React.useState(0);
   const [isAuthorized, setIsAuthorized] = React.useState<boolean | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [isDark, setIsDark] = React.useState(document.documentElement.classList.contains('dark'));
+
+  React.useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
 
   React.useEffect(() => {
     if (!user) {
@@ -84,35 +89,35 @@ export const Dashboard: React.FC = () => {
     <>
       <button 
         onClick={() => setActiveTab('overview')}
-        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'overview' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'overview' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-[var(--foreground)] opacity-50 hover:opacity-100 hover:bg-[var(--surface-hover)]'}`}
       >
         <LayoutTemplate className="w-5 h-5" />
         Overview
       </button>
       <button 
         onClick={() => setActiveTab('pages')}
-        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'pages' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'pages' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-[var(--foreground)] opacity-50 hover:opacity-100 hover:bg-[var(--surface-hover)]'}`}
       >
         <FileText className="w-5 h-5" />
         Dynamic Pages
       </button>
       <button 
         onClick={() => setActiveTab('blogs')}
-        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'blogs' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'blogs' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-[var(--foreground)] opacity-50 hover:opacity-100 hover:bg-[var(--surface-hover)]'}`}
       >
         <FileText className="w-5 h-5" />
         Manage Blogs
       </button>
       <button 
         onClick={() => setActiveTab('faqs')}
-        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'faqs' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'faqs' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-[var(--foreground)] opacity-50 hover:opacity-100 hover:bg-[var(--surface-hover)]'}`}
       >
         <HelpCircle className="w-5 h-5" />
         Manage FAQs
       </button>
       <button 
         onClick={() => setActiveTab('enquiries')}
-        className={`flex items-center justify-between w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'enquiries' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+        className={`flex items-center justify-between w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'enquiries' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-[var(--foreground)] opacity-50 hover:opacity-100 hover:bg-[var(--surface-hover)]'}`}
       >
         <div className="flex items-center gap-3">
           <MessageSquare className="w-5 h-5" />
@@ -126,7 +131,7 @@ export const Dashboard: React.FC = () => {
       </button>
       <button 
         onClick={() => setActiveTab('admins')}
-        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'admins' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'admins' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-[var(--foreground)] opacity-50 hover:opacity-100 hover:bg-[var(--surface-hover)]'}`}
       >
         <Shield className="w-5 h-5" />
         Manage Admins
@@ -135,45 +140,61 @@ export const Dashboard: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen w-full bg-black overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-screen w-full bg-[var(--background)] overflow-hidden">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-zinc-950 border-b border-zinc-800 p-4 flex items-center justify-between">
-        <h2 className="text-xl font-black text-white flex items-center gap-2 italic">
+      <div className="lg:hidden bg-[var(--surface)] border-b border-[var(--border)] p-4 flex items-center justify-between">
+        <h2 className="text-xl font-black text-[var(--foreground)] flex items-center gap-2 italic">
           <Settings className="w-5 h-5 text-red-600" />
           ADMIN
         </h2>
-        <button 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 text-zinc-400 hover:text-white"
-        >
-          {isMobileMenuOpen ? <X /> : <Menu />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsDark(!isDark)}
+            className="p-2 text-[var(--foreground)] opacity-60 hover:opacity-100"
+          >
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 text-[var(--foreground)] opacity-60 hover:opacity-100"
+          >
+            {isMobileMenuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
       </div>
 
       {/* Sidebar (Desktop) */}
-      <div className={`fixed inset-0 z-50 lg:relative lg:z-auto bg-zinc-950 border-r border-zinc-800 flex flex-col w-72 transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        <div className="p-8 border-b border-zinc-900 hidden lg:block">
-          <h2 className="text-2xl font-black text-white flex items-center gap-3 italic">
-            <Settings className="w-7 h-7 text-red-600" />
-            SPARK ADMIN
-          </h2>
-          <p className="text-[10px] text-zinc-500 mt-4 font-black uppercase tracking-widest truncate">{user.email}</p>
+      <div className={`fixed inset-0 z-50 lg:relative lg:z-auto bg-[var(--surface)] border-r border-[var(--border)] flex flex-col w-72 transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <div className="p-8 border-b border-[var(--border)] hidden lg:block">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-black text-[var(--foreground)] flex items-center gap-3 italic">
+              <Settings className="w-7 h-7 text-red-600" />
+              ADMIN
+            </h2>
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className="p-2 text-[var(--foreground)] opacity-60 hover:opacity-100 transition-all hover:scale-110"
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+          </div>
+          <p className="text-[10px] text-[var(--foreground)] opacity-40 mt-4 font-black uppercase tracking-widest truncate">{user.email}</p>
         </div>
         
         <div className="flex-1 overflow-y-auto p-6 space-y-2">
           <NavButtons />
-          <div className="pt-6 mt-6 border-t border-zinc-900">
-            <Link to="/" className="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl font-bold transition-all">
+          <div className="pt-6 mt-6 border-t border-[var(--border)]">
+            <Link to="/" className="flex items-center gap-3 px-4 py-3 text-[var(--foreground)] opacity-60 hover:opacity-100 hover:bg-[var(--surface-hover)] rounded-xl font-bold transition-all">
               <Globe className="w-5 h-5" />
               View Website
             </Link>
           </div>
         </div>
 
-        <div className="p-6 border-t border-zinc-900">
+        <div className="p-6 border-t border-[var(--border)]">
           <button 
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-4 py-4 text-zinc-500 hover:text-white hover:bg-red-600 rounded-2xl font-black uppercase tracking-widest text-xs transition-all group"
+            className="flex items-center gap-3 w-full px-4 py-4 text-[var(--foreground)] opacity-50 hover:opacity-100 hover:bg-red-600 hover:text-white rounded-2xl font-black uppercase tracking-widest text-xs transition-all group"
           >
             <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
             Sign Out
