@@ -83,16 +83,16 @@ export function CompressTool() {
         context.fillRect(0, 0, canvas.width, canvas.height)
         
         await page.render({ 
-          canvasContext: context, 
+          canvasContext: context as any, 
           viewport,
-          canvas: canvas
+          canvas,
         }).promise
         
         // Get image as jpeg
         const imgData = canvas.toDataURL('image/jpeg', quality)
         
         const jpgImage = await newPdf.embedJpg(imgData)
-        const pdfPage = newPdf.addPage([viewport.width, viewport.height])
+        const pdfPage = newPdf.addPage([viewport.width, viewport.height] as [number, number])
         
         pdfPage.drawImage(jpgImage, {
           x: 0,

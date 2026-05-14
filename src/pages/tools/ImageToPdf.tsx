@@ -437,7 +437,7 @@ export function ImageToPdfTool() {
         const usableH = Math.max(pageHeight - p.margin * 2, 1)
 
         const totalImagesInPage = p.images.slice(0, p.imagesPerPage)
-        const page = pdf.addPage([pageWidth, pageHeight])
+        const page = pdf.addPage([pageWidth, pageHeight] as [number, number])
         page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: rgb(1, 1, 1) })
 
         const cols = p.imagesPerPage === 1 ? 1 : (p.imagesPerPage === 2 ? 1 : 2)

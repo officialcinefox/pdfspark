@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
-import { 
-  Camera, 
-  Upload, 
-  RotateCcw, 
-  Check, 
-  X, 
-  Trash2, 
-  Download, 
-  Plus, 
+import {
+  Camera,
+  Upload,
+  RotateCcw,
+  Check,
+  X,
+  Trash2,
+  Download,
+  Plus,
   Loader2,
   Filter,
   Sparkles,
@@ -19,6 +19,12 @@ import { detectDocument, transformPerspective, applyFilter, Point } from '../../
 import { PDFDocument } from 'pdf-lib';
 import toast from 'react-hot-toast';
 import { SEO } from '../../components/SEO';
+
+declare global {
+  interface Window {
+    cv: any;
+  }
+}
 
 interface ScannedPage {
   id: string;
@@ -36,10 +42,10 @@ export const DocScanner: React.FC = () => {
   const [isCVReady, setIsCVReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [cameraFacing, setCameraFacing] = useState<'user' | 'environment'>('environment');
-  
+
   // Dimensions for cropping UI
   const [imgDims, setImgDims] = useState({ width: 0, height: 0, naturalWidth: 1, naturalHeight: 1 });
-  
+
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cropImgRef = useRef<HTMLImageElement>(null);
@@ -86,7 +92,7 @@ export const DocScanner: React.FC = () => {
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0);
-        
+
         canvas.id = `proc-${Date.now()}`;
         document.body.appendChild(canvas);
         const detection = await detectDocument(canvas.id);
@@ -124,7 +130,7 @@ export const DocScanner: React.FC = () => {
   const handleCropComplete = async () => {
     if (currentPageIndex === null) return;
     setIsLoading(true);
-    
+
     const page = pages[currentPageIndex];
     const img = new Image();
     img.onload = async () => {
@@ -137,7 +143,7 @@ export const DocScanner: React.FC = () => {
       const targetWidth = 1200;
       const targetHeight = 1600;
       const processed = await transformPerspective(canvas, page.points, targetWidth, targetHeight);
-      
+
       const updatedPages = [...pages];
       updatedPages[currentPageIndex] = { ...page, processed };
       setPages(updatedPages);
@@ -150,10 +156,10 @@ export const DocScanner: React.FC = () => {
   const handleApplyFilter = async (filterType: string) => {
     if (currentPageIndex === null) return;
     setIsLoading(true);
-    
+
     const page = pages[currentPageIndex];
     const filtered = await applyFilter(page.processed, filterType as any);
-    
+
     const updatedPages = [...pages];
     updatedPages[currentPageIndex] = { ...page, filter: filterType, processed: filtered };
     setPages(updatedPages);
@@ -167,7 +173,7 @@ export const DocScanner: React.FC = () => {
       for (const page of pages) {
         const imgBytes = await fetch(page.processed).then(res => res.arrayBuffer());
         const img = await pdfDoc.embedJpg(imgBytes);
-        const pdfPage = pdfDoc.addPage([img.width, img.height]);
+        const pdfPage = pdfDoc.addPage([img.width, img.height] as [number, number]);
         pdfPage.drawImage(img, {
           x: 0, y: 0, width: img.width, height: img.height,
         });
@@ -219,10 +225,10 @@ export const DocScanner: React.FC = () => {
   const handlePointMove = (index: number, clientX: number, clientY: number) => {
     if (!cropImgRef.current || currentPageIndex === null) return;
     const rect = cropImgRef.current.getBoundingClientRect();
-    
+
     const relX = Math.max(0, Math.min(clientX - rect.left, rect.width));
     const relY = Math.max(0, Math.min(clientY - rect.top, rect.height));
-    
+
     const x = (relX / rect.width) * imgDims.naturalWidth;
     const y = (relY / rect.height) * imgDims.naturalHeight;
 
@@ -233,11 +239,11 @@ export const DocScanner: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col pt-24 pb-12">
-      <SEO 
+      <SEO
         title="Smart Document Scanner - CamScanner Style"
         description="Scan documents using your camera, auto-detect edges, and generate professional PDFs entirely in your browser."
       />
-      
+
       <div className="max-w-4xl mx-auto w-full px-4 flex-1 flex flex-col">
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -248,7 +254,7 @@ export const DocScanner: React.FC = () => {
             <p className="text-[var(--foreground)] opacity-50 font-medium">Professional document digitization.</p>
           </div>
           {pages.length > 0 && step === 'list' && (
-            <button 
+            <button
               onClick={generatePDF}
               className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-600/20 flex items-center gap-2"
             >
@@ -260,7 +266,7 @@ export const DocScanner: React.FC = () => {
 
         <AnimatePresence>
           {isLoading && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center"
             >
@@ -275,7 +281,7 @@ export const DocScanner: React.FC = () => {
         {step === 'start' && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex-1 flex flex-col items-center justify-center py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-              <button 
+              <button
                 onClick={() => setStep('camera')}
                 disabled={!isCVReady}
                 className="group p-10 bg-[var(--surface)] border-2 border-[var(--border)] border-dashed rounded-[2.5rem] hover:border-red-500 transition-all text-center flex flex-col items-center gap-6"
@@ -290,7 +296,7 @@ export const DocScanner: React.FC = () => {
                 {!isCVReady && <span className="text-xs text-red-500 font-bold">Loading Core...</span>}
               </button>
 
-              <button 
+              <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={!isCVReady}
                 className="group p-10 bg-[var(--surface)] border-2 border-[var(--border)] border-dashed rounded-[2.5rem] hover:border-red-500 transition-all text-center flex flex-col items-center gap-6"
@@ -333,17 +339,18 @@ export const DocScanner: React.FC = () => {
           <div className="flex-1 flex flex-col gap-6">
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-4 overflow-hidden flex-1 relative flex items-center justify-center" ref={containerRef}>
               <div className="relative">
-                <img 
+                <img
                   ref={cropImgRef}
-                  src={pages[currentPageIndex].original} 
+                  src={pages[currentPageIndex].original}
+                  alt="Original document"
                   className="max-h-[60vh] md:max-h-[70vh] w-auto object-contain"
                   onLoad={updateImgDims}
                 />
-                
+
                 {imgDims.width > 0 && (
                   <>
                     <svg className="absolute inset-0 w-full h-full pointer-events-none z-20">
-                      <polygon 
+                      <polygon
                         points={pages[currentPageIndex].points.map(p => {
                           const pos = getRelativePos(p);
                           return `${pos.x},${pos.y}`;
@@ -357,7 +364,7 @@ export const DocScanner: React.FC = () => {
                     {pages[currentPageIndex].points.map((p, i) => {
                       const pos = getRelativePos(p);
                       return (
-                        <div 
+                        <div
                           key={i}
                           className="absolute w-8 h-8 -ml-4 -mt-4 bg-white border-4 border-red-500 rounded-full cursor-move z-30 flex items-center justify-center shadow-xl active:scale-125 transition-transform"
                           style={{ left: pos.x, top: pos.y }}
@@ -400,11 +407,15 @@ export const DocScanner: React.FC = () => {
           <div className="flex-1 flex flex-col gap-6">
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[2rem] p-6 flex-1 flex flex-col">
               <div className="flex-1 relative rounded-xl overflow-hidden bg-black/5 flex items-center justify-center mb-6">
-                <img src={pages[currentPageIndex].processed} className="max-h-full max-w-full object-contain shadow-lg" />
+                <img
+                  src={pages[currentPageIndex].processed}
+                  alt="Processed scan"
+                  className="max-h-full max-w-full object-contain shadow-lg"
+                />
               </div>
               <div className="grid grid-cols-5 gap-2">
                 {['original', 'magic', 'enhanced', 'bw', 'grayscale'].map(f => (
-                  <button 
+                  <button
                     key={f}
                     onClick={() => handleApplyFilter(f)}
                     className={`flex flex-col items-center gap-2 p-2 rounded-xl transition-all ${pages[currentPageIndex].filter === f ? 'bg-red-500 text-white shadow-lg' : 'bg-[var(--background)] text-[var(--foreground)] opacity-60'}`}
@@ -427,7 +438,11 @@ export const DocScanner: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {pages.map((page, idx) => (
                 <div key={page.id} className="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-3">
-                  <img src={page.processed} className="aspect-[3/4] rounded-lg object-contain mb-3 bg-black/5" />
+                  <img
+                    src={page.processed}
+                    alt={`Page ${idx + 1}`}
+                    className="aspect-[3/4] rounded-lg object-contain mb-3 bg-black/5"
+                  />
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold opacity-50">Page {idx + 1}</span>
                     <div className="flex gap-2">
