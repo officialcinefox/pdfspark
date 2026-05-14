@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-900: #1e3a8a;
+
+  --color-surface: #f7faf9;
+  --color-surface-hover: #edf4f3;
+  --color-background: #edf3f2;
+  
+  --color-dark-bg: #101315;
+  --color-dark-surface: #181d20;
+  --color-dark-surface-hover: #222a2e;
+  --color-dark-border: #303a3f;
+}
+
+@layer base {
+  :root {
+    --background: var(--color-background);
+    --foreground: #172027;
+    --surface: #fbfefd;
+    --surface-hover: #f4eeee;
+    --border: #ddd2d2;
+    --accent: #E50914;
+    --accent-hover: #b20710;
+    --accent-soft: #fff1f2;
+    --premium: #E50914;
+    --premium-warm: #E50914;
+    --panel-shadow: 0 22px 70px rgba(23, 32, 39, 0.12);
+  }
+
+  .dark {
+    --background: var(--color-dark-bg);
+    --foreground: #edf2f1;
+    --surface: var(--color-dark-surface);
+    --surface-hover: var(--color-dark-surface-hover);
+    --border: var(--color-dark-border);
+    --accent: #E50914;
+    --accent-hover: #ff1f2b;
+    --accent-soft: rgba(229, 9, 20, 0.16);
+    --premium: #E50914;
+    --premium-warm: #E50914;
+    --panel-shadow: 0 22px 70px rgba(0, 0, 0, 0.32);
+  }
+
+  body {
+    background:
+      linear-gradient(135deg, rgba(229, 9, 20, 0.02), transparent 34%),
+      linear-gradient(315deg, rgba(15, 15, 15, 0.02), transparent 38%),
+      var(--background);
+    color: var(--foreground);
+    @apply font-sans antialiased transition-colors duration-200;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+.custom-scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.custom-scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.glass-panel {
+  background: rgba(247, 250, 249, 0.72);
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  border: 1px solid rgba(203, 216, 216, 0.72);
+  box-shadow: var(--panel-shadow);
+}
+
+.dark .glass-panel {
+  background: rgba(24, 29, 32, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: var(--panel-shadow);
+}
+
+.tool-card {
+  @apply bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-7 transition-all duration-500 ease-out relative overflow-hidden;
+}
+
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--accent-soft), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tool-card:hover::before {
+  opacity: 0.05;
+}
+
+.tool-card:hover {
+  @apply -translate-y-1 border-[var(--accent)];
+  box-shadow: var(--panel-shadow);
+}
+
+/* Unique Background Animation */
+.bg-mesh {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(229, 9, 20, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(229, 9, 20, 0.04) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(229, 9, 20, 0.02), rgba(0, 0, 0, 0.01) 48%, transparent),
+    var(--background);
+  background-size: 80px 80px, 80px 80px, 100% 100%, 100% 100%;
+}
+
+.text-gradient {
+  color: var(--accent);
+}
+
+.section-title {
+  @apply text-4xl md:text-5xl font-bold mb-4;
+}
+
+.section-subtitle {
+  @apply text-lg opacity-60 max-w-2xl mx-auto mb-16;
+}
+
+/* Blog Typography Styles */
+.prose h1 { @apply text-4xl font-black mb-6 mt-10 text-[var(--foreground)]; }
+.prose h2 { @apply text-3xl font-bold mb-5 mt-8 text-[var(--foreground)]; }
+.prose h3 { @apply text-2xl font-bold mb-4 mt-6 text-[var(--foreground)]; }
+.prose p { @apply text-lg leading-relaxed mb-6 text-[var(--foreground)] opacity-80; }
+.prose ul { @apply list-disc list-inside mb-6 space-y-2 text-[var(--foreground)] opacity-80; }
+.prose ol { @apply list-decimal list-inside mb-6 space-y-2 text-[var(--foreground)] opacity-80; }
+.prose li { @apply pl-2; }
+.prose blockquote { @apply border-l-4 border-red-500 pl-6 py-2 italic my-8 bg-red-500/5 rounded-r-xl text-[var(--foreground)] opacity-90; }
+.prose img { @apply rounded-2xl border border-[var(--border)] my-10 shadow-2xl mx-auto; }
+.prose a { @apply text-[var(--accent)] font-bold hover:underline; }
+.prose strong { @apply text-[var(--foreground)] font-bold; }
