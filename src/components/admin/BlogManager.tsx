@@ -489,7 +489,7 @@ export const BlogManager: React.FC = () => {
           </div>
 
           {/* Sidebar Settings Section */}
-          <div className="space-y-6">
+          <div className="space-y-6 lg:sticky lg:top-24 h-fit">
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
               <h3 className="font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
                 <Settings size={18} className="text-red-500" />
