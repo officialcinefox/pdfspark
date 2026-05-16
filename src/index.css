@@ -22,7 +22,11 @@
 }
 
 @layer base {
-  :root {
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { bg: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { @apply bg-zinc-800 rounded-full hover:bg-red-500/50 transition-colors; }
+
+:root {
     --background: var(--color-background);
     --foreground: #172027;
     --surface: #fbfefd;
