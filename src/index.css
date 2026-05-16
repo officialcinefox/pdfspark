@@ -160,8 +160,8 @@
 .prose h2 { @apply text-3xl font-bold mb-5 mt-8 text-[var(--foreground)]; }
 .prose h3 { @apply text-2xl font-bold mb-4 mt-6 text-[var(--foreground)]; }
 .prose p { @apply text-lg leading-relaxed mb-6 text-[var(--foreground)] opacity-80; }
-.prose ul { @apply list-disc list-inside mb-6 space-y-2 text-[var(--foreground)] opacity-80; }
-.prose ol { @apply list-decimal list-inside mb-6 space-y-2 text-[var(--foreground)] opacity-80; }
+.prose ul { @apply list-disc list-outside mb-6 ml-6 space-y-2 text-[var(--foreground)] opacity-80; }
+.prose ol { @apply list-decimal list-outside mb-6 ml-6 space-y-2 text-[var(--foreground)] opacity-80; }
 .prose li { @apply pl-2; }
 .prose blockquote { @apply border-l-4 border-red-500 pl-6 py-2 italic my-8 bg-red-500/5 rounded-r-xl text-[var(--foreground)] opacity-90; }
 .prose img { @apply rounded-2xl border border-[var(--border)] my-10 shadow-2xl mx-auto; }

@@ -11,7 +11,7 @@ import {
   Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, 
   Heading1, Heading2, Heading3, Quote, Image as ImageIcon,
   ChevronLeft, Loader2, CheckCircle2, Settings, Calendar as CalendarIcon,
-  Copy, Check, ChevronDown
+  Copy, Check, ChevronDown, Pilcrow
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -33,39 +33,33 @@ interface Blog {
 const MenuBar = ({ editor }: { editor: any }) => {
   if (!editor) return null;
 
-  const getCurrentNodeName = () => {
-    if (editor.isActive('heading', { level: 1 })) return 'Heading 1';
-    if (editor.isActive('heading', { level: 2 })) return 'Heading 2';
-    if (editor.isActive('heading', { level: 3 })) return 'Heading 3';
-    if (editor.isActive('blockquote')) return 'Quote';
-    if (editor.isActive('bulletList')) return 'Bullet List';
-    if (editor.isActive('orderedList')) return 'Ordered List';
-    return 'Paragraph';
-  };
-
   return (
     <div className="flex flex-wrap gap-1 p-2 border-b border-[var(--border)] bg-[var(--surface)] sticky top-0 z-10 items-center">
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--background)] border border-[var(--border)] mr-2 min-w-[120px]">
-        <span className="text-[10px] font-black uppercase tracking-widest text-red-500 opacity-80">{getCurrentNodeName()}</span>
-      </div>
+      <button
+        onClick={() => editor.chain().focus().setParagraph().run()}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('paragraph') ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
+        title="Paragraph"
+      >
+        <Pilcrow size={18} />
+      </button>
       <div className="w-px h-6 bg-[var(--border)] self-center mx-1" />
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
-        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('bold') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('bold') ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
         title="Bold"
       >
         <Bold size={18} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('italic') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('italic') ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
         title="Italic"
       >
         <Italic size={18} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleUnderline().run()}
-        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('underline') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('underline') ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
         title="Underline"
       >
         <UnderlineIcon size={18} />
@@ -73,21 +67,21 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <div className="w-px h-6 bg-[var(--border)] self-center mx-1" />
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('heading', { level: 1 }) ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('heading', { level: 1 }) ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
         title="Heading 1"
       >
         <Heading1 size={18} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('heading', { level: 2 }) ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('heading', { level: 2 }) ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
         title="Heading 2"
       >
         <Heading2 size={18} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('heading', { level: 3 }) ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('heading', { level: 3 }) ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
         title="Heading 3"
       >
         <Heading3 size={18} />
@@ -95,21 +89,21 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <div className="w-px h-6 bg-zinc-800 self-center mx-1" />
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('bulletList') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('bulletList') ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
         title="Bullet List"
       >
         <List size={18} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('orderedList') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('orderedList') ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
         title="Ordered List"
       >
         <ListOrdered size={18} />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
-        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('blockquote') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        className={`p-2 rounded hover:bg-zinc-800 transition-all ${editor.isActive('blockquote') ? 'text-white bg-red-600 shadow-lg shadow-red-500/20' : 'text-zinc-400'}`}
         title="Blockquote"
       >
         <Quote size={18} />
@@ -320,15 +314,15 @@ export const BlogManager: React.FC = () => {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (isAutoSave = false) => {
     if (!currentBlog?.title || !currentBlog?.slug) {
-      toast.error('Title and Slug are required');
+      if (!isAutoSave) toast.error('Title and Slug are required');
       return;
     }
 
     try {
-      const isPublished = status !== 'draft';
-      const finalPublishedAt = status === 'published' ? new Date().toISOString() : currentBlog.published_at;
+      const isPublished = isAutoSave ? false : status !== 'draft';
+      const finalPublishedAt = status === 'published' ? new Date().toISOString() : (currentBlog.published_at || new Date().toISOString());
 
       // Ensure category_list is not empty if category exists
       const finalCategoryList = currentBlog.category_list && currentBlog.category_list.length > 0 
@@ -397,12 +391,21 @@ export const BlogManager: React.FC = () => {
     blog.slug.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleBack = async () => {
+    if (currentBlog?.title) {
+      toast('Auto-saving draft...', { icon: '📝' });
+      await handleSave(true);
+    }
+    setIsEditing(false);
+    setCurrentBlog(null);
+  };
+
   if (isEditing) {
     return (
       <div className="max-w-5xl mx-auto pb-20">
         <div className="flex items-center justify-between mb-8">
           <button 
-            onClick={() => { setIsEditing(false); setCurrentBlog(null); }}
+            onClick={handleBack}
             className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
           >
             <ChevronLeft size={20} /> Back to Blogs
