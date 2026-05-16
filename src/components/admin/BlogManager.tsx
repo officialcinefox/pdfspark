@@ -11,7 +11,7 @@ import {
   Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, 
   Heading1, Heading2, Heading3, Quote, Image as ImageIcon,
   ChevronLeft, Loader2, CheckCircle2, Settings, Calendar as CalendarIcon,
-  Copy, Check
+  Copy, Check, ChevronDown
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -33,8 +33,22 @@ interface Blog {
 const MenuBar = ({ editor }: { editor: any }) => {
   if (!editor) return null;
 
+  const getCurrentNodeName = () => {
+    if (editor.isActive('heading', { level: 1 })) return 'Heading 1';
+    if (editor.isActive('heading', { level: 2 })) return 'Heading 2';
+    if (editor.isActive('heading', { level: 3 })) return 'Heading 3';
+    if (editor.isActive('blockquote')) return 'Quote';
+    if (editor.isActive('bulletList')) return 'Bullet List';
+    if (editor.isActive('orderedList')) return 'Ordered List';
+    return 'Paragraph';
+  };
+
   return (
-    <div className="flex flex-wrap gap-1 p-2 border-b border-[var(--border)] bg-[var(--surface)] sticky top-0 z-10">
+    <div className="flex flex-wrap gap-1 p-2 border-b border-[var(--border)] bg-[var(--surface)] sticky top-0 z-10 items-center">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--background)] border border-[var(--border)] mr-2 min-w-[120px]">
+        <span className="text-[10px] font-black uppercase tracking-widest text-red-500 opacity-80">{getCurrentNodeName()}</span>
+      </div>
+      <div className="w-px h-6 bg-[var(--border)] self-center mx-1" />
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('bold') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
