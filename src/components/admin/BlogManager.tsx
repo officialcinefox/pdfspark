@@ -5,6 +5,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import ImageExtension from '@tiptap/extension-image';
 import LinkExtension from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
 import { 
   Plus, Search, Edit2, Trash2, Save, X, Upload, Link as LinkIcon, 
   Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, 
@@ -100,6 +101,25 @@ const MenuBar = ({ editor }: { editor: any }) => {
         <Quote size={18} />
       </button>
       <div className="w-px h-6 bg-zinc-800 self-center mx-1" />
+      <button
+        onClick={() => {
+          const previousUrl = editor.getAttributes('link').href;
+          const url = window.prompt('Enter URL', previousUrl);
+          
+          if (url === null) return;
+          if (url === '') {
+            editor.chain().focus().extendMarkRange('link').unsetLink().run();
+            return;
+          }
+          
+          editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+        }}
+        className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('link') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
+        title="Add/Edit Link"
+      >
+        <LinkIcon size={18} />
+      </button>
+      <div className="w-px h-6 bg-zinc-800 self-center mx-1" />
       <div className="flex items-center gap-1">
         <button
           onClick={() => {
@@ -111,10 +131,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
           className="p-2 rounded hover:bg-zinc-800 transition-colors text-zinc-400"
           title="Add Image by URL"
         >
-          <LinkIcon size={18} />
+          <ImageIcon size={18} className="opacity-60" />
         </button>
         <label className="p-2 rounded hover:bg-zinc-800 transition-colors text-zinc-400 cursor-pointer" title="Upload Image to Content">
-          <ImageIcon size={18} />
+          <Upload size={18} />
           <input 
             type="file" 
             className="hidden" 
@@ -179,6 +199,14 @@ export const BlogManager: React.FC = () => {
       ImageExtension,
       LinkExtension.configure({
         openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-red-500 hover:underline cursor-pointer',
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        },
+      }),
+      Placeholder.configure({
+        placeholder: 'Start writing your amazing blog post here...',
       }),
     ],
     content: '',
@@ -288,8 +316,15 @@ export const BlogManager: React.FC = () => {
       const isPublished = status !== 'draft';
       const finalPublishedAt = status === 'published' ? new Date().toISOString() : currentBlog.published_at;
 
+      // Ensure category_list is not empty if category exists
+      const finalCategoryList = currentBlog.category_list && currentBlog.category_list.length > 0 
+        ? currentBlog.category_list 
+        : [currentBlog.category || categories[0]].filter(Boolean);
+
       const { id, created_at, ...blogData } = {
         ...currentBlog,
+        category_list: finalCategoryList,
+        category: finalCategoryList[0],
         is_published: isPublished,
         published_at: finalPublishedAt,
         content: editor?.getHTML() || '',
@@ -400,6 +435,14 @@ export const BlogManager: React.FC = () => {
                 }
                 .tiptap.prose p {
                   opacity: 0.9;
+                }
+                .tiptap p.is-editor-empty:first-child::before {
+                  content: attr(data-placeholder);
+                  float: left;
+                  color: var(--foreground);
+                  opacity: 0.3;
+                  pointer-events: none;
+                  height: 0;
                 }
                 .tiptap:focus {
                   outline: none;

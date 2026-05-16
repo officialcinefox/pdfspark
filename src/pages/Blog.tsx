@@ -13,7 +13,10 @@ const categories = [
   'PDF Management',
   'Conversion Tools',
   'Security Tools',
-  'Editing Tools'
+  'Editing Tools',
+  'Productivity',
+  'Guides',
+  'Tips & Tricks'
 ]
 
 export function Blog() {
