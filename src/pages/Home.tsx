@@ -270,9 +270,11 @@ export function Home() {
                         ) : (
                           <span className="text-4xl font-bold opacity-10 text-white">PDF</span>
                         )}
-                        <div className="absolute top-4 left-4 bg-[var(--accent)] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
-                          {post.category}
-                        </div>
+                        {post.category && (
+                          <div className="absolute top-4 left-4 bg-[var(--accent)] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                            {post.category}
+                          </div>
+                        )}
                       </div>
                       
                       <div className="p-7 flex flex-col flex-1">

@@ -86,7 +86,9 @@ export function BlogPost() {
             animate={{ opacity: 1, y: 0 }}
           >
             <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest text-[var(--accent)] mb-6">
-              <span className="bg-[var(--accent-soft)] px-3 py-1 rounded-lg">{post.category}</span>
+              {post.category && (
+                <span className="bg-[var(--accent-soft)] px-3 py-1 rounded-lg">{post.category}</span>
+              )}
               <span className="flex items-center gap-1.5 opacity-60"><Clock className="w-3.5 h-3.5" /> {post.read_time}</span>
             </div>
             
