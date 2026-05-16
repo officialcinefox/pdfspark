@@ -412,7 +412,7 @@ export const BlogManager: React.FC = () => {
           </button>
           <div className="flex gap-4">
             <button
-              onClick={handleSave}
+              onClick={() => handleSave()}
               className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all"
             >
               <Save size={18} /> Save Blog
