@@ -23,17 +23,23 @@ function isActivePath(currentPath: string, path: string) {
 
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false)
-  const [isDark, setIsDark] = React.useState(false)
+  const [isDark, setIsDark] = React.useState(() => {
+    const saved = localStorage.getItem('theme')
+    if (saved) return saved === 'dark'
+    return true // default to dark mode
+  })
   const location = useLocation()
   const { user } = useAuth()
 
   React.useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark)
+    localStorage.setItem('theme', isDark ? 'dark' : 'light')
   }, [isDark])
 
   React.useEffect(() => {
     setIsOpen(false)
   }, [location.pathname])
+
 
   return (
     <header className="sticky top-0 z-50 w-full px-0 sm:px-3 pt-0 sm:pt-3">

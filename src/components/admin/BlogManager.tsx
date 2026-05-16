@@ -6,12 +6,12 @@ import Underline from '@tiptap/extension-underline';
 import ImageExtension from '@tiptap/extension-image';
 import LinkExtension from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { 
-  Plus, Search, Edit2, Trash2, Save, X, Upload, Link as LinkIcon, 
-  Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, 
+import {
+  Plus, Search, Edit2, Trash2, Save, X, Upload, Link as LinkIcon,
+  Bold, Italic, Underline as UnderlineIcon, List, ListOrdered,
   Heading1, Heading2, Heading3, Quote, Image as ImageIcon,
   ChevronLeft, Loader2, CheckCircle2, Settings, Calendar as CalendarIcon,
-  Copy, Check, ChevronDown, Pilcrow
+  Copy, Check, Pilcrow
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -113,13 +113,13 @@ const MenuBar = ({ editor }: { editor: any }) => {
         onClick={() => {
           const previousUrl = editor.getAttributes('link').href;
           const url = window.prompt('Enter URL', previousUrl);
-          
+
           if (url === null) return;
           if (url === '') {
             editor.chain().focus().extendMarkRange('link').unsetLink().run();
             return;
           }
-          
+
           editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
         }}
         className={`p-2 rounded hover:bg-zinc-800 transition-colors ${editor.isActive('link') ? 'text-red-500 bg-red-500/10' : 'text-zinc-400'}`}
@@ -143,14 +143,14 @@ const MenuBar = ({ editor }: { editor: any }) => {
         </button>
         <label className="p-2 rounded hover:bg-zinc-800 transition-colors text-zinc-400 cursor-pointer" title="Upload Image to Content">
           <Upload size={18} />
-          <input 
-            type="file" 
-            className="hidden" 
-            accept="image/*" 
+          <input
+            type="file"
+            className="hidden"
+            accept="image/*"
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              
+
               const toastId = toast.loading('Uploading image...');
               try {
                 const fileExt = file.name.split('.').pop();
@@ -172,7 +172,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
               } catch (error: any) {
                 toast.error('Upload failed: ' + error.message, { id: toastId });
               }
-            }} 
+            }}
           />
         </label>
       </div>
@@ -272,7 +272,7 @@ export const BlogManager: React.FC = () => {
   const handleEdit = (blog: Blog) => {
     const isPublished = blog.is_published;
     const isFuture = new Date(blog.published_at) > new Date();
-    
+
     let currentStatus: 'draft' | 'published' | 'scheduled' = 'draft';
     if (isPublished) {
       currentStatus = isFuture ? 'scheduled' : 'published';
@@ -290,7 +290,7 @@ export const BlogManager: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     console.log('Finalizing delete for ID:', id);
-    
+
     if (!id) {
       toast.error('Error: Blog ID is missing');
       return;
@@ -299,12 +299,12 @@ export const BlogManager: React.FC = () => {
     const toastId = toast.loading('Deleting blog article...');
     try {
       const { error } = await supabase.from('blogs').delete().eq('id', id);
-      
+
       if (error) {
         console.error('Supabase delete error:', error);
         throw error;
       }
-      
+
       toast.success('Blog deleted successfully', { id: toastId });
       setDeletingId(null);
       fetchBlogs();
@@ -325,8 +325,8 @@ export const BlogManager: React.FC = () => {
       const finalPublishedAt = status === 'published' ? new Date().toISOString() : (currentBlog.published_at || new Date().toISOString());
 
       // Ensure category_list is not empty if category exists
-      const finalCategoryList = currentBlog.category_list && currentBlog.category_list.length > 0 
-        ? currentBlog.category_list 
+      const finalCategoryList = currentBlog.category_list && currentBlog.category_list.length > 0
+        ? currentBlog.category_list
         : [currentBlog.category || categories[0]].filter(Boolean);
 
       const { id, created_at, ...blogData } = {
@@ -386,7 +386,7 @@ export const BlogManager: React.FC = () => {
     }
   };
 
-  const filteredBlogs = blogs.filter(blog => 
+  const filteredBlogs = blogs.filter(blog =>
     blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     blog.slug.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -404,14 +404,14 @@ export const BlogManager: React.FC = () => {
     return (
       <div className="max-w-5xl mx-auto pb-20">
         <div className="flex items-center justify-between mb-8">
-          <button 
+          <button
             onClick={handleBack}
             className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
           >
             <ChevronLeft size={20} /> Back to Blogs
           </button>
           <div className="flex gap-4">
-            <button 
+            <button
               onClick={handleSave}
               className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all"
             >
@@ -425,8 +425,8 @@ export const BlogManager: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
               <label className="block text-sm font-bold text-[var(--foreground)] opacity-60 mb-2">Blog Title</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={currentBlog?.title}
                 onChange={(e) => setCurrentBlog({ ...currentBlog, title: e.target.value })}
                 className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/50"
@@ -476,12 +476,12 @@ export const BlogManager: React.FC = () => {
                 <Settings size={18} className="text-red-500" />
                 Settings
               </h3>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-[var(--foreground)] opacity-60 uppercase mb-1.5">URL Slug</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={currentBlog?.slug}
                     onChange={(e) => setCurrentBlog({ ...currentBlog, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
                     className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none"
@@ -494,12 +494,12 @@ export const BlogManager: React.FC = () => {
                   <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto p-2 bg-[var(--background)] rounded-xl border border-[var(--border)]">
                     {categories.map((cat) => (
                       <label key={cat} className="flex items-center gap-2 px-2 py-1.5 hover:bg-zinc-700/50 rounded-lg cursor-pointer transition-colors">
-                        <input 
+                        <input
                           type="checkbox"
                           checked={currentBlog?.category_list?.includes(cat)}
                           onChange={(e) => {
                             const currentList = currentBlog?.category_list || [];
-                            const newList = e.target.checked 
+                            const newList = e.target.checked
                               ? [...currentList, cat]
                               : currentList.filter(c => c !== cat);
                             setCurrentBlog({ ...currentBlog, category_list: newList, category: newList[0] || '' });
@@ -515,7 +515,7 @@ export const BlogManager: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-zinc-400 uppercase mb-3">Status</label>
-                  <select 
+                  <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
                     className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none mb-4"
@@ -530,8 +530,8 @@ export const BlogManager: React.FC = () => {
                       <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-2 ml-1">Select Live Date & Time</label>
                       <div className="relative">
                         <CalendarIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-red-500" />
-                        <input 
-                          type="datetime-local" 
+                        <input
+                          type="datetime-local"
                           value={currentBlog?.published_at}
                           onChange={(e) => setCurrentBlog({ ...currentBlog, published_at: e.target.value })}
                           className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-10 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-red-500"
@@ -544,8 +544,8 @@ export const BlogManager: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-zinc-400 uppercase mb-1.5">Read Time</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={currentBlog?.read_time}
                     onChange={(e) => setCurrentBlog({ ...currentBlog, read_time: e.target.value })}
                     className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none"
@@ -560,20 +560,20 @@ export const BlogManager: React.FC = () => {
                 <ImageIcon size={18} className="text-red-500" />
                 Featured Image
               </h3>
-              
+
               <div className="space-y-4">
                 {currentBlog?.image_url ? (
                   <div className="relative group rounded-xl overflow-hidden border border-zinc-800 bg-black">
                     <img src={currentBlog.image_url} alt="Featured" className="w-full h-40 object-contain" />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                      <button 
+                      <button
                         onClick={() => copyToClipboard(currentBlog.image_url!)}
                         className="p-2 bg-zinc-900 rounded-lg text-white hover:bg-zinc-800"
                         title="Copy URL"
                       >
                         <Copy size={16} />
                       </button>
-                      <button 
+                      <button
                         onClick={() => setCurrentBlog({ ...currentBlog, image_url: '' })}
                         className="p-2 bg-red-600 rounded-lg text-white hover:bg-red-700"
                         title="Remove"
@@ -600,7 +600,7 @@ export const BlogManager: React.FC = () => {
                       <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                         <LinkIcon size={14} className="text-zinc-500" />
                       </div>
-                      <input 
+                      <input
                         type="text"
                         placeholder="Paste Image URL..."
                         className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-red-500"
@@ -621,7 +621,7 @@ export const BlogManager: React.FC = () => {
 
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
               <label className="block text-xs font-bold text-zinc-400 uppercase mb-1.5">Short Description</label>
-              <textarea 
+              <textarea
                 value={currentBlog?.description}
                 onChange={(e) => setCurrentBlog({ ...currentBlog, description: e.target.value })}
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none min-h-[100px]"
@@ -641,7 +641,7 @@ export const BlogManager: React.FC = () => {
           <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">Manage Blogs</h1>
           <p className="text-[var(--foreground)] opacity-60">Total {blogs.length} articles published</p>
         </div>
-        <button 
+        <button
           onClick={handleCreateNew}
           className="flex items-center justify-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-500/20"
         >
@@ -652,9 +652,9 @@ export const BlogManager: React.FC = () => {
       {/* Search and Filters */}
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--foreground)] opacity-40 w-5 h-5" />
-        <input 
-          type="text" 
-          placeholder="Search articles by title or slug..." 
+        <input
+          type="text"
+          placeholder="Search articles by title or slug..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-2xl pl-12 pr-4 py-4 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
@@ -737,13 +737,13 @@ export const BlogManager: React.FC = () => {
                     {deletingId === blog.id ? (
                       <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200">
                         <span className="text-[10px] font-bold text-red-500 uppercase mr-2">Delete?</span>
-                        <button 
+                        <button
                           onClick={() => handleDelete(blog.id)}
                           className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold rounded-lg transition-colors"
                         >
                           Confirm
                         </button>
-                        <button 
+                        <button
                           onClick={() => setDeletingId(null)}
                           className="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 text-[10px] font-bold rounded-lg transition-colors"
                         >
@@ -752,14 +752,14 @@ export const BlogManager: React.FC = () => {
                       </div>
                     ) : (
                       <>
-                        <button 
+                        <button
                           onClick={() => handleEdit(blog)}
                           className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
                           title="Edit Post"
                         >
                           <Edit2 size={18} />
                         </button>
-                        <button 
+                        <button
                           onClick={() => setDeletingId(blog.id)}
                           className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
                           title="Delete Post"
