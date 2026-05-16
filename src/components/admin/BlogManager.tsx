@@ -321,18 +321,29 @@ export const BlogManager: React.FC = () => {
     }
 
     try {
-      const isPublished = isAutoSave ? false : status !== 'draft';
-      const finalPublishedAt = status === 'published' ? new Date().toISOString() : (currentBlog.published_at || new Date().toISOString());
+      // Respect status exactly — auto-save preserves current status
+      const saveStatus = isAutoSave ? 'draft' : status;
+      const isPublished = saveStatus !== 'draft';
 
-      // Ensure category_list is not empty if category exists
-      const finalCategoryList = currentBlog.category_list && currentBlog.category_list.length > 0
-        ? currentBlog.category_list
-        : [currentBlog.category || categories[0]].filter(Boolean);
+      // For scheduled: use the user-set date. For published: use now. For draft: keep existing or now
+      let finalPublishedAt: string;
+      if (saveStatus === 'published') {
+        finalPublishedAt = new Date().toISOString();
+      } else if (saveStatus === 'scheduled') {
+        finalPublishedAt = currentBlog.published_at || new Date().toISOString();
+      } else {
+        // draft — save a placeholder date, won't matter since is_published=false
+        finalPublishedAt = currentBlog.published_at || new Date().toISOString();
+      }
+
+      // If no category selected → leave empty (shows in "All" on website)
+      const finalCategoryList = currentBlog.category_list || [];
+      const finalCategory = finalCategoryList[0] || '';
 
       const { id, created_at, ...blogData } = {
         ...currentBlog,
         category_list: finalCategoryList,
-        category: finalCategoryList[0],
+        category: finalCategory,
         is_published: isPublished,
         published_at: finalPublishedAt,
         content: editor?.getHTML() || '',
@@ -348,9 +359,17 @@ export const BlogManager: React.FC = () => {
 
       if (error) throw error;
 
-      toast.success('Blog saved successfully');
-      setIsEditing(false);
-      setCurrentBlog(null);
+      if (!isAutoSave) {
+        toast.success(
+          saveStatus === 'draft' ? '📝 Saved as Draft' :
+          saveStatus === 'scheduled' ? '⏰ Blog Scheduled!' :
+          '✅ Blog Published!'
+        );
+        setIsEditing(false);
+        setCurrentBlog(null);
+      } else {
+        toast.success('Draft auto-saved', { icon: '💾' });
+      }
       fetchBlogs();
     } catch (error: any) {
       toast.error('Error saving blog: ' + error.message);
