@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, FileOutput, Shield, Star, Zap, Calendar, Clock, Loader2, ShieldCheck, FileText, RefreshCw, ChevronRight } from 'lucide-react'
+import { ArrowRight, FileOutput, Shield, Star, Zap, Calendar, Clock, Loader2, ShieldCheck, FileText, RefreshCw, ChevronRight, Users, CheckCircle, TrendingUp, Award } from 'lucide-react'
 import * as Accordion from '@radix-ui/react-accordion'
 import { Background } from '../components/Background'
 import { TOOL_CATEGORIES, getCategoryPath } from '../lib/toolsData'
@@ -452,30 +452,129 @@ export function Home() {
       </section>
 
       <section className="py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-4 text-center">
+        <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="p-10 md:p-16 rounded-[2rem] bg-gradient-to-br from-zinc-950 via-zinc-900 to-neutral-950 text-white shadow-2xl relative overflow-hidden group border border-zinc-800/80"
+            className="relative rounded-[2rem] overflow-hidden border border-zinc-800/80 shadow-2xl"
           >
-            {/* Ambient Red glow background layers */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(239,68,68,0.12),transparent_70%)] opacity-100"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(239,68,68,0.22),transparent_50%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            
-            <div className="relative z-10 max-w-3xl mx-auto">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight leading-tight">
-                Ready to Spark Your PDFs?
-              </h2>
-              <p className="text-base sm:text-lg text-zinc-400 mb-8 max-w-xl mx-auto leading-relaxed">
-                Upgrade your PDF workflow with a cleaner, faster, and browser-first secure toolkit.
-              </p>
-              <Link
-                to="/tools"
-                className="inline-flex h-14 sm:h-15 items-center justify-center rounded-2xl bg-gradient-to-r from-red-600 to-rose-700 px-10 text-base sm:text-lg font-bold text-white shadow-lg shadow-red-900/10 hover:from-red-500 hover:to-rose-600 hover:scale-[1.02] hover:shadow-red-500/20 transition-all duration-300 border border-red-500/20"
-              >
-                Explore All Tools Now
-              </Link>
+            {/* Dark gradient base */}
+            <div className="absolute inset-0 bg-gradient-to-br from-zinc-950 via-zinc-900 to-neutral-950"></div>
+
+            {/* Animated grid pattern overlay */}
+            <div className="absolute inset-0 opacity-[0.04]" style={{
+              backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
+              backgroundSize: '40px 40px'
+            }}></div>
+
+            {/* Red radial glow top center */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-10%,rgba(239,68,68,0.25),transparent_65%)]"></div>
+            {/* Purple subtle accent bottom right */}
+            <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-[radial-gradient(ellipse_at_100%_100%,rgba(168,85,247,0.07),transparent_60%)]"></div>
+
+            {/* Main content grid */}
+            <div className="relative z-10 p-8 md:p-14 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+              {/* Left: Text + CTA */}
+              <div className="text-left">
+                {/* Badge */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-widest mb-6">
+                  <Zap className="w-3.5 h-3.5" />
+                  PDF Toolkit v1.2.0
+                </div>
+
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-5 tracking-tight leading-[1.1] text-white">
+                  Ready to Spark
+                  <br />
+                  <span className="bg-gradient-to-r from-red-400 via-rose-400 to-orange-400 bg-clip-text text-transparent">
+                    Your PDFs?
+                  </span>
+                </h2>
+
+                <p className="text-base sm:text-lg text-zinc-400 mb-8 leading-relaxed max-w-md">
+                  Upgrade your PDF workflow with a cleaner, faster, and browser-first secure toolkit. No login required.
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <Link
+                    to="/tools"
+                    className="inline-flex h-13 items-center justify-center rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 px-8 text-base font-bold text-white shadow-lg shadow-red-900/30 hover:from-red-500 hover:to-rose-500 hover:scale-[1.03] hover:shadow-red-500/30 transition-all duration-300"
+                  >
+                    Explore All Tools
+                    <ArrowRight className="ml-2.5 w-4 h-4" />
+                  </Link>
+                  <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium">
+                    <CheckCircle className="w-4 h-4 text-emerald-400" />
+                    100% Free. No sign-up.
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Floating Stat Cards */}
+              <div className="relative h-72 lg:h-80 flex items-center justify-center">
+
+                {/* Card 1: Users */}
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute top-0 left-0 sm:left-6 flex items-center gap-3.5 px-5 py-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-xl hover:bg-white/10 transition-colors"
+                >
+                  <div className="p-2.5 rounded-xl bg-blue-500/15 text-blue-400">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-lg font-black text-white leading-tight">10,000+</span>
+                    <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">Monthly Users</span>
+                  </div>
+                </motion.div>
+
+                {/* Card 2: Files Processed */}
+                <motion.div
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.7 }}
+                  className="absolute top-1/2 right-0 sm:right-4 -translate-y-1/2 flex items-center gap-3.5 px-5 py-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-xl hover:bg-white/10 transition-colors"
+                >
+                  <div className="p-2.5 rounded-xl bg-emerald-500/15 text-emerald-400">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-lg font-black text-white leading-tight">2M+ Files</span>
+                    <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">Processed Daily</span>
+                  </div>
+                </motion.div>
+
+                {/* Card 3: Rating */}
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+                  className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-3.5 px-5 py-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-xl hover:bg-white/10 transition-colors whitespace-nowrap"
+                >
+                  <div className="p-2.5 rounded-xl bg-amber-500/15 text-amber-400">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      ))}
+                      <span className="text-white font-black text-sm ml-1">4.9</span>
+                    </div>
+                    <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">User Rating</span>
+                  </div>
+                </motion.div>
+
+                {/* Card 4: Security */}
+                <motion.div
+                  animate={{ x: [0, -8, 0] }}
+                  transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+                  className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 backdrop-blur-md border border-red-500/20 shadow-xl"
+                >
+                  <ShieldCheck className="w-5 h-5 text-red-400" />
+                  <span className="text-sm font-bold text-red-300">AES-256 Encrypted</span>
+                </motion.div>
+
+              </div>
             </div>
           </motion.div>
         </div>
