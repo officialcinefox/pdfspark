@@ -46,10 +46,10 @@ export function Security() {
               <ShieldCheck className="h-4 w-4" />
               Security-first PDF workflows
             </span>
-            <h1 className="mt-7 text-4xl md:text-6xl font-black leading-[1.05]">
+            <h1 className="mt-7 text-3xl md:text-5xl font-black leading-[1.1] tracking-tight">
               Protect documents without making the site heavier.
             </h1>
-            <p className="mt-6 text-lg md:text-xl opacity-70 max-w-2xl leading-relaxed">
+            <p className="mt-6 text-base md:text-lg opacity-75 max-w-2xl leading-relaxed">
               PDF Spark keeps security tools visible, simple, and account-free: lock sensitive files, unlock your own documents, and prepare signed copies from one place.
             </p>
             <div className="mt-9 flex flex-col sm:flex-row gap-3">

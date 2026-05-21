@@ -92,7 +92,7 @@ export function CategoryTools() {
             <span className="inline-flex rounded-full bg-[var(--accent-soft)] px-4 py-2 text-sm font-bold text-[var(--accent)] ring-1 ring-[var(--border)]">
               {category.tools.length} services
             </span>
-            <h1 className="mt-6 text-4xl md:text-6xl font-black leading-[1.05] text-[var(--accent)]">
+            <h1 className="mt-6 text-3xl md:text-5xl font-black leading-[1.1] text-[var(--accent)] tracking-tight">
               {category.title}
             </h1>
           </motion.div>
@@ -101,7 +101,7 @@ export function CategoryTools() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="text-lg md:text-xl opacity-70 leading-relaxed lg:text-right"
+            className="text-base md:text-lg opacity-75 leading-relaxed lg:text-right"
           >
             {category.homeDescription}
           </motion.p>
@@ -142,8 +142,8 @@ export function CategoryTools() {
         <div className="border-t border-[var(--border)] pt-20">
           <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
             <div>
-              <h2 className="text-3xl md:text-4xl font-black mb-4">Related Guides & Articles</h2>
-              <p className="opacity-60 text-lg">Learn more about {category.title.toLowerCase()} and productivity.</p>
+              <h2 className="text-2xl md:text-3xl font-black mb-3 tracking-tight">Related Guides & Articles</h2>
+              <p className="opacity-70 text-base md:text-lg">Learn more about {category.title.toLowerCase()} and productivity.</p>
             </div>
             <Link to="/blog" className="text-[var(--accent)] font-bold hover:underline mb-2">View all articles →</Link>
           </div>
@@ -192,8 +192,8 @@ export function CategoryTools() {
             <div className="inline-flex p-3 bg-red-500/10 rounded-2xl text-red-500 mb-6">
               <HelpCircle size={32} />
             </div>
-            <h2 className="text-4xl font-black mb-4">Frequently Asked Questions</h2>
-            <p className="opacity-60 text-lg">Got questions about {category?.title}? We've got answers.</p>
+            <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">Frequently Asked Questions</h2>
+            <p className="opacity-70 text-base sm:text-lg">Got questions about {category?.title}? We've got answers.</p>
           </div>
 
           <Accordion.Root type="single" collapsible className="space-y-4">

@@ -26,7 +26,7 @@ export function Navbar() {
   const [isDark, setIsDark] = React.useState(() => {
     const saved = localStorage.getItem('theme')
     if (saved) return saved === 'dark'
-    return true // default to dark mode
+    return false // default to light mode
   })
   const location = useLocation()
   const { user } = useAuth()

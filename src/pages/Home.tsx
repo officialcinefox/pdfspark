@@ -88,12 +88,12 @@ export function Home() {
             <Star className="w-3 h-3 sm:w-4 sm:h-4 mr-2 fill-current" /> Premium PDF Toolkit - 100% Private & Secure
           </motion.div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 sm:mb-8 leading-[1.1] max-w-5xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-[1.1] max-w-4xl mx-auto tracking-tight">
             Professional PDF Tools <br className="hidden md:block" />
             <span className="text-[var(--accent)]">Simplified for Everyone.</span>
           </h1>
 
-          <p className="text-lg sm:text-xl md:text-2xl text-[var(--foreground)] opacity-70 max-w-3xl mx-auto mb-10 sm:mb-14 leading-relaxed font-medium">
+          <p className="text-base sm:text-lg md:text-xl text-[var(--foreground)] opacity-75 max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed font-medium">
             Merge, split, compress, convert, protect, and organize PDFs with browser-first workflows and no account wall.
           </p>
 
@@ -174,9 +174,9 @@ export function Home() {
       <section className="py-16 sm:py-28 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="glass-panel rounded-3xl p-10 md:p-16 overflow-hidden relative">
-            <div className="relative z-10 text-center mb-16">
-              <h2 className="text-4xl md:text-6xl font-black mb-6">Why Professionals Trust PDF Spark</h2>
-              <p className="opacity-65 max-w-2xl mx-auto text-xl">Document processing that feels polished, private, and fast.</p>
+            <div className="relative z-10 text-center mb-12">
+              <h2 className="text-3xl md:text-5xl font-black mb-4 tracking-tight">Why Professionals Trust PDF Spark</h2>
+              <p className="opacity-70 max-w-2xl mx-auto text-base sm:text-lg">Document processing that feels polished, private, and fast.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
@@ -306,9 +306,9 @@ export function Home() {
 
       <section className="py-16 sm:py-28 bg-[var(--surface)]/30 backdrop-blur-sm border-y border-[var(--border)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black mb-6">Common Questions</h2>
-            <p className="opacity-65 text-xl">Everything you need to know about PDF Spark.</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">Common Questions</h2>
+            <p className="opacity-70 text-base sm:text-lg">Everything you need to know about PDF Spark.</p>
           </div>
 
           <Accordion.Root type="single" collapsible className="space-y-5">
@@ -336,21 +336,28 @@ export function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-28">
+      <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="p-10 md:p-16 rounded-3xl bg-[linear-gradient(135deg,#1a0b0e,#E50914,#8b0000)] text-white shadow-2xl relative overflow-hidden group"
+            className="p-10 md:p-16 rounded-[2rem] bg-gradient-to-br from-zinc-950 via-zinc-900 to-neutral-950 text-white shadow-2xl relative overflow-hidden group border border-zinc-800/80"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(229,9,20,0.4),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            <div className="relative z-10">
-              <h2 className="text-5xl md:text-7xl font-black mb-8">Ready to Spark Your PDFs?</h2>
-              <p className="text-xl md:text-2xl text-white/80 mb-12 max-w-2xl mx-auto">Upgrade your PDF workflow with a cleaner, faster toolkit.</p>
+            {/* Ambient Red glow background layers */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(239,68,68,0.12),transparent_70%)] opacity-100"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(239,68,68,0.22),transparent_50%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            
+            <div className="relative z-10 max-w-3xl mx-auto">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight leading-tight">
+                Ready to Spark Your PDFs?
+              </h2>
+              <p className="text-base sm:text-lg text-zinc-400 mb-8 max-w-xl mx-auto leading-relaxed">
+                Upgrade your PDF workflow with a cleaner, faster, and browser-first secure toolkit.
+              </p>
               <Link
                 to="/tools"
-                className="inline-flex h-16 items-center justify-center rounded-2xl bg-white px-12 text-xl font-bold text-red-900 shadow-xl hover:bg-white/90 hover:scale-[1.02] transition-all"
+                className="inline-flex h-14 sm:h-15 items-center justify-center rounded-2xl bg-gradient-to-r from-red-600 to-rose-700 px-10 text-base sm:text-lg font-bold text-white shadow-lg shadow-red-900/10 hover:from-red-500 hover:to-rose-600 hover:scale-[1.02] hover:shadow-red-500/20 transition-all duration-300 border border-red-500/20"
               >
                 Explore All Tools Now
               </Link>

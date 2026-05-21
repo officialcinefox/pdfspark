@@ -92,7 +92,7 @@ export function BlogPost() {
               <span className="flex items-center gap-1.5 opacity-60"><Clock className="w-3.5 h-3.5" /> {post.read_time}</span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-black mb-8 leading-tight">
+            <h1 className="text-3xl md:text-5xl font-black mb-6 leading-tight tracking-tight">
               {post.title}
             </h1>
             

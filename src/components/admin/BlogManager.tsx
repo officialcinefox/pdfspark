@@ -381,7 +381,7 @@ export const BlogManager: React.FC = () => {
       const finalCategoryList = currentBlog.category_list || [];
       const finalCategory = finalCategoryList[0] || 'Uncategorized';
 
-      const { id, created_at, ...blogData } = {
+      const { id, created_at, seo_keyword, ...blogData } = {
         ...currentBlog,
         category_list: finalCategoryList,
         category: finalCategory,
@@ -541,10 +541,10 @@ export const BlogManager: React.FC = () => {
         </div>
 
         {/* 2-Column Split-Layout Workspace */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           
           {/* Main workspace (2/3 width) */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="xl:col-span-2 space-y-5">
             
             {/* Excerpt Details */}
             <div className="bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-6 space-y-5">
@@ -661,7 +661,7 @@ export const BlogManager: React.FC = () => {
                       opacity: 0.4;
                     }
                   `}</style>
-                  <div className="bg-white dark:bg-[#121517] dark:text-zinc-150">
+                  <div className="bg-white dark:bg-[#121517] dark:text-zinc-150 h-[500px] overflow-y-auto border-t border-zinc-200 dark:border-zinc-800">
                     <EditorContent editor={editor} />
                   </div>
                 </>

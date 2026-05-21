@@ -42,10 +42,10 @@ export function Features() {
             <span className="inline-flex items-center rounded-full bg-[var(--surface)]/80 px-4 py-2 text-sm font-bold text-[var(--accent)] ring-1 ring-[var(--border)]">
               PDF toolkit, rebuilt for speed
             </span>
-            <h1 className="mt-7 text-4xl md:text-6xl font-black leading-[1.05]">
+            <h1 className="mt-7 text-3xl md:text-5xl font-black leading-[1.1] tracking-tight">
               Tools that make PDF work feel lighter.
             </h1>
-            <p className="mt-6 text-lg md:text-xl opacity-70 max-w-2xl leading-relaxed">
+            <p className="mt-6 text-base md:text-lg opacity-75 max-w-2xl leading-relaxed">
               PDF Spark brings the daily document actions together in a cleaner, faster interface with small PNG tool icons and no account wall.
             </p>
             <div className="mt-9 flex flex-col sm:flex-row gap-3">
@@ -107,8 +107,8 @@ export function Features() {
 
       <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="mb-10">
-          <h2 className="text-3xl md:text-5xl font-black">Feature Groups</h2>
-          <p className="mt-4 text-lg opacity-65 max-w-2xl">Pick a workflow and jump straight into the right PDF tool.</p>
+          <h2 className="text-2xl md:text-3xl font-black tracking-tight">Feature Groups</h2>
+          <p className="mt-3 text-base md:text-lg opacity-70 max-w-2xl">Pick a workflow and jump straight into the right PDF tool.</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -140,8 +140,8 @@ export function Features() {
       <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <div className="rounded-2xl bg-[var(--foreground)] text-[var(--background)] p-8 md:p-12 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           <div>
-            <h2 className="text-3xl md:text-4xl font-black">No login. No setup. Just tools.</h2>
-            <p className="mt-3 opacity-75 text-lg">Start with the workflow you need and download the result when it is ready.</p>
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight">No login. No setup. Just tools.</h2>
+            <p className="mt-3 opacity-75 text-base sm:text-lg">Start with the workflow you need and download the result when it is ready.</p>
           </div>
           <div className="grid sm:grid-cols-3 gap-3 text-sm font-semibold">
             {['Free access', 'PNG tool icons', 'Mobile ready'].map((item) => (

@@ -71,10 +71,10 @@ export function About() {
             <span className="inline-flex rounded-full bg-[var(--accent-soft)] px-4 py-2 text-sm font-bold text-[var(--accent)] ring-1 ring-[var(--border)]">
               About PDF Spark
             </span>
-            <h1 className="mt-7 text-4xl md:text-6xl font-black leading-[1.05]">
+            <h1 className="mt-7 text-3xl md:text-5xl font-black leading-[1.1] tracking-tight">
               A focused PDF toolkit for everyday document work.
             </h1>
-            <p className="mt-6 text-lg md:text-xl opacity-70 max-w-3xl leading-relaxed">
+            <p className="mt-6 text-base md:text-lg opacity-75 max-w-3xl leading-relaxed">
               PDF Spark helps students, freelancers, office teams, and small businesses handle common PDF jobs without installing heavy software. The goal is simple: upload the right file, choose a clear setting, and download a polished result.
             </p>
             <div className="mt-9 flex flex-col sm:flex-row gap-3">
@@ -133,9 +133,9 @@ export function About() {
       {/* FAQ Section */}
       <section className="py-24 bg-[var(--surface)]/30 backdrop-blur-sm border-t border-[var(--border)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black mb-4">About PDF Spark FAQ</h2>
-            <p className="opacity-60 text-lg">Common questions about our mission and technology.</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">About PDF Spark FAQ</h2>
+            <p className="opacity-70 text-base sm:text-lg">Common questions about our mission and technology.</p>
           </div>
 
           <Accordion.Root type="single" collapsible className="space-y-4">

@@ -53,8 +53,8 @@ export function TermsConditions() {
             <FileCheck2 className="h-4 w-4" />
             Last updated: {loading ? '...' : updatedAt}
           </span>
-          <h1 className="mt-7 text-4xl md:text-6xl font-black leading-[1.05]">Terms and Conditions</h1>
-          <p className="mt-5 text-lg opacity-70 leading-relaxed">
+          <h1 className="mt-7 text-3xl md:text-5xl font-black leading-[1.1] tracking-tight">Terms and Conditions</h1>
+          <p className="mt-5 text-base md:text-lg opacity-75 leading-relaxed">
             These terms apply when you access {SITE.name}, use our PDF tools, or read our guides.
           </p>
         </div>

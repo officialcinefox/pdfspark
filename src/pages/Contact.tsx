@@ -87,10 +87,10 @@ export function Contact() {
               <MessageSquare className="h-4 w-4" />
               Contact PDF Spark
             </span>
-            <h1 className="mt-7 text-4xl md:text-6xl font-black leading-[1.05]">
+            <h1 className="mt-7 text-3xl md:text-5xl font-black leading-[1.1] tracking-tight">
               Need help choosing the right PDF tool?
             </h1>
-            <p className="mt-6 text-lg md:text-xl opacity-70 max-w-2xl leading-relaxed">
+            <p className="mt-6 text-base md:text-lg opacity-75 max-w-2xl leading-relaxed">
               Tell us what you are trying to do, or jump into one of the most common workflows below.
             </p>
 
@@ -193,8 +193,8 @@ export function Contact() {
       <section className="py-24 bg-[var(--surface)]/30 backdrop-blur-sm border-t border-[var(--border)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black mb-4">Contact & Support FAQ</h2>
-            <p className="opacity-60 text-lg">Quick answers to common support questions.</p>
+            <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">Contact & Support FAQ</h2>
+            <p className="opacity-70 text-base sm:text-lg">Quick answers to common support questions.</p>
           </div>
 
           <Accordion.Root type="single" collapsible className="space-y-4">

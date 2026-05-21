@@ -53,8 +53,8 @@ export function Disclaimer() {
             <AlertTriangle className="h-4 w-4" />
             Last updated: {loading ? '...' : updatedAt}
           </span>
-          <h1 className="mt-7 text-4xl md:text-6xl font-black leading-[1.05]">Disclaimer</h1>
-          <p className="mt-5 text-lg opacity-70 leading-relaxed">
+          <h1 className="mt-7 text-3xl md:text-5xl font-black leading-[1.1] tracking-tight">Disclaimer</h1>
+          <p className="mt-5 text-base md:text-lg opacity-75 leading-relaxed">
             This disclaimer explains the limits of the information, tools, and downloads available on {SITE.name}.
           </p>
         </div>
