@@ -393,10 +393,11 @@ export const BlogManager: React.FC = () => {
       } as any;
 
       let error;
-      if (id) {
+      const isExisting = blogs.some(b => b.id === id);
+      if (id && isExisting) {
         ({ error } = await supabase.from('blogs').update(blogData).eq('id', id));
       } else {
-        ({ error } = await supabase.from('blogs').insert([blogData]));
+        ({ error } = await supabase.from('blogs').insert([{ ...blogData, id }]));
       }
 
       if (error) throw error;
@@ -926,7 +927,7 @@ export const BlogManager: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="max-w-[1400px] mx-auto pb-20 space-y-6 animate-in fade-in duration-300">
       
       {/* CMS Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-3.5">
@@ -973,6 +974,8 @@ export const BlogManager: React.FC = () => {
             </button>
           );
         })}
+      </div>
+
       {/* Table & Filtering Shell Container */}
       <div className="bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-4 space-y-3 shadow-sm relative overflow-hidden">
         
@@ -1010,7 +1013,7 @@ export const BlogManager: React.FC = () => {
               </select>
             </div>
           </div>
-        </div>        </div>
+        </div>
 
         {/* Directory Table View */}
         <div className="overflow-x-auto rounded-2xl border border-zinc-150 dark:border-zinc-850">
