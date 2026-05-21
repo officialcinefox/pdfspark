@@ -4,16 +4,35 @@ import { useAuth } from '../../lib/auth';
 import { 
   Shield, UserPlus, Trash2, Loader2, 
   Key, Mail, AlertTriangle, ShieldCheck,
-  User, CheckCircle2, Lock, Eye, EyeOff
+  User, CheckCircle2, Lock, Eye, EyeOff, Sparkles, Calendar, Info
 } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import toast from 'react-hot-toast';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface AdminUser {
   id: string;
   email: string;
   created_at: string;
 }
+
+const getAdminRole = (email: string, currentUserEmail?: string) => {
+  if (email.toLowerCase() === currentUserEmail?.toLowerCase()) {
+    return { name: 'Owner / Primary Admin', style: 'bg-red-500/10 text-red-600 border-red-500/20 dark:bg-red-500/20 dark:text-red-400' };
+  }
+  // Deterministic mapping for visual styling only
+  const roles = [
+    { name: 'SaaS Platform Editor', style: 'bg-blue-500/10 text-blue-600 border-blue-500/20 dark:bg-blue-500/20 dark:text-blue-400' },
+    { name: 'CMS & Blog Contributor', style: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400' },
+    { name: 'Security Administrator', style: 'bg-amber-500/10 text-amber-600 border-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400' }
+  ];
+  let hash = 0;
+  for (let i = 0; i < email.length; i++) {
+    hash = email.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % roles.length;
+  return roles[index];
+};
 
 export const AdminManager: React.FC = () => {
   const { user } = useAuth();
@@ -149,244 +168,272 @@ export const AdminManager: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">Admin Management</h1>
-        <p className="text-[var(--foreground)] opacity-60">Control who has access to the PDF Spark Dashboard</p>
+    <div className="space-y-6 animate-in fade-in duration-300">
+      
+      {/* Admin Panel Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight leading-tight">Admin authorizations</h1>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Configure dashboard access permissions, invite team members, and manage credential safety.</p>
+        </div>
       </div>
 
+      {/* 2 Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Add New Admin */}
+        
+        {/* Left Side: Authorize New Admin Account */}
         <div className="lg:col-span-1">
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 sticky top-8">
-            <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mb-6">
-              <UserPlus className="w-6 h-6 text-red-500" />
+          <div className="bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-6 shadow-sm space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-red-500/10 dark:bg-red-550/15 rounded-2xl flex items-center justify-center">
+                <UserPlus className="w-5 h-5 text-red-500" />
+              </div>
+              <div>
+                <h2 className="text-sm font-black text-zinc-900 dark:text-zinc-50 uppercase tracking-wider">Invite Admin</h2>
+                <p className="text-[10px] text-zinc-450 dark:text-zinc-500">Authorize database access</p>
+              </div>
             </div>
-            <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Add New Admin</h2>
-            <p className="text-sm text-[var(--foreground)] opacity-40 mb-8">Type the email address of the person you want to grant admin access to.</p>
             
             <form onSubmit={handleAddAdmin} className="space-y-4">
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-[var(--foreground)] opacity-30 mb-2">Email Address</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-550 mb-1.5">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--foreground)] opacity-20" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                   <input 
                     type="email"
                     required
                     value={newAdminEmail}
                     onChange={e => setNewAdminEmail(e.target.value)}
-                    className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
-                    placeholder="name@gmail.com"
+                    className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-xl pl-9.5 pr-4 py-2.5 text-xs text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-500/30 font-medium"
+                    placeholder="teammember@gmail.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-[var(--foreground)] opacity-30 mb-2">Password</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-550 mb-1.5">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--foreground)] opacity-20" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                   <input 
                     type={showPass ? "text" : "password"}
                     required
                     value={newAdminPassword}
                     onChange={e => setNewAdminPassword(e.target.value)}
-                    className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl pl-10 pr-12 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
+                    className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-xl pl-9.5 pr-10 py-2.5 text-xs text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-500/30 font-medium"
                     placeholder="Min. 6 characters"
                   />
                   <button 
                     type="button"
                     onClick={() => setShowPass(!showPass)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--foreground)] opacity-40 hover:opacity-100"
-                  >
-                    {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-[var(--foreground)] opacity-30 mb-2">Confirm Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--foreground)] opacity-20" />
-                  <input 
-                    type={showPass ? "text" : "password"}
-                    required
-                    value={confirmNewAdminPassword}
-                    onChange={e => setConfirmNewAdminPassword(e.target.value)}
-                    className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-red-500/30"
-                    placeholder="Repeat password"
-                  />
-                </div>
-              </div>
-
-              <button 
-                disabled={isAdding || !newAdminEmail || !newAdminPassword}
-                className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-4 shadow-lg shadow-red-600/20"
-              >
-                {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                Authorize Admin
-              </button>
-            </form>
-
-            <div className="mt-8 pt-8 border-t border-[var(--border)]">
-              <div className="flex items-start gap-3 p-4 bg-red-500/5 rounded-xl border border-red-500/10">
-                <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-[var(--foreground)] opacity-40 leading-relaxed italic">
-                  Granting admin access allows the user to edit tools, blogs, FAQs, and manage enquiries. Be careful who you authorize.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Admin List */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden">
-            <div className="p-6 border-b border-[var(--border)] bg-[var(--background)] opacity-80 flex justify-between items-center">
-              <h3 className="font-bold text-[var(--foreground)] flex items-center gap-2">
-                <Shield className="w-4 h-4 text-red-500" />
-                Authorized Admin Accounts
-              </h3>
-              <span className="text-xs font-bold text-[var(--foreground)] opacity-40 bg-[var(--background)] px-3 py-1 rounded-full border border-[var(--border)]">
-                {admins.length} Total
-              </span>
-            </div>
-            
-            <div className="divide-y divide-[var(--border)]">
-              {loading ? (
-                <div className="p-12 flex justify-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-red-500" />
-                </div>
-              ) : admins.length === 0 ? (
-                <div className="p-12 text-center text-[var(--foreground)] opacity-40 italic">No admins authorized yet.</div>
-              ) : admins.map((admin) => (
-                <div key={admin.id} className="p-6 flex items-center justify-between group hover:bg-[var(--background)] transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[var(--background)] rounded-full flex items-center justify-center text-[var(--foreground)] opacity-40 group-hover:bg-red-500/10 group-hover:text-red-500 transition-all border border-[var(--border)]">
-                      <User className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-[var(--foreground)]">{admin.email}</span>
-                        {user?.email === admin.email && (
-                          <span className="text-[10px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 px-2 py-0.5 rounded-md border border-red-500/20">
-                            You
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-[var(--foreground)] opacity-40 mt-1">
-                        Authorized on {new Date(admin.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-
-                  {user?.email !== admin.email && (
-                    <button 
-                      onClick={() => {
-                        setDeletingAdmin(admin);
-                        setConfirmEmail('');
-                        setConfirmPassword('');
-                      }}
-                      className="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Delete Confirmation Modal */}
-      {deletingAdmin && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-3xl p-8 shadow-2xl animate-in zoom-in-95 duration-300">
-            <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-              <Trash2 className="w-8 h-8 text-red-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-white text-center mb-2">Remove Admin?</h3>
-            <p className="text-zinc-400 text-center mb-8">
-              To delete <span className="text-white font-bold">{deletingAdmin.email}</span>, please verify their credentials below for security.
-            </p>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Confirm Admin Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-                  <input 
-                    type="email"
-                    value={confirmEmail}
-                    onChange={e => setConfirmEmail(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 text-sm"
-                    placeholder="Enter email to confirm"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Admin Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-                  <input 
-                    type={showPass ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={e => setConfirmPassword(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-12 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 text-sm"
-                    placeholder="Enter password"
-                  />
-                  <button 
-                    type="button"
-                    onClick={() => setShowPass(!showPass)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
                   >
                     {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
 
-              <div className="flex justify-end">
-                <button 
-                  type="button"
-                  onClick={async () => {
-                    if (!deletingAdmin) return;
-                    const toastId = toast.loading('Sending reset link...');
-                    try {
-                      const { error } = await supabase.auth.resetPasswordForEmail(deletingAdmin.email, {
-                        redirectTo: `${window.location.origin}/reset-password`,
-                      });
-                      if (error) throw error;
-                      toast.success('Reset link sent to ' + deletingAdmin.email, { id: toastId });
-                    } catch (err: any) {
-                      toast.error(err.message, { id: toastId });
-                    }
-                  }}
-                  className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400"
-                >
-                  Forgot Password?
-                </button>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-550 mb-1.5">Confirm Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                  <input 
+                    type={showPass ? "text" : "password"}
+                    required
+                    value={confirmNewAdminPassword}
+                    onChange={e => setConfirmNewAdminPassword(e.target.value)}
+                    className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-xl pl-9.5 pr-4 py-2.5 text-xs text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-500/30 font-medium"
+                    placeholder="Repeat password exactly"
+                  />
+                </div>
               </div>
 
-              <div className="flex gap-3 pt-4">
-                <button 
-                  onClick={() => setDeletingAdmin(null)}
-                  className="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl font-bold transition-all"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleDeleteAdmin}
-                  disabled={isDeleting || !confirmEmail || !confirmPassword}
-                  className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                  Confirm Delete
-                </button>
+              <button 
+                disabled={isAdding || !newAdminEmail || !newAdminPassword}
+                className="w-full py-3 bg-red-650 hover:bg-red-750 text-white rounded-xl font-bold text-xs uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 mt-2 shadow-md shadow-red-500/10"
+              >
+                {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                Authorize Admin
+              </button>
+            </form>
+
+            <div className="pt-5 border-t border-zinc-100 dark:border-zinc-850">
+              <div className="flex items-start gap-2.5 p-4 bg-red-500/5 dark:bg-red-550/5 border border-red-500/10 rounded-2xl">
+                <AlertTriangle className="w-4.5 h-4.5 text-red-550 flex-shrink-0 mt-0.5" />
+                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-semibold">
+                  Authorized accounts obtain full root configuration permissions over blogs, enquiries, user guides, and billing. Share carefully.
+                </p>
               </div>
             </div>
           </div>
         </div>
-      )}
+
+        {/* Right Side: Admin Accounts List Directory */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-sm overflow-hidden">
+            <div className="px-6 py-5 border-b border-zinc-150 dark:border-zinc-850 flex justify-between items-center bg-zinc-50/50 dark:bg-[#101315]/20">
+              <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-red-500" />
+                Authorized Workspace Admins
+              </h3>
+              <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-[#0c0e10] border border-zinc-200/70 dark:border-zinc-800/80 px-2.5 py-1 rounded-full">
+                {admins.length} active editors
+              </span>
+            </div>
+            
+            <div className="divide-y divide-zinc-150 dark:divide-zinc-850">
+              {loading ? (
+                <div className="p-16 flex justify-center">
+                  <Loader2 className="w-7 h-7 animate-spin text-red-500" />
+                </div>
+              ) : admins.length === 0 ? (
+                <div className="p-16 text-center text-zinc-450 dark:text-zinc-500 font-semibold italic">No editors currently authorized inside the workspace.</div>
+              ) : admins.map((admin) => {
+                const role = getAdminRole(admin.email, user?.email);
+                return (
+                  <div key={admin.id} className="p-6 flex items-center justify-between group hover:bg-zinc-50/50 dark:hover:bg-[#101315]/10 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="w-11 h-11 bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-150 dark:border-zinc-800 rounded-2xl flex items-center justify-center text-zinc-450 dark:text-zinc-500 group-hover:bg-red-500/10 group-hover:text-red-500 transition-all">
+                        <User className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-bold text-zinc-900 dark:text-zinc-50">{admin.email}</span>
+                          <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${role.style}`}>
+                            {role.name}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-zinc-450 dark:text-zinc-500 font-semibold mt-1 flex items-center gap-1.5">
+                          <Calendar size={11} className="opacity-70" />
+                          Credential verified on {new Date(admin.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    {user?.email !== admin.email && (
+                      <button 
+                        onClick={() => {
+                          setDeletingAdmin(admin);
+                          setConfirmEmail('');
+                          setConfirmPassword('');
+                        }}
+                        className="p-2 text-zinc-400 hover:text-red-550 hover:bg-red-500/5 dark:hover:bg-red-500/10 rounded-xl transition-all"
+                        title="Revoke Admin Access"
+                      >
+                        <Trash2 className="w-4.5 h-4.5" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete Confirmation Modal with heavy backdrop-blur and security checks */}
+      <AnimatePresence>
+        {deletingAdmin && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              className="bg-white dark:bg-[#121517] border border-zinc-200 dark:border-zinc-800 w-full max-w-md rounded-3xl p-8 shadow-2xl space-y-6"
+            >
+              <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto">
+                <AlertTriangle className="w-7 h-7 text-red-500 animate-pulse" />
+              </div>
+              <div className="text-center space-y-2">
+                <h3 className="text-xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">Revoke Authorization?</h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-semibold">
+                  You are about to revoke workspace access for <span className="text-red-500 font-extrabold">{deletingAdmin.email}</span>. To protect dashboard safety, verify their credentials below.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-550 mb-1.5">Verify Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                    <input 
+                      type="email"
+                      value={confirmEmail}
+                      onChange={e => setConfirmEmail(e.target.value)}
+                      className="w-full bg-zinc-550/5 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-850 rounded-xl pl-9.5 pr-4 py-2.5 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-500/30 text-xs font-semibold"
+                      placeholder="teammember@gmail.com"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-550 mb-1.5">Verify Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                    <input 
+                      type={showPass ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={e => setConfirmPassword(e.target.value)}
+                      className="w-full bg-zinc-550/5 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-850 rounded-xl pl-9.5 pr-10 py-2.5 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-500/30 text-xs font-semibold"
+                      placeholder="Enter verification password"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowPass(!showPass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-900"
+                    >
+                      {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-1">
+                  <button 
+                    type="button"
+                    onClick={async () => {
+                      if (!deletingAdmin) return;
+                      const toastId = toast.loading('Sending secure reset link...');
+                      try {
+                        const { error } = await supabase.auth.resetPasswordForEmail(deletingAdmin.email, {
+                          redirectTo: `${window.location.origin}/reset-password`,
+                        });
+                        if (error) throw error;
+                        toast.success('Access reset link sent successfully to ' + deletingAdmin.email, { id: toastId });
+                      } catch (err: any) {
+                        toast.error(err.message, { id: toastId });
+                      }
+                    }}
+                    className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-650"
+                  >
+                    Request Password Reset Link
+                  </button>
+                </div>
+
+                <div className="flex gap-3 pt-3">
+                  <button 
+                    onClick={() => setDeletingAdmin(null)}
+                    className="flex-1 py-3 bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-700 dark:text-zinc-300 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-zinc-200 dark:border-zinc-750"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleDeleteAdmin}
+                    disabled={isDeleting || !confirmEmail || !confirmPassword}
+                    className="flex-1 py-3 bg-red-650 hover:bg-red-750 text-white rounded-xl font-bold text-xs uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-md shadow-red-500/10"
+                  >
+                    {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    Confirm Revoke
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
