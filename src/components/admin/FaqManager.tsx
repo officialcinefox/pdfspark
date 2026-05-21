@@ -198,23 +198,23 @@ export const FaqManager: React.FC = () => {
             >
               <ChevronLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" /> Back to Directory
             </button>
-            <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight leading-none flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-red-500" />
+            <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-zinc-55 tracking-tight leading-none flex items-center gap-2">
+              <Sparkles className="w-6 h-6 text-red-500 animate-pulse" />
               {currentFaq?.id ? 'Edit Help FAQ' : 'Compose Support FAQ'}
             </h1>
           </div>
           <div className="flex items-center gap-3">
             <button 
               onClick={() => { setIsEditing(false); setCurrentFaq(null); }}
-              className="px-5 py-2.5 bg-white hover:bg-zinc-100 dark:bg-zinc-800/40 dark:hover:bg-zinc-850 border border-zinc-200 dark:border-zinc-700/65 text-zinc-600 dark:text-zinc-300 rounded-xl font-bold text-xs transition-all"
+              className="px-3 py-1.5 bg-white hover:bg-zinc-100 dark:bg-zinc-800/40 dark:hover:bg-zinc-850 border border-zinc-200 dark:border-zinc-700/65 text-zinc-600 dark:text-zinc-300 rounded-lg font-bold text-xs transition-all"
             >
               Discard
             </button>
             <button 
               onClick={handleSave}
-              className="flex items-center gap-1.5 px-6 py-2.5 bg-red-650 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition-all shadow-md shadow-red-500/10"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-red-650 hover:bg-red-700 text-white rounded-lg font-bold text-xs transition-all shadow-md shadow-red-500/10"
             >
-              <Save size={14} /> Save FAQ Post
+              <Save size={12} /> Save FAQ Post
             </button>
           </div>
         </div>
@@ -228,22 +228,22 @@ export const FaqManager: React.FC = () => {
               <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">FAQ Content</span>
               
               <div>
-                <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-350 mb-2">Question Title</label>
+                <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-350 mb-1.5">Question Title</label>
                 <input 
                   type="text" 
                   value={currentFaq?.question}
                   onChange={(e) => setCurrentFaq({ ...currentFaq, question: e.target.value })}
-                  className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-500/30 text-sm font-bold placeholder-zinc-400"
+                  className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-55 focus:outline-none focus:ring-2 focus:ring-red-500/30 text-xs font-bold placeholder-zinc-400"
                   placeholder="How do I merge multiple PDF files?"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-350 mb-2">Detailed Answer</label>
+                <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-350 mb-1.5">Detailed Answer</label>
                 <textarea 
                   value={currentFaq?.answer}
                   onChange={(e) => setCurrentFaq({ ...currentFaq, answer: e.target.value })}
-                  className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3.5 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-500/30 min-h-[220px] text-sm leading-relaxed placeholder-zinc-400 font-medium"
+                  className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-55 focus:outline-none focus:ring-2 focus:ring-red-500/30 min-h-[160px] text-xs leading-relaxed placeholder-zinc-400 font-medium"
                   placeholder="To merge PDF files, simply upload your files to the 'Merge PDF' tool. You can reorder the pages visually, and then click 'Merge PDF' to download your combined document instantly."
                 />
               </div>
@@ -271,17 +271,17 @@ export const FaqManager: React.FC = () => {
             
             {/* Action Settings Panel */}
             <div className="bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-6 shadow-sm space-y-6">
-              <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-550 flex items-center gap-1.5 pb-3 border-b border-zinc-100 dark:border-zinc-850">
+              <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-555 flex items-center gap-1.5 pb-3 border-b border-zinc-100 dark:border-zinc-850">
                 <Settings size={14} className="text-red-500" />
                 Index Configurations
               </h3>
               
               <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-350 mb-2.5">Category Directory Mapping</label>
-                  <div className="grid grid-cols-1 gap-1.5 max-h-56 overflow-y-auto p-2 bg-zinc-50 dark:bg-[#0c0e10] rounded-xl border border-zinc-200/60 dark:border-zinc-800/80">
+                  <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-350 mb-1.5">Category Directory Mapping</label>
+                  <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto p-1.5 bg-zinc-50 dark:bg-[#0c0e10] rounded-lg border border-zinc-200/60 dark:border-zinc-800/80">
                     {categories.map((cat) => (
-                      <label key={cat} className="flex items-center gap-2.5 px-2.5 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded-lg cursor-pointer transition-all">
+                      <label key={cat} className="flex items-center gap-2 px-2 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded cursor-pointer transition-all">
                         <input 
                           type="checkbox"
                           checked={currentFaq?.category_list?.includes(cat)}
@@ -296,39 +296,39 @@ export const FaqManager: React.FC = () => {
                               category: newList[0] || categories[0] 
                             });
                           }}
-                          className="w-4 h-4 rounded bg-white dark:bg-[#0c0e10] border-zinc-300 dark:border-zinc-700 text-red-650 focus:ring-red-500"
+                          className="w-3.5 h-3.5 rounded bg-white dark:bg-[#0c0e10] border-zinc-300 dark:border-zinc-700 text-red-650 focus:ring-red-500"
                         />
-                        <span className="text-xs text-zinc-650 dark:text-zinc-300 font-bold">{cat === 'General' ? 'General (Home)' : cat}</span>
+                        <span className="text-[11px] text-zinc-650 dark:text-zinc-300 font-bold">{cat === 'General' ? 'General (Home)' : cat}</span>
                       </label>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-350 mb-2">Display Rank (Order)</label>
+                  <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-350 mb-1">Display Rank (Order)</label>
                   <input 
                     type="number" 
                     value={currentFaq?.order_index}
                     onChange={(e) => setCurrentFaq({ ...currentFaq, order_index: parseInt(e.target.value) || 0 })}
-                    className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-xs font-mono font-bold text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-500/30"
+                    className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-500/30"
                   />
-                  <p className="text-[10px] text-zinc-400 font-medium mt-1">Lighter priorities display higher on accordion lists.</p>
+                  <p className="text-[9px] text-zinc-400 font-medium mt-0.5">Lighter priorities display higher on accordion lists.</p>
                 </div>
 
-                <div className="flex items-center justify-between p-3.5 bg-zinc-50 dark:bg-[#0c0e10] rounded-xl border border-zinc-200/60 dark:border-zinc-800/80">
+                <div className="flex items-center justify-between p-2.5 bg-zinc-50 dark:bg-[#0c0e10] rounded-lg border border-zinc-200/60 dark:border-zinc-800/80">
                   <div>
                     <label className="text-xs font-bold text-zinc-750 dark:text-zinc-300">Live Visibility</label>
                     <p className="text-[9px] text-zinc-400 mt-0.5">Toggle display on website</p>
                   </div>
                   <button
                     onClick={() => setCurrentFaq({ ...currentFaq, is_published: !currentFaq?.is_published })}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all focus:outline-none shrink-0 ${
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-all focus:outline-none shrink-0 ${
                       currentFaq?.is_published 
                         ? 'bg-red-600 shadow-md shadow-red-500/10' 
                         : 'bg-zinc-200 dark:bg-zinc-800'
                     }`}
                   >
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${currentFaq?.is_published ? 'translate-x-6' : 'translate-x-1'}`} />
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${currentFaq?.is_published ? 'translate-x-5' : 'translate-x-1'}`} />
                   </button>
                 </div>
               </div>
@@ -336,7 +336,7 @@ export const FaqManager: React.FC = () => {
 
             {/* Publishing Guidelines tip card */}
             <div className="bg-red-500/5 border border-red-500/10 dark:border-red-500/20 rounded-3xl p-5 space-y-2">
-              <h4 className="text-xs font-black text-red-550 dark:text-red-400 uppercase tracking-wider flex items-center gap-1.5">
+              <h4 className="text-xs font-black text-red-555 dark:text-red-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Info size={14} />
                 Indexing Guidelines
               </h4>
@@ -351,24 +351,24 @@ export const FaqManager: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-4 animate-in fade-in duration-300">
       
       {/* FAQ Head */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight leading-tight">Help FAQ Directory</h1>
+          <h1 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight leading-tight">Help FAQ Directory</h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Configure user guides, tool support cards, pricing clarifications, and help center topics.</p>
         </div>
         <button 
           onClick={handleCreateNew}
-          className="flex items-center justify-center gap-1.5 px-5 py-2.5 bg-red-650 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition-all shadow-md shadow-red-500/10"
+          className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-red-650 hover:bg-red-700 text-white rounded-lg font-bold text-xs transition-all shadow-md shadow-red-500/10"
         >
-          <Plus size={16} /> Add FAQ Guide
+          <Plus size={14} /> Add FAQ Guide
         </button>
       </div>
 
       {/* Modern Filter Category Tabs with Dynamic BADGE counts */}
-      <div className="flex items-center gap-2 p-1 bg-zinc-100 dark:bg-[#111416]/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl overflow-x-auto no-scrollbar scroll-smooth">
+      <div className="flex items-center gap-1.5 p-1 bg-zinc-100 dark:bg-[#111416]/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl overflow-x-auto no-scrollbar scroll-smooth">
         {['All', ...categories].map((tab) => {
           const isActive = activeTab === tab;
           const count = getCategoryCount(tab);
@@ -376,16 +376,16 @@ export const FaqManager: React.FC = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex items-center gap-2 flex-none px-4 py-2.5 rounded-xl font-bold text-xs transition-all ${
+              className={`flex items-center gap-1.5 flex-none px-3 py-1.5 rounded-lg font-bold text-[11px] transition-all ${
                 isActive 
-                  ? 'bg-white dark:bg-[#121517] text-red-600 dark:text-red-400 shadow-sm border border-zinc-200/50 dark:border-zinc-800' 
+                  ? 'bg-white dark:bg-[#121517] text-red-650 dark:text-red-400 shadow-sm border border-zinc-200/50 dark:border-zinc-800' 
                   : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-white/40 dark:hover:bg-zinc-800/20'
               }`}
             >
               <span>{tab === 'General' ? 'Home / General' : tab}</span>
-              <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-black ${
+              <span className={`px-1 py-0.2 rounded text-[8px] font-black ${
                 isActive 
-                  ? 'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400' 
+                  ? 'bg-red-500/10 text-red-655 dark:bg-red-500/20 dark:text-red-400' 
                   : 'bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-500 dark:text-zinc-500'
               }`}>
                 {count}
@@ -397,47 +397,47 @@ export const FaqManager: React.FC = () => {
 
       {/* Glowing Search Bar matching Blogs */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
         <input 
           type="text" 
           placeholder={`Search key query points or articles in ${activeTab === 'All' ? 'all' : activeTab}...`} 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl pl-10 pr-4 py-3.5 text-xs text-zinc-900 dark:text-zinc-50 focus:outline-none"
+          className="w-full bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl pl-8.5 pr-3.5 py-2 text-xs text-zinc-900 dark:text-zinc-50 focus:outline-none"
         />
       </div>
 
       {/* Directory Table Grid container */}
-      <div className="overflow-x-auto rounded-2xl border border-zinc-150 dark:border-zinc-850 bg-white dark:bg-[#121517]">
+      <div className="overflow-x-auto rounded-xl border border-zinc-150 dark:border-zinc-850 bg-white dark:bg-[#121517]">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-zinc-50/70 dark:bg-[#101315]/40 border-b border-zinc-150 dark:border-zinc-850">
-              <th className="px-6 py-4 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest w-16">Rank</th>
-              <th className="px-6 py-4 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Question Summary</th>
-              <th className="px-6 py-4 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Linked Directories</th>
-              <th className="px-6 py-4 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest w-28">Status</th>
-              <th className="px-6 py-4 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest text-right w-36">Actions</th>
+            <tr className="bg-zinc-50/70 dark:bg-[#101315]/40 border-b border-zinc-150 dark:border-zinc-855">
+              <th className="px-3.5 py-2 text-[9px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest w-12">Rank</th>
+              <th className="px-3.5 py-2 text-[9px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Question Summary</th>
+              <th className="px-3.5 py-2 text-[9px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Linked Directories</th>
+              <th className="px-3.5 py-2 text-[9px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest w-24">Status</th>
+              <th className="px-3.5 py-2 text-[9px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest text-right w-28">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-150 dark:divide-zinc-850 text-sm">
+          <tbody className="divide-y divide-zinc-150 dark:divide-zinc-855 text-xs">
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-zinc-550 dark:text-zinc-400">
-                  <Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-red-500" />
+                <td colSpan={5} className="px-3.5 py-8 text-center text-zinc-550 dark:text-zinc-400">
+                  <Loader2 className="w-6 h-6 animate-spin mx-auto mb-1.5 text-red-500" />
                   Accessing FAQ databases...
                 </td>
               </tr>
             ) : filteredFaqs.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-16 text-center text-zinc-450 dark:text-zinc-500 font-semibold italic">
+                <td colSpan={5} className="px-3.5 py-12 text-center text-zinc-450 dark:text-zinc-500 font-semibold italic">
                   No support guides compiled inside this category.
                 </td>
               </tr>
             ) : filteredFaqs.map((faq, idx) => (
               <tr key={faq.id} className="hover:bg-zinc-50/50 dark:hover:bg-[#101315]/20 transition-colors group">
-                <td className="px-6 py-4 w-16">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-mono text-xs font-bold text-zinc-500 dark:text-zinc-400">{faq.order_index}</span>
+                <td className="px-3.5 py-2 w-12">
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-[11px] font-bold text-zinc-500 dark:text-zinc-400">{faq.order_index}</span>
                     <div className="flex flex-col opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         onClick={() => changeOrder(faq, 'up')}
@@ -445,7 +445,7 @@ export const FaqManager: React.FC = () => {
                         className="text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 disabled:opacity-20"
                         title="Move Up"
                       >
-                        <ArrowUp size={10} />
+                        <ArrowUp size={8} />
                       </button>
                       <button 
                         onClick={() => changeOrder(faq, 'down')}
@@ -453,55 +453,55 @@ export const FaqManager: React.FC = () => {
                         className="text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 disabled:opacity-20"
                         title="Move Down"
                       >
-                        <ArrowDown size={10} />
+                        <ArrowDown size={8} />
                       </button>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 max-w-sm">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-red-500/10 dark:bg-red-550/15 rounded-xl text-red-500 dark:text-red-400 shrink-0">
-                      <HelpCircle size={16} />
+                <td className="px-3.5 py-2 max-w-sm">
+                  <div className="flex items-start gap-2">
+                    <div className="p-1.5 bg-red-500/10 dark:bg-red-550/15 rounded-lg text-red-500 dark:text-red-400 shrink-0">
+                      <HelpCircle size={13} />
                     </div>
                     <div className="space-y-0.5">
-                      <div className="font-bold text-zinc-900 dark:text-zinc-100 leading-snug line-clamp-2">{faq.question}</div>
+                      <div className="font-bold text-zinc-900 dark:text-zinc-100 leading-snug line-clamp-1">{faq.question}</div>
                       <p className="text-[10px] text-zinc-450 dark:text-zinc-500 line-clamp-1">{faq.answer}</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <div className="flex flex-wrap gap-1">
+                <td className="px-3.5 py-2">
+                  <div className="flex flex-wrap gap-0.5">
                     {(faq.category_list || [faq.category]).filter(Boolean).map((cat, i) => (
-                      <span key={i} className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${getCategoryStyles(cat)}`}>
+                      <span key={i} className={`px-1.5 py-0.2 rounded text-[8px] font-black uppercase tracking-wider ${getCategoryStyles(cat)}`}>
                         {cat === 'General' ? 'Home' : cat}
                       </span>
                     ))}
                   </div>
                 </td>
-                <td className="px-6 py-4 w-28">
+                <td className="px-3.5 py-2 w-24">
                   {faq.is_published ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-450 text-[10px] font-extrabold uppercase tracking-wide">
-                      <CheckCircle2 size={11} /> Active
+                    <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-450 text-[9px] font-extrabold uppercase tracking-wide">
+                      <CheckCircle2 size={10} /> Active
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-550 dark:bg-zinc-800 dark:text-zinc-400 text-[10px] font-extrabold uppercase tracking-wide">
-                      <Eye size={11} className="opacity-80" /> Private
+                    <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-550 dark:bg-zinc-800 dark:text-zinc-400 text-[9px] font-extrabold uppercase tracking-wide">
+                      <Eye size={10} className="opacity-80" /> Private
                     </span>
                   )}
                 </td>
-                <td className="px-6 py-4 text-right w-36">
-                  <div className="flex items-center justify-end gap-1" onClick={e => e.stopPropagation()}>
+                <td className="px-3.5 py-2 text-right w-28">
+                  <div className="flex items-center justify-end gap-0.5" onClick={e => e.stopPropagation()}>
                     {deletingId === faq.id ? (
-                      <div className="flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex items-center gap-1 animate-in fade-in zoom-in-95 duration-200">
                         <button 
                           onClick={() => handleDelete(faq.id)}
-                          className="px-3 py-1.5 bg-red-650 text-white text-[10px] font-bold rounded-lg hover:bg-red-750 shadow-md shadow-red-650/10"
+                          className="px-2 py-1 bg-red-650 text-white text-[9px] font-bold rounded hover:bg-red-750 shadow-md shadow-red-650/10"
                         >
                           Delete
                         </button>
                         <button 
                           onClick={() => setDeletingId(null)}
-                          className="px-3 py-1.5 bg-zinc-150 text-zinc-650 dark:bg-zinc-800 dark:text-zinc-300 text-[10px] font-bold rounded-lg"
+                          className="px-2 py-1 bg-zinc-150 text-zinc-650 dark:bg-zinc-800 dark:text-zinc-300 text-[9px] font-bold rounded"
                         >
                           Cancel
                         </button>
@@ -510,17 +510,17 @@ export const FaqManager: React.FC = () => {
                       <>
                         <button 
                           onClick={() => handleEdit(faq)}
-                          className="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/40 rounded-xl transition-all"
+                          className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/40 rounded-lg transition-all"
                           title="Edit Support Guide"
                         >
-                          <Edit2 size={14} />
+                          <Edit2 size={12} />
                         </button>
                         <button 
                           onClick={() => setDeletingId(faq.id)}
-                          className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all"
+                          className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/5 rounded-lg transition-all"
                           title="Delete FAQ"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={12} />
                         </button>
                       </>
                     )}

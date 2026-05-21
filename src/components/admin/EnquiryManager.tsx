@@ -160,18 +160,18 @@ export const EnquiryManager: React.FC = () => {
   const counts = getStatusCounts();
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-4 animate-in fade-in duration-300">
       
       {/* CRM Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200 dark:border-zinc-800 pb-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight leading-tight">Customer CRM Inbox</h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Review contact inquiries, send professional responses, and manage status logs.</p>
+          <h1 className="text-lg md:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight leading-tight">Customer CRM Inbox</h1>
+          <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Review contact inquiries, send professional responses, and manage status logs.</p>
         </div>
       </div>
 
       {/* Inbox Category Switchers */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {[
           { id: 'all', name: 'All Inquiries', count: counts.all },
           { id: 'new', name: 'New/Unread', count: counts.newCount, isAlert: counts.newCount > 0 },
@@ -183,14 +183,14 @@ export const EnquiryManager: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-5 py-2.5 rounded-full text-xs font-bold border transition-all flex items-center gap-2 ${
+              className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-all flex items-center gap-1.5 ${
                 isActive 
                   ? 'bg-zinc-900 border-zinc-900 text-white dark:bg-zinc-100 dark:border-zinc-100 dark:text-zinc-900' 
                   : 'bg-white dark:bg-[#121517] border-zinc-200 dark:border-zinc-800 text-zinc-450 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-50'
               }`}
             >
               <span>{tab.name}</span>
-              <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
+              <span className={`px-1.5 py-0.25 rounded-full text-[8px] font-black ${
                 isActive 
                   ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-800' 
                   : tab.isAlert
@@ -205,24 +205,24 @@ export const EnquiryManager: React.FC = () => {
       </div>
 
       {/* Message Filter Tools */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center">
+      <div className="flex flex-col sm:flex-row gap-2.5 items-center">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
           <input 
             type="text" 
-            placeholder="Search by sender name, email, keyword, subject..." 
+            placeholder="Search sender, email, keyword, subject..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl pl-10 pr-4 py-3.5 text-xs text-zinc-900 dark:text-zinc-50 focus:outline-none"
+            className="w-full bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl pl-9 pr-3.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-50 focus:outline-none"
           />
         </div>
         
         <div className="relative group/filter w-full sm:w-auto shrink-0">
-          <Filter className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-3 h-3" />
           <select 
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
-            className="w-full sm:w-auto bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl pl-9.5 pr-8 py-3.5 text-xs font-bold text-zinc-550 dark:text-zinc-400 focus:outline-none appearance-none cursor-pointer"
+            className="w-full sm:w-auto bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl pl-8 pr-7 py-1.5 text-xs font-bold text-zinc-550 dark:text-zinc-400 focus:outline-none appearance-none cursor-pointer"
           >
             <option value="all">All Dates</option>
             <option value="today">Received Today</option>
@@ -231,22 +231,22 @@ export const EnquiryManager: React.FC = () => {
             <option value="last7">Last 7 Days</option>
             <option value="last30">Last 30 Days</option>
           </select>
-          <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 w-3 h-3 pointer-events-none" />
         </div>
       </div>
 
       {/* Inbox List View */}
-      <div className="space-y-4">
+      <div className="space-y-2.5">
         {loading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="w-8 h-8 animate-spin text-red-500" />
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin text-red-500" />
           </div>
         ) : filteredEnquiries.length === 0 ? (
-          <div className="text-center py-20 bg-white dark:bg-[#121517] rounded-3xl border border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center space-y-4 shadow-sm">
-            <Inbox className="w-12 h-12 text-zinc-300 dark:text-zinc-700" />
+          <div className="text-center py-16 bg-white dark:bg-[#121517] rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center space-y-3 shadow-sm">
+            <Inbox className="w-10 h-10 text-zinc-300 dark:text-zinc-700" />
             <div>
-              <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Inbox Completely Clean</p>
-              <p className="text-xs text-zinc-450 dark:text-zinc-500 mt-1">No enquiries match the current filters.</p>
+              <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200">Inbox Completely Clean</p>
+              <p className="text-[10px] text-zinc-450 dark:text-zinc-500 mt-0.5">No enquiries match the current filters.</p>
             </div>
           </div>
         ) : filteredEnquiries.map((enq) => {
@@ -257,56 +257,56 @@ export const EnquiryManager: React.FC = () => {
             <div 
               key={enq.id} 
               onClick={() => isNew && updateStatus(enq.id, 'read')}
-              className={`bg-white dark:bg-[#121517] border rounded-3xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-zinc-300/5 dark:hover:shadow-black/20 cursor-pointer group ${
+              className={`bg-white dark:bg-[#121517] border rounded-2xl p-3.5 py-3 transition-all duration-300 hover:shadow-lg hover:shadow-zinc-300/5 dark:hover:shadow-black/20 cursor-pointer group ${
                 isNew 
                   ? 'border-red-500/30 ring-1 ring-red-500/10 shadow-[0_0_20px_rgba(239,68,68,0.03)] dark:bg-[#151212]/10' 
                   : 'border-zinc-200/80 dark:border-zinc-800/80'
               }`}
             >
               {/* Message Header */}
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                <div className="flex gap-4">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
+                <div className="flex gap-3">
                   {/* Glowing dynamic Initials Avatar */}
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 text-sm font-black bg-gradient-to-tr shadow-md ${gradient}`}>
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-xs font-black bg-gradient-to-tr shadow-md ${gradient}`}>
                     {initials}
                   </div>
                   
-                  <div className="space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-50">{enq.subject || 'No Subject'}</h3>
+                  <div className="space-y-0.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-50">{enq.subject || 'No Subject'}</h3>
                       {isNew && (
-                        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" title="Unread Message" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" title="Unread Message" />
                       )}
                     </div>
                     
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-450 dark:text-zinc-400 font-semibold">
-                      <span className="text-zinc-900 dark:text-zinc-100 font-bold flex items-center gap-1"><User size={12} className="opacity-60" /> {enq.name}</span>
-                      <span className="w-1 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
-                      <span className="font-mono text-[11px] opacity-75">{enq.email}</span>
-                      <span className="w-1 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
-                      <span className="flex items-center gap-1 text-[11px] font-medium"><Clock size={11} className="opacity-60" /> {new Date(enq.created_at).toLocaleString()}</span>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-zinc-450 dark:text-zinc-400 font-semibold">
+                      <span className="text-zinc-900 dark:text-zinc-100 font-bold flex items-center gap-1"><User size={10} className="opacity-60" /> {enq.name}</span>
+                      <span className="w-0.5 h-0.5 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                      <span className="font-mono text-[10px] opacity-75">{enq.email}</span>
+                      <span className="w-0.5 h-0.5 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                      <span className="flex items-center gap-1 text-[10px] font-medium"><Clock size={10} className="opacity-60" /> {new Date(enq.created_at).toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* CRM Controls */}
-                <div className="flex items-center gap-2.5 self-end md:self-auto" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center gap-2 self-end md:self-auto" onClick={e => e.stopPropagation()}>
                   <button 
                     onClick={() => setReplyingTo(replyingTo === enq.id ? null : enq.id)}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
                       replyingTo === enq.id 
                         ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100' 
                         : 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white'
                     }`}
                   >
-                    <Reply size={13} />
+                    <Reply size={11} />
                     {replyingTo === enq.id ? 'Close' : 'Quick Reply'}
                   </button>
 
                   <select 
                     value={enq.status}
                     onChange={(e) => updateStatus(enq.id, e.target.value)}
-                    className="bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200/70 dark:border-zinc-800/60 text-[10px] font-black uppercase tracking-wider text-zinc-550 dark:text-zinc-300 px-3 py-2 rounded-xl focus:outline-none cursor-pointer"
+                    className="bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200/70 dark:border-zinc-800/60 text-[9px] font-black uppercase tracking-wider text-zinc-550 dark:text-zinc-300 px-2 py-1 rounded-lg focus:outline-none cursor-pointer"
                   >
                     <option value="new">New</option>
                     <option value="read">Mark Read</option>
@@ -314,16 +314,16 @@ export const EnquiryManager: React.FC = () => {
                   </select>
 
                   {deletingId === enq.id ? (
-                    <div className="flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="flex items-center gap-1 animate-in fade-in zoom-in-95 duration-200">
                       <button 
                         onClick={() => handleDelete(enq.id)}
-                        className="px-3 py-1.5 bg-red-600 text-white text-[10px] font-bold rounded-lg hover:bg-red-700 shadow-md shadow-red-650/10"
+                        className="px-2 py-1 bg-red-650 text-white text-[9px] font-bold rounded-md hover:bg-red-700 shadow-md shadow-red-650/10"
                       >
                         Confirm
                       </button>
                       <button 
                         onClick={() => setDeletingId(null)}
-                        className="px-3 py-1.5 bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300 text-[10px] font-bold rounded-lg"
+                        className="px-2 py-1 bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300 text-[9px] font-bold rounded-md"
                       >
                         Cancel
                       </button>
@@ -331,33 +331,33 @@ export const EnquiryManager: React.FC = () => {
                   ) : (
                     <button 
                       onClick={() => setDeletingId(enq.id)}
-                      className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all"
+                      className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-500/5 rounded-lg transition-all"
                       title="Delete Inquiry"
                     >
-                      <Trash2 size={15} />
+                      <Trash2 size={13} />
                     </button>
                   )}
                 </div>
               </div>
 
               {/* Message Description */}
-              <div className="mt-5 bg-zinc-50 dark:bg-[#0c0e10] p-5 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 text-zinc-800 dark:text-zinc-250 leading-relaxed whitespace-pre-wrap text-sm font-medium">
+              <div className="mt-2.5 bg-zinc-50 dark:bg-[#0c0e10] p-3 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 text-zinc-800 dark:text-zinc-250 leading-relaxed whitespace-pre-wrap text-xs font-medium">
                 {enq.message}
               </div>
 
               {/* Active Compose Reply Area */}
               {replyingTo === enq.id && (
                 <div 
-                  className="mt-6 pt-6 border-t border-zinc-150 dark:border-zinc-850 space-y-4 animate-in slide-in-from-top-4 duration-300"
+                  className="mt-3.5 pt-3.5 border-t border-zinc-150 dark:border-zinc-855 space-y-3 animate-in slide-in-from-top-4 duration-300"
                   onClick={e => e.stopPropagation()}
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <Sparkles size={14} className="text-red-500 animate-pulse" />
-                      <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Draft Response Email</h4>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles size={12} className="text-red-500 animate-pulse" />
+                      <h4 className="text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Draft Response Email</h4>
                     </div>
                     {/* Auto-template selectors */}
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1">
                       {replyTemplates.map((tmp, i) => (
                         <button
                           key={i}
@@ -367,7 +367,7 @@ export const EnquiryManager: React.FC = () => {
                               .replace('[NAME]', enq.name);
                             setReplyText({ ...replyText, [enq.id]: formatted });
                           }}
-                          className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-750 text-[10px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-200/40 dark:border-zinc-700/40 rounded-lg transition-all"
+                          className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-750 text-[9px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-200/40 dark:border-zinc-700/40 rounded-md transition-all"
                         >
                           {tmp.name}
                         </button>
@@ -379,13 +379,13 @@ export const EnquiryManager: React.FC = () => {
                     placeholder="Type your reply or select a quick template above..."
                     value={replyText[enq.id] || ''}
                     onChange={(e) => setReplyText({...replyText, [enq.id]: e.target.value})}
-                    className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-250/70 dark:border-zinc-800/60 rounded-2xl px-5 py-4 text-zinc-900 dark:text-zinc-50 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/30 min-h-[160px] leading-relaxed transition-all"
+                    className="w-full bg-zinc-550/5 dark:bg-[#0c0e10] border border-zinc-250/70 dark:border-zinc-800/60 rounded-xl px-3 py-2 text-zinc-900 dark:text-zinc-50 text-xs focus:outline-none focus:ring-2 focus:ring-red-500/30 min-h-[120px] leading-relaxed transition-all"
                   />
 
-                  <div className="flex justify-end gap-3">
+                  <div className="flex justify-end gap-2">
                     <button 
                       onClick={() => setReplyingTo(null)}
-                      className="px-5 py-2.5 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/40 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/65 text-zinc-600 dark:text-zinc-300 rounded-xl font-bold text-xs transition-all"
+                      className="px-3 py-1.5 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/40 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/65 text-zinc-600 dark:text-zinc-300 rounded-lg font-bold text-xs transition-all"
                     >
                       Discard
                     </button>
@@ -395,9 +395,9 @@ export const EnquiryManager: React.FC = () => {
                         updateStatus(enq.id, 'replied');
                         setReplyingTo(null);
                       }}
-                      className="inline-flex items-center gap-1.5 px-6 py-2.5 bg-red-650 text-white rounded-xl font-bold text-xs hover:bg-red-700 transition-all shadow-md shadow-red-500/10"
+                      className="inline-flex items-center gap-1 px-4 py-1.5 bg-red-650 text-white rounded-lg font-bold text-xs hover:bg-red-750 transition-all shadow-md shadow-red-500/10"
                     >
-                      <Send size={12} />
+                      <Send size={10} />
                       Send Response via Mail
                     </a>
                   </div>

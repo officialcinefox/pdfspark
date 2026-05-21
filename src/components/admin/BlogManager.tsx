@@ -228,9 +228,6 @@ export const BlogManager: React.FC = () => {
 
   // Interactive editing states
   const [editorMode, setEditorMode] = useState<'visual' | 'code'>('visual');
-  const [focusKeyword, setFocusKeyword] = useState('');
-  const [seoMetaTitle, setSeoMetaTitle] = useState('');
-  const [seoMetaDescription, setSeoMetaDescription] = useState('');
 
   // Author details mock database (allows visual updates but defaults determination)
   const [authorName, setAuthorName] = useState('Mohit Sharma');
@@ -313,9 +310,6 @@ export const BlogManager: React.FC = () => {
       is_published: false,
       published_at: new Date().toISOString().slice(0, 16)
     });
-    setFocusKeyword('');
-    setSeoMetaTitle('');
-    setSeoMetaDescription('');
     setStatus('draft');
     editor?.commands.setContent('');
     setIsEditing(true);
@@ -347,9 +341,6 @@ export const BlogManager: React.FC = () => {
       category_list: blog.category_list || [blog.category].filter(Boolean)
     });
     setStatus(currentStatus);
-    setFocusKeyword((blog as any).seo_keyword || blog.title?.split(' ')[0] || '');
-    setSeoMetaTitle(blog.title || '');
-    setSeoMetaDescription(blog.description || '');
     editor?.commands.setContent(blog.content || '');
     setIsEditing(true);
     setEditorMode('visual');
@@ -398,7 +389,7 @@ export const BlogManager: React.FC = () => {
         published_at: finalPublishedAt,
         content: editorMode === 'visual' ? (editor?.getHTML() || '') : currentBlog.content,
         updated_at: new Date().toISOString(),
-        seo_keyword: focusKeyword, // fallback session
+        seo_keyword: (currentBlog as any).seo_keyword || '', // fallback session
       } as any;
 
       let error;
@@ -456,31 +447,7 @@ export const BlogManager: React.FC = () => {
     }
   };
 
-  // SEO RankMath Checklist Calculator
-  const getSeoChecklist = () => {
-    const title = currentBlog?.title || '';
-    const slug = currentBlog?.slug || '';
-    const excerpt = seoMetaDescription || '';
-    const content = editor?.getHTML() || '';
-    const keyword = focusKeyword.trim().toLowerCase();
 
-    if (!keyword) {
-      return { score: null, checklist: [] };
-    }
-
-    const checks = [
-      { id: 'title', text: 'Keyword present in title', success: title.toLowerCase().includes(keyword), weight: 30 },
-      { id: 'slug', text: 'Keyword used in URL Slug', success: slug.toLowerCase().includes(keyword.replace(/\s+/g, '-')), weight: 20 },
-      { id: 'desc', text: 'Keyword in short SEO description', success: excerpt.toLowerCase().includes(keyword), weight: 20 },
-      { id: 'title_length', text: 'Title length is ideal (30-60 chars)', success: title.length >= 30 && title.length <= 60, weight: 15 },
-      { id: 'content_length', text: 'Article content has minimum 150 words', success: content.split(/\s+/).filter(Boolean).length >= 150, weight: 15 },
-    ];
-
-    const score = checks.reduce((acc, check) => acc + (check.success ? check.weight : 0), 0);
-    return { score, checklist: checks };
-  };
-
-  const { score: seoScore, checklist: seoChecklist } = getSeoChecklist();
 
   // Directory filter logic
   const filteredBlogs = blogs.filter(blog => {
@@ -562,29 +529,13 @@ export const BlogManager: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 self-end sm:self-auto">
-            {seoScore !== null && (
-              <span className={`px-4 py-2.5 rounded-xl font-bold text-xs border flex items-center gap-2 ${
-                seoScore >= 80 
-                  ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                  : seoScore >= 50
-                  ? 'bg-amber-500/10 text-amber-500 border-amber-500/20'
-                  : 'bg-red-500/10 text-red-500 border-red-500/20'
-              }`}>
-                <Sparkles size={14} className="animate-spin-slow" />
-                SEO Score: <span className="font-extrabold">{seoScore}/100</span>
-              </span>
-            )}
-            {seoScore === null && (
-              <span className="px-4 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/50 dark:border-zinc-700/50 text-zinc-400 text-xs font-semibold">
-                SEO Score: N/A (Keyword Empty)
-              </span>
-            )}
+          <div className="flex items-center gap-2.5 self-end sm:self-auto">
             <button
               onClick={() => handleSave()}
-              className="flex items-center gap-2 px-6 py-2.5 bg-red-650 hover:bg-red-700 text-white text-sm rounded-xl font-bold transition-all shadow-lg shadow-red-600/15"
+              style={{ backgroundColor: '#E50914', color: '#ffffff' }}
+              className="flex items-center gap-1.5 px-4 py-2 bg-red-650 hover:bg-red-700 text-white text-xs rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-[#E50914]/20 border-none cursor-pointer"
             >
-              <Save size={16} /> Save Changes
+              <Save size={14} /> Save Changes
             </button>
           </div>
         </div>
@@ -635,9 +586,8 @@ export const BlogManager: React.FC = () => {
               <div>
                 <label className="block text-xs font-extrabold text-zinc-450 dark:text-zinc-400 mb-1.5 uppercase tracking-wider">Short Excerpt / Summary</label>
                 <textarea
-                  value={seoMetaDescription}
+                  value={currentBlog?.description || ''}
                   onChange={(e) => {
-                    setSeoMetaDescription(e.target.value);
                     setCurrentBlog({ ...currentBlog, description: e.target.value });
                   }}
                   className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-250/70 dark:border-zinc-800/60 rounded-xl px-3.5 py-3 text-sm text-zinc-900 dark:text-zinc-50 focus:outline-none min-h-[90px] leading-relaxed"
@@ -725,72 +675,7 @@ export const BlogManager: React.FC = () => {
               )}
             </div>
 
-            {/* RankMath SEO Optimizer Dashboard */}
-            <div className="bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-6 space-y-6">
-              <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4">
-                <div>
-                  <h3 className="font-extrabold text-base tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-red-500" /> RankMath SEO Optimizer
-                  </h3>
-                  <p className="text-xs text-zinc-400">Configure focus keywords and preview live search simulations</p>
-                </div>
-              </div>
 
-              {/* Dynamic Google Result Simulator */}
-              <div className="space-y-3">
-                <span className="block text-xs font-extrabold uppercase tracking-wider text-zinc-450 dark:text-zinc-400">Live Google SERP Simulator</span>
-                <div className="bg-zinc-50 dark:bg-[#0c0e10] p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 font-sans space-y-1.5 shadow-sm max-w-2xl">
-                  <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-                    <span className="bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-[10px] uppercase font-black tracking-widest text-zinc-500 scale-90">Ad</span>
-                    <span className="truncate">apargo.com &gt; blog &gt; <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{currentBlog?.slug || 'new-post'}</span></span>
-                  </div>
-                  <a href="#" className="block text-lg md:text-xl font-medium text-blue-850 hover:underline dark:text-blue-400 leading-tight">
-                    {currentBlog?.title || 'Please enter post title...'}
-                  </a>
-                  <p className="text-xs text-zinc-650 dark:text-zinc-400 leading-relaxed line-clamp-2">
-                    {seoMetaDescription || 'Write an excerpt in the summary field above to see your live search description snippet simulator load dynamically.'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-zinc-150 dark:border-zinc-850">
-                <div>
-                  <label className="block text-xs font-extrabold text-zinc-450 dark:text-zinc-400 mb-1.5 uppercase tracking-wider">Focus Keyword</label>
-                  <input
-                    type="text"
-                    value={focusKeyword}
-                    onChange={(e) => setFocusKeyword(e.target.value)}
-                    className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-250/70 dark:border-zinc-800/60 rounded-xl px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 focus:outline-none"
-                    placeholder="e.g. decision, checklist, split pdf"
-                  />
-                  <p className="text-[10px] text-zinc-400 dark:text-zinc-550 mt-1.5">SEO score parses keyword presence dynamically.</p>
-                </div>
-
-                <div className="space-y-2">
-                  <span className="block text-xs font-extrabold uppercase tracking-wider text-zinc-450 dark:text-zinc-400">SEO Real-time Audits</span>
-                  {focusKeyword.trim() ? (
-                    <div className="space-y-2 max-h-40 overflow-y-auto p-3 bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800/80 rounded-xl">
-                      {seoChecklist.map((check) => (
-                        <div key={check.id} className="flex items-center gap-2 text-xs">
-                          {check.success ? (
-                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0" />
-                          ) : (
-                            <span className="w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0" />
-                          )}
-                          <span className={check.success ? 'text-zinc-700 dark:text-zinc-300 font-medium' : 'text-zinc-400 italic line-through'}>
-                            {check.text} ({check.weight}%)
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 p-4 bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800/80 rounded-xl text-zinc-400 text-xs italic">
-                      <AlertCircle size={14} className="text-zinc-450" /> Focus keyword required for live audits
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Sidebar Area (1/3 width) */}
@@ -834,13 +719,14 @@ export const BlogManager: React.FC = () => {
                 <div className="pt-2 flex justify-between gap-3">
                   <button
                     onClick={handleBack}
-                    className="flex-1 py-3 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/40 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/65 rounded-xl font-bold text-xs text-center transition-all text-zinc-700 dark:text-zinc-300"
+                    className="flex-1 py-2 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/40 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/65 rounded-xl font-bold text-xs text-center transition-all text-zinc-700 dark:text-zinc-300"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => handleSave()}
-                    className="flex-1 py-3 bg-red-650 hover:bg-red-700 text-white rounded-xl font-bold text-xs text-center transition-all shadow-md shadow-red-500/10"
+                    style={{ backgroundColor: '#E50914', color: '#ffffff' }}
+                    className="flex-1 py-2 bg-red-650 hover:bg-red-700 text-white rounded-xl font-bold text-xs text-center transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-red-500/20 border-none cursor-pointer"
                   >
                     Update Post
                   </button>
@@ -1043,16 +929,17 @@ export const BlogManager: React.FC = () => {
     <div className="space-y-6 animate-in fade-in duration-300">
       
       {/* CMS Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-3.5">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight leading-tight">AIS Blogs & Content</h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Write dynamic articles, configure meta tags, and audit SEO ranks.</p>
+          <h1 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight leading-tight">AIS Blogs & Content</h1>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Write dynamic articles, configure categories, and manage blog publication.</p>
         </div>
         <button
           onClick={handleCreateNew}
-          className="flex items-center justify-center gap-2 px-5 py-3 bg-red-650 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all shadow-lg shadow-red-600/20"
+          style={{ backgroundColor: '#E50914', color: '#ffffff' }}
+          className="flex items-center justify-center gap-1.5 px-4.5 py-2 bg-red-650 hover:bg-red-700 active:bg-red-750 text-white text-xs font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-[#E50914]/25 border-none cursor-pointer"
         >
-          <Plus size={16} /> Create New Post
+          <Plus size={14} /> Create New Post
         </button>
       </div>
 
@@ -1069,7 +956,7 @@ export const BlogManager: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveStatusTab(tab.id as any)}
-              className={`px-5 py-2.5 rounded-full text-xs font-bold border transition-all flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all flex items-center gap-2 ${
                 isActive 
                   ? 'bg-zinc-900 border-zinc-900 text-white dark:bg-zinc-100 dark:border-zinc-100 dark:text-zinc-900' 
                   : 'bg-white dark:bg-[#121517] border-zinc-200 dark:border-zinc-800 text-zinc-450 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-50'
@@ -1086,10 +973,8 @@ export const BlogManager: React.FC = () => {
             </button>
           );
         })}
-      </div>
-
       {/* Table & Filtering Shell Container */}
-      <div className="bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-5 space-y-4 shadow-sm relative overflow-hidden">
+      <div className="bg-white dark:bg-[#121517] border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-4 space-y-3 shadow-sm relative overflow-hidden">
         
         {/* Secondary Inner Filter Controls */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1102,45 +987,45 @@ export const BlogManager: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2.5">
             {/* Table Search Input */}
             <div className="relative w-full sm:w-60">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
               <input
                 type="text"
                 placeholder="Search title, keyword..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200/70 dark:border-zinc-800/60 rounded-xl pl-9.5 pr-4 py-2.5 text-xs text-zinc-900 dark:text-zinc-50 focus:outline-none"
+                className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200/70 dark:border-zinc-800/60 rounded-xl pl-8 pr-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-50 focus:outline-none"
               />
             </div>
 
             {/* Category selection */}
             <div className="relative group/filter w-full sm:w-auto">
-              <Filter className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-3.5 h-3.5" />
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-3 h-3" />
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full sm:w-auto bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200/70 dark:border-zinc-800/60 rounded-xl pl-9.5 pr-8 py-2.5 text-xs font-bold text-zinc-550 dark:text-zinc-400 focus:outline-none appearance-none cursor-pointer"
+                className="w-full sm:w-auto bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200/70 dark:border-zinc-800/60 rounded-xl pl-8 pr-7 py-1.5 text-xs font-bold text-zinc-555 dark:text-zinc-400 focus:outline-none appearance-none cursor-pointer"
               >
                 <option value="all">All Categories</option>
                 {categories.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
           </div>
-        </div>
+        </div>        </div>
 
         {/* Directory Table View */}
         <div className="overflow-x-auto rounded-2xl border border-zinc-150 dark:border-zinc-850">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50/70 dark:bg-[#101315]/40 border-b border-zinc-150 dark:border-zinc-850">
-                <th className="px-6 py-4.5 w-10">
+                <th className="px-3.5 py-2.5 w-10">
                   <input type="checkbox" className="w-4 h-4 rounded bg-white dark:bg-[#0c0e10] border-zinc-300 dark:border-zinc-700 text-red-650 focus:ring-red-500" />
                 </th>
-                <th className="px-6 py-4.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Title</th>
-                <th className="px-6 py-4.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Author</th>
-                <th className="px-6 py-4.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Category</th>
-                <th className="px-6 py-4.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Date</th>
-                <th className="px-6 py-4.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">SEO Rating</th>
-                <th className="px-6 py-4.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest text-right">Actions</th>
+                <th className="px-3.5 py-2.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Title</th>
+                <th className="px-3.5 py-2.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Author</th>
+                <th className="px-3.5 py-2.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Category</th>
+                <th className="px-3.5 py-2.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Date</th>
+                <th className="px-3.5 py-2.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest">Views</th>
+                <th className="px-3.5 py-2.5 text-[10px] font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-widest text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-150 dark:divide-zinc-850 text-sm">
@@ -1161,22 +1046,20 @@ export const BlogManager: React.FC = () => {
                 const author = getAuthorForBlog(blog.id);
                 const isFuture = new Date(blog.published_at) > new Date();
                 
-                // Live preview SEO score calculations
-                const titleKeyword = (blog.title || '').toLowerCase().includes((blog.title || '').split(' ')[0]?.toLowerCase() || 'pdf');
-                const calculatedScore = titleKeyword ? 78 : 45;
+
 
                 return (
                   <tr key={blog.id} className="hover:bg-zinc-50/50 dark:hover:bg-[#101315]/20 transition-colors group">
-                    <td className="px-6 py-4 w-10">
+                    <td className="px-3.5 py-2.5 w-10">
                       <input type="checkbox" className="w-4 h-4 rounded bg-white dark:bg-[#0c0e10] border-zinc-300 dark:border-zinc-700 text-red-650 focus:ring-red-500" />
                     </td>
-                    <td className="px-6 py-4 max-w-sm">
+                    <td className="px-3.5 py-2.5 max-w-sm">
                       <div className="flex flex-col gap-0.5">
                         <span className="font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-red-500 transition-colors line-clamp-2 leading-snug">{blog.title}</span>
                         <span className="text-[10px] font-mono text-zinc-400 tracking-tight select-all truncate">/{blog.slug}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3.5 py-2.5 whitespace-nowrap">
                       <div className="flex items-center gap-2.5">
                         <img
                           src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${author.seed}`}
@@ -1184,19 +1067,19 @@ export const BlogManager: React.FC = () => {
                           className="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white"
                         />
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-zinc-850 dark:text-zinc-200 leading-tight">{author.name}</span>
+                          <span className="text-xs font-bold text-zinc-855 dark:text-zinc-200 leading-tight">{author.name}</span>
                           <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-semibold">{author.role}</span>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3.5 py-2.5 whitespace-nowrap">
                       <span className={`px-2.5 py-1.5 rounded-full text-[10px] font-bold ${getCategoryPillStyles(blog.category)}`}>
                         {blog.category || 'Uncategorized'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3.5 py-2.5 whitespace-nowrap">
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-xs text-zinc-600 dark:text-zinc-450 font-bold">{new Date(blog.published_at || blog.created_at).toLocaleDateString()}</span>
+                        <span className="text-xs text-zinc-650 dark:text-zinc-450 font-bold">{new Date(blog.published_at || blog.created_at).toLocaleDateString()}</span>
                         {blog.is_published ? (
                           isFuture ? (
                             <span className="text-[9px] font-black uppercase tracking-wider text-blue-500">SCHEDULED</span>
@@ -1208,21 +1091,13 @@ export const BlogManager: React.FC = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`px-2.5 py-1 rounded-md text-[9px] font-black ${
-                          calculatedScore >= 75
-                            ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400'
-                            : 'bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400'
-                        }`}>
-                          {calculatedScore}/100
-                        </span>
-                        <div className="flex items-center gap-1 opacity-40 hover:opacity-100 text-zinc-450 text-[10px] font-semibold transition-opacity">
-                          <Eye size={12} /> 0
-                        </div>
+                    <td className="px-3.5 py-2.5 whitespace-nowrap">
+                      <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400 text-xs font-semibold">
+                        <Eye size={14} className="opacity-60" />
+                        <span>{(blog as any).views || 0}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right whitespace-nowrap">
+                    <td className="px-3.5 py-2.5 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-2">
                         {deletingId === blog.id ? (
                           <div className="flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-200">

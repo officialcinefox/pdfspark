@@ -21,6 +21,10 @@
   --color-dark-surface: #181d20;
   --color-dark-surface-hover: #222a2e;
   --color-dark-border: #303a3f;
+
+  --color-red-650: #E50914;
+  --color-red-700: #C10811;
+  --color-red-750: #B80710;
 }
 
 @layer base {
