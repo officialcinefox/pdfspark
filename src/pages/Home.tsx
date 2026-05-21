@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, FileOutput, Shield, Star, Zap, Calendar, Clock, Loader2 } from 'lucide-react'
+import { ArrowRight, FileOutput, Shield, Star, Zap, Calendar, Clock, Loader2, ShieldCheck, FileText, RefreshCw, ChevronRight } from 'lucide-react'
 import * as Accordion from '@radix-ui/react-accordion'
 import { Background } from '../components/Background'
 import { TOOL_CATEGORIES, getCategoryPath } from '../lib/toolsData'
@@ -72,47 +72,159 @@ export function Home() {
       />
       <Background />
 
-      <section className="relative px-4 pt-4 pb-12 sm:pt-24 sm:pb-28 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="relative z-10"
-        >
+      <section className="relative px-4 pt-10 pb-20 sm:pt-16 sm:pb-24 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center text-left">
+          
+          {/* Left Column: Text & Content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center rounded-full bg-[var(--surface)]/80 px-4 py-2 text-[10px] sm:text-sm font-bold text-[var(--accent)] ring-1 ring-[var(--border)] mb-6 sm:mb-8"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="lg:col-span-7 flex flex-col items-start relative z-10"
           >
-            <Star className="w-3 h-3 sm:w-4 sm:h-4 mr-2 fill-current" /> Premium PDF Toolkit - 100% Private & Secure
+            {/* Elegant Pill Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2.5 rounded-full bg-[var(--surface)]/90 backdrop-blur-md px-3.5 py-1.5 text-xs sm:text-sm font-bold text-[var(--foreground)] border border-[var(--border)] mb-8 hover:scale-[1.01] transition-transform cursor-pointer shadow-sm"
+            >
+              <span className="flex items-center justify-center bg-[var(--accent)] text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full">v1.2.0</span>
+              <span className="flex items-center text-sm font-bold tracking-tight opacity-90">
+                New Security Updates Active <ChevronRight className="w-3.5 h-3.5 ml-1 text-[var(--accent)]" />
+              </span>
+            </motion.div>
+
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-6 leading-[1.1] tracking-tight text-[var(--foreground)] max-w-2xl">
+              Professional PDF Tools <br />
+              <span className="text-[var(--accent)]">Simplified for Everyone.</span>
+            </h1>
+
+            {/* Description */}
+            <p className="text-base sm:text-lg md:text-xl text-[var(--foreground)] opacity-75 mb-10 leading-relaxed font-medium max-w-xl">
+              Merge, split, compress, convert, protect, and organize PDFs with browser-first workflows and 100% secure privacy. No account wall, no logs.
+            </p>
+
+            {/* Call to Actions */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-10">
+              <Link
+                to="/tools"
+                className="inline-flex w-full sm:w-auto h-14 items-center justify-center rounded-2xl bg-[var(--accent)] px-8 text-base sm:text-lg font-bold text-white hover:bg-[var(--accent-hover)] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-red-600/20 cursor-pointer border-none"
+              >
+                Get Started Free
+              </Link>
+              <a
+                href="#services"
+                className="group inline-flex w-full sm:w-auto h-14 items-center justify-center rounded-2xl px-8 text-base sm:text-lg font-bold hover:bg-[var(--surface-hover)] border border-[var(--border)] bg-[var(--surface)]/45 backdrop-blur-sm transition-colors cursor-pointer"
+              >
+                Explore Services
+                <ArrowRight className="ml-2.5 w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
+              </a>
+            </div>
+
+            {/* Social Proof */}
+            <div className="flex flex-wrap items-center gap-4.5 pt-4 border-t border-[var(--border)] w-full">
+              <div className="flex -space-x-3.5">
+                {[
+                  'https://api.dicebear.com/7.x/avataaars/svg?seed=mohit',
+                  'https://api.dicebear.com/7.x/avataaars/svg?seed=jane',
+                  'https://api.dicebear.com/7.x/avataaars/svg?seed=phillip',
+                  'https://api.dicebear.com/7.x/avataaars/svg?seed=michael',
+                  'https://api.dicebear.com/7.x/avataaars/svg?seed=dylan'
+                ].map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt="User"
+                    className="w-10 h-10 rounded-full border-2 border-[var(--background)] bg-[var(--surface)] hover:scale-105 transition-transform"
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col items-start">
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                  ))}
+                  <span className="text-xs font-black ml-1 tracking-tight text-[var(--foreground)]">4.9/5</span>
+                </div>
+                <p className="text-xs text-[var(--foreground)] opacity-60 font-semibold tracking-tight">
+                  Trusted by 10,000+ professionals for painless PDF management.
+                </p>
+              </div>
+            </div>
           </motion.div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-[1.1] max-w-4xl mx-auto tracking-tight">
-            Professional PDF Tools <br className="hidden md:block" />
-            <span className="text-[var(--accent)]">Simplified for Everyone.</span>
-          </h1>
+          {/* Right Column: Illustration & Floating Badges */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.15 }}
+            className="lg:col-span-5 relative flex items-center justify-center lg:pl-6"
+          >
+            {/* Elegant Background Glow and blobs */}
+            <div className="absolute w-[360px] h-[360px] rounded-full bg-[var(--accent)]/5 blur-[80px] -z-10 animate-pulse duration-4000"></div>
+            <div className="absolute w-[240px] h-[240px] rounded-full bg-red-400/5 blur-[60px] -z-10 -top-10 -right-10"></div>
 
-          <p className="text-base sm:text-lg md:text-xl text-[var(--foreground)] opacity-75 max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed font-medium">
-            Merge, split, compress, convert, protect, and organize PDFs with browser-first workflows and no account wall.
-          </p>
+            {/* Premium Professional Character & Illustration inside glass frame */}
+            <div className="relative group rounded-[2.5rem] overflow-hidden border border-[var(--border)] bg-[var(--surface)]/30 backdrop-blur-md p-3 max-w-md w-full hover:scale-[1.01] hover:border-red-500/20 transition-all duration-700 shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-tr from-[var(--accent)]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+              
+              <img
+                src="/pdf_hero_girl.png"
+                alt="PDF Spark Professional"
+                className="w-full h-auto object-cover rounded-3xl drop-shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]"
+              />
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
-            <Link
-              to="/tools"
-              className="inline-flex w-full sm:w-auto h-14 sm:h-16 items-center justify-center rounded-2xl bg-[var(--accent)] px-10 text-lg sm:text-xl font-bold text-white hover:bg-[var(--accent-hover)] hover:scale-[1.02] transition-all shadow-lg shadow-red-600/20"
-            >
-              Get Started Free
-            </Link>
-            <a
-              href="#services"
-              className="group inline-flex w-full sm:w-auto h-14 sm:h-16 items-center justify-center rounded-2xl px-10 text-lg sm:text-xl font-bold hover:bg-[var(--surface-hover)] border border-[var(--border)] backdrop-blur-sm transition-colors"
-            >
-              Explore Services
-              <ArrowRight className="ml-3 w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
-            </a>
-          </div>
-        </motion.div>
+              {/* Floating Badge 1: Compression Badge */}
+              <motion.div
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute top-8 -left-6 max-w-[210px] flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/80 dark:bg-[#121517]/85 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/60 shadow-xl"
+              >
+                <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-xs font-extrabold text-[var(--foreground)]">Report_final.pdf</span>
+                  <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider mt-0.5">Compressed -68%</span>
+                </div>
+              </motion.div>
+
+              {/* Floating Badge 2: Encryption Security Badge */}
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                className="absolute bottom-16 -right-4 max-w-[220px] flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/80 dark:bg-[#121517]/85 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/60 shadow-xl"
+              >
+                <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-xs font-extrabold text-[var(--foreground)]">AES-256 Security</span>
+                  <span className="text-[10px] text-amber-500 font-bold uppercase tracking-wider mt-0.5">100% Encrypted</span>
+                </div>
+              </motion.div>
+
+              {/* Floating Badge 3: Conversion Success */}
+              <motion.div
+                animate={{ x: [0, -5, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                className="absolute -bottom-4 left-6 max-w-[190px] flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-white/75 dark:bg-[#121517]/80 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/50 shadow-lg"
+              >
+                <div className="p-2 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)]">
+                  <RefreshCw className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Word to PDF</span>
+                  <span className="text-xs font-extrabold text-emerald-500 mt-0.5">Done Successfully</span>
+                </div>
+              </motion.div>
+
+            </div>
+          </motion.div>
+
+        </div>
       </section>
 
       <section id="services" className="py-16 sm:py-28 relative overflow-hidden">
