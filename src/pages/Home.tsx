@@ -166,23 +166,26 @@ export function Home() {
             <div className="absolute w-[360px] h-[360px] rounded-full bg-[var(--accent)]/5 blur-[80px] -z-10 animate-pulse duration-4000"></div>
             <div className="absolute w-[240px] h-[240px] rounded-full bg-red-400/5 blur-[60px] -z-10 -top-10 -right-10"></div>
 
-            {/* Premium Professional Character & Illustration inside glass frame */}
-            <div className="relative group rounded-[2.5rem] overflow-hidden border border-[var(--border)] bg-[var(--surface)]/30 backdrop-blur-md p-3 max-w-md w-full hover:scale-[1.01] hover:border-red-500/20 transition-all duration-700 shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-tr from-[var(--accent)]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-              
-              <img
-                src="/pdf_hero_girl.png"
-                alt="PDF Spark Professional"
-                className="w-full h-auto object-cover rounded-3xl drop-shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]"
-              />
+            {/* Outer wrapper - badges position hogi yahaan, NO overflow-hidden */}
+            <div className="relative max-w-md w-full mx-6">
 
-              {/* Floating Badge 1: Compression Badge */}
+              {/* Premium Professional Character inside glass frame */}
+              <div className="relative group rounded-[2.5rem] border border-[var(--border)] bg-[var(--surface)]/30 backdrop-blur-md p-3 w-full hover:scale-[1.01] hover:border-red-500/20 transition-all duration-700 shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-tr from-[var(--accent)]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <img
+                  src="/pdf_hero_girl.png"
+                  alt="PDF Spark Professional"
+                  className="w-full h-auto object-cover rounded-3xl drop-shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]"
+                />
+              </div>
+
+              {/* Floating Badge 1: Compression Badge - TOP LEFT, outside overflow */}
               <motion.div
                 animate={{ y: [0, -6, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute top-8 -left-6 max-w-[210px] flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/80 dark:bg-[#121517]/85 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/60 shadow-xl"
+                className="absolute top-6 -left-8 z-20 max-w-[210px] flex items-center gap-3 px-4 py-3 rounded-2xl bg-white dark:bg-[#1a1d20] backdrop-blur-md border border-zinc-200/70 dark:border-zinc-700/60 shadow-xl"
               >
-                <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
+                <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500 flex-shrink-0">
                   <FileText className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col items-start leading-tight">
@@ -191,13 +194,13 @@ export function Home() {
                 </div>
               </motion.div>
 
-              {/* Floating Badge 2: Encryption Security Badge */}
+              {/* Floating Badge 2: Security Badge - RIGHT MIDDLE, outside overflow */}
               <motion.div
                 animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                className="absolute bottom-16 -right-4 max-w-[220px] flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/80 dark:bg-[#121517]/85 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/60 shadow-xl"
+                className="absolute top-1/2 -translate-y-1/2 -right-8 z-20 max-w-[200px] flex items-center gap-3 px-4 py-3 rounded-2xl bg-white dark:bg-[#1a1d20] backdrop-blur-md border border-zinc-200/70 dark:border-zinc-700/60 shadow-xl"
               >
-                <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500">
+                <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 flex-shrink-0">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col items-start leading-tight">
@@ -206,13 +209,13 @@ export function Home() {
                 </div>
               </motion.div>
 
-              {/* Floating Badge 3: Conversion Success */}
+              {/* Floating Badge 3: Conversion Badge - BOTTOM LEFT, outside overflow */}
               <motion.div
                 animate={{ x: [0, -5, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute -bottom-4 left-6 max-w-[190px] flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-white/75 dark:bg-[#121517]/80 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/50 shadow-lg"
+                className="absolute -bottom-5 left-8 z-20 max-w-[190px] flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#1a1d20] backdrop-blur-md border border-zinc-200/70 dark:border-zinc-700/50 shadow-lg"
               >
-                <div className="p-2 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)]">
+                <div className="p-2 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] flex-shrink-0">
                   <RefreshCw className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col items-start leading-tight">
