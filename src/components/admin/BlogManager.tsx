@@ -684,8 +684,11 @@ export const BlogManager: React.FC = () => {
                   <MenuBar editor={editor} />
                   <style>{`
                     .tiptap.prose {
-                      color: var(--foreground) !important;
+                      color: #181d20 !important;
                       max-width: none;
+                    }
+                    .dark .tiptap.prose {
+                      color: #edf2f1 !important;
                     }
                     .tiptap.prose p, 
                     .tiptap.prose h1, 
@@ -698,10 +701,14 @@ export const BlogManager: React.FC = () => {
                     .tiptap p.is-editor-empty:first-child::before {
                       content: attr(data-placeholder);
                       float: left;
-                      color: var(--foreground);
-                      opacity: 0.3;
+                      color: #71717a;
+                      opacity: 0.6;
                       pointer-events: none;
                       height: 0;
+                    }
+                    .dark .tiptap p.is-editor-empty:first-child::before {
+                      color: #a1a1aa;
+                      opacity: 0.4;
                     }
                   `}</style>
                   <div className="bg-white dark:bg-[#121517] dark:text-zinc-150">
@@ -988,6 +995,26 @@ export const BlogManager: React.FC = () => {
                       onChange={(e) => setAuthorRole(e.target.value)}
                       className="w-full bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-250/70 dark:border-zinc-800/60 rounded-lg px-2.5 py-2 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none"
                     />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">Avatar Design (Seed)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={authorAvatarSeed}
+                      onChange={(e) => setAuthorAvatarSeed(e.target.value)}
+                      placeholder="Type custom seed name..."
+                      className="flex-1 bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-250/70 dark:border-zinc-800/60 rounded-lg px-2.5 py-2 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setAuthorAvatarSeed(Math.random().toString(36).substring(7))}
+                      className="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-350 rounded-lg text-xs font-black transition-colors"
+                    >
+                      Random
+                    </button>
                   </div>
                 </div>
 
