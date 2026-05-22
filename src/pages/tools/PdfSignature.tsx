@@ -165,8 +165,8 @@ export function PdfSignatureTool() {
       const baseVp = page.getViewport({ scale: 1 })
       setPageNaturalW(baseVp.width)
       setPageNaturalH(baseVp.height)
-      setPageRenderedW(vp.width)
-      setPageRenderedH(vp.height)
+      setPageRenderedW(viewport.width)
+      setPageRenderedH(viewport.height)
       setRenderedPageUrl(url)
     } catch (e: any) {
       if (e?.name !== 'RenderingCancelledException') console.error(e)
