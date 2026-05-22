@@ -25,6 +25,8 @@ const UnlockTool = React.lazy(() => import('./pages/tools/Unlock').then((module)
 const ImageToPdfTool = React.lazy(() => import('./pages/tools/ImageToPdf').then((module) => ({ default: module.ImageToPdfTool })))
 const GenericPdfTool = React.lazy(() => import('./pages/tools/GenericPdfTool').then((module) => ({ default: module.GenericPdfTool })))
 const PdfSignatureTool = React.lazy(() => import('./pages/tools/PdfSignature').then((module) => ({ default: module.PdfSignatureTool })))
+const WatermarkTool = React.lazy(() => import('./pages/tools/Watermark').then((module) => ({ default: module.WatermarkTool })))
+
 
 const Login = React.lazy(() => import('./pages/Login').then((module) => ({ default: module.Login })))
 const Dashboard = React.lazy(() => import('./pages/Dashboard').then((module) => ({ default: module.Dashboard })))
@@ -66,6 +68,8 @@ export default function App() {
           <Route path="tool/image-to-pdf" element={page(<ImageToPdfTool />)} />
           <Route path="tool/pdf-signature" element={page(<PdfSignatureTool />)} />
           <Route path="tool/digital-signature" element={page(<PdfSignatureTool />)} />
+          <Route path="tool/watermark" element={page(<WatermarkTool />)} />
+
 
           <Route path="tool/:toolId" element={page(<GenericPdfTool />)} />
         </Route>
