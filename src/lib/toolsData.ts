@@ -95,7 +95,7 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
     tools: [
       tool('lock', 'Lock PDF', 'Encrypt your PDF with a strong password.'),
       tool('unlock', 'Unlock PDF', 'Remove password and security restrictions.'),
-      tool('digital-signature', 'Digital Signature', 'Sign PDFs with a secure digital signature.'),
+      tool('pdf-signature', 'PDF Signature', 'Sign PDFs with draw, type, or upload methods.'),
       tool('remove-restrictions', 'Remove Restrictions', 'Remove printing and copying limitations.')
     ]
   },
