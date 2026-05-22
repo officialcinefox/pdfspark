@@ -11,10 +11,7 @@ import {
 import { SEO } from '../../components/SEO'
 import { Background } from '../../components/Background'
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.mjs',
-  import.meta.url
-).toString()
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.worker.min.mjs'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

@@ -2,7 +2,7 @@ import { PDFDocument, rgb, StandardFonts, type PDFFont, type PDFPage } from 'pdf
 import * as pdfjsLib from 'pdfjs-dist'
 import JSZip from 'jszip'
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString()
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.worker.min.mjs'
 
 const A4: [number, number] = [595.28, 841.89]
 const LETTER: [number, number] = [612, 792]
