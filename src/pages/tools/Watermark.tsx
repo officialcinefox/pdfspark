@@ -301,6 +301,26 @@ export function WatermarkTool() {
 
   function onPagePointerUp() { dragRef.current = null }
 
+  function resetSettings() {
+    setWmConfig({
+      type: 'text',
+      text: 'CONFIDENTIAL',
+      fontIndex: 0,
+      fontSize: 48,
+      textColor: '#ef4444',
+      opacity: 0.35,
+      rotation: 45,
+      scale: 0.5,
+      x: 0.5,
+      y: 0.5
+    })
+    setWmImageFile(null)
+    setWmImagePreview(null)
+    setImageNaturalW(200)
+    setImageNaturalH(100)
+    setApplyTo('all')
+  }
+
   // ── Generate & Download Signed PDF ──
   async function downloadWatermarked() {
     if (!pdfFile) { toast.error('Please upload a PDF first.'); return }
@@ -378,6 +398,10 @@ export function WatermarkTool() {
       a.download = `${pdfFile.name.replace(/\.pdf$/i, '')}-watermarked.pdf`
       a.click()
       URL.revokeObjectURL(url)
+      
+      // Reset settings on successful generation & download
+      resetSettings()
+      
       toast.success('Watermarked PDF downloaded!')
     } catch (e: any) {
       toast.error(e?.message || 'Failed to generate watermarked PDF.')
@@ -385,6 +409,7 @@ export function WatermarkTool() {
       setIsGenerating(false)
     }
   }
+
 
   // ── Calculate dynamic screen dimensions ──
   const screenScale = renderedW / pageNaturalW
