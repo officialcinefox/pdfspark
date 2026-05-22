@@ -153,7 +153,7 @@ export function PdfSignatureTool() {
     try {
       const page = await doc.getPage(pageNum)
       const naturalVp = page.getViewport({ scale: 1 })
-      const fitScale = availableW / naturalVp.width   // scale that fits container
+      const fitScale = Math.min(availableW, 720) / naturalVp.width   // scale that fits container, capped at 720px for natural elegant sizing
       const renderScale = fitScale * zoomLevel
 
       const viewport = page.getViewport({ scale: renderScale })
@@ -431,305 +431,295 @@ export function PdfSignatureTool() {
   // ─────────────────── EDITOR SCREEN ───────────────────────────────────────────
 
   return (
-    <div className="relative flex flex-col" style={{ minHeight: '100vh' }}>
+    <div className="relative" style={{ minHeight: '100vh' }}>
       <SEO title="PDF Signature Tool" description="Sign PDFs professionally. 100% browser-based." canonical="/tool/digital-signature" />
       <Background />
 
-      {/* ── Sticky Top Bar ── */}
-      <div className="relative z-20 sticky top-0 glass-panel border-b border-[var(--border)] px-4 py-2.5 flex flex-wrap items-center gap-2 justify-between">
-        {/* Left: title + filename */}
-        <div className="flex items-center gap-3 min-w-0">
-          <PenTool className="w-5 h-5 text-[var(--accent)] flex-shrink-0" />
-          <div className="min-w-0">
-            <span className="font-black text-base leading-none block">PDF Signature</span>
-            <span className="text-[10px] opacity-40 truncate block max-w-[180px]">{pdfFile.name}</span>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-col gap-4">
+
+        {/* ── Top Controls Bar ── */}
+        <div className="glass-panel rounded-2xl px-4 py-3 flex flex-wrap items-center gap-3 justify-between border border-[var(--border)]">
+          {/* Left: title + filename */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <PenTool className="w-5 h-5 text-[var(--accent)] flex-shrink-0" />
+            <div className="min-w-0">
+              <span className="font-black text-base leading-none block">PDF Signature</span>
+              <span className="text-[10px] opacity-40 truncate block max-w-[200px]">{pdfFile.name}</span>
+            </div>
+          </div>
+          {/* Right: action buttons */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button onClick={undo} disabled={!undoStack.length} className="h-8 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs font-semibold hover:bg-[var(--surface-hover)] disabled:opacity-40 flex items-center gap-1.5 transition-all">
+              <RotateCcw className="w-3.5 h-3.5" /> Undo
+            </button>
+            <button onClick={deleteSelected} disabled={!selectedSigId} className="h-8 px-3 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-100 dark:hover:bg-red-900/30 disabled:opacity-40 flex items-center gap-1.5 transition-all">
+              <Minus className="w-3.5 h-3.5" /> Remove
+            </button>
+            <button onClick={clearAll} disabled={!signatures.length} className="h-8 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs font-semibold hover:bg-[var(--surface-hover)] disabled:opacity-40 flex items-center gap-1.5 transition-all">
+              <Trash2 className="w-3.5 h-3.5" /> Clear All
+            </button>
+            <button onClick={() => { setPdfFile(null); setPdfDoc(null); setSignatures([]); setUndoStack([]); setRenderedPageUrl(null) }} className="h-8 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs font-semibold hover:bg-[var(--surface-hover)] flex items-center gap-1.5 transition-all">
+              <X className="w-3.5 h-3.5" /> New PDF
+            </button>
+            <button
+              onClick={downloadSigned}
+              disabled={isGenerating || !signatures.length}
+              className="h-8 px-4 rounded-lg bg-[var(--accent)] text-white text-xs font-bold shadow-lg shadow-red-500/20 hover:bg-[var(--accent-hover)] hover:shadow-red-500/30 disabled:opacity-50 flex items-center gap-1.5 transition-all"
+            >
+              {isGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+              {isGenerating ? 'Generating…' : 'Download Signed PDF'}
+            </button>
           </div>
         </div>
-        {/* Right: action buttons */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <button onClick={undo} disabled={!undoStack.length} className="h-8 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs font-semibold hover:bg-[var(--surface-hover)] disabled:opacity-40 flex items-center gap-1 transition-all">
-            <RotateCcw className="w-3.5 h-3.5" /> Undo
-          </button>
-          <button onClick={deleteSelected} disabled={!selectedSigId} className="h-8 px-3 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-100 dark:hover:bg-red-900/30 disabled:opacity-40 flex items-center gap-1 transition-all">
-            <Minus className="w-3.5 h-3.5" /> Remove
-          </button>
-          <button onClick={clearAll} disabled={!signatures.length} className="h-8 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs font-semibold hover:bg-[var(--surface-hover)] disabled:opacity-40 flex items-center gap-1 transition-all">
-            <Trash2 className="w-3.5 h-3.5" /> Clear All
-          </button>
-          <button onClick={() => { setPdfFile(null); setPdfDoc(null); setSignatures([]); setUndoStack([]); setRenderedPageUrl(null) }} className="h-8 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs font-semibold hover:bg-[var(--surface-hover)] flex items-center gap-1 transition-all">
-            <X className="w-3.5 h-3.5" /> New PDF
-          </button>
-          <button
-            onClick={downloadSigned}
-            disabled={isGenerating || !signatures.length}
-            className="h-8 px-4 rounded-lg bg-[var(--accent)] text-white text-xs font-bold shadow hover:bg-[var(--accent-hover)] disabled:opacity-50 flex items-center gap-1.5 transition-all"
-          >
-            {isGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-            {isGenerating ? 'Generating…' : 'Download Signed PDF'}
-          </button>
-        </div>
-      </div>
 
-      {/* ── Main Content: Sidebar + Preview ── */}
-      <div className="relative z-10 flex flex-1 overflow-hidden" style={{ height: 'calc(100vh - 53px)' }}>
+        {/* ── Main Content: Sidebar + Preview ── */}
+        <div className="grid grid-cols-1 xl:grid-cols-[264px_1fr] gap-4" style={{ minHeight: 'calc(100vh - 200px)' }}>
 
-        {/* ── Left Sidebar ── */}
-        <aside className="w-72 flex-shrink-0 border-r border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-md overflow-y-auto flex flex-col gap-3 p-3">
+          {/* ── Left Sidebar ── */}
+          <div className="glass-panel rounded-2xl border border-[var(--border)] overflow-y-auto flex flex-col gap-3 p-3" style={{ maxHeight: 'calc(100vh - 200px)' }}>
 
-          {/* Method Tabs */}
-          <div className="flex rounded-xl bg-[var(--surface)] p-1 gap-1">
-            {([['draw', PenTool, 'Draw'], ['type', Type, 'Type'], ['upload', ImageIcon, 'Upload']] as const).map(([m, Icon, lbl]) => (
-              <button key={m} onClick={() => { setMethod(m); setPendingSigUrl(null) }}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${method === m ? 'bg-[var(--accent)] text-white shadow' : 'hover:bg-[var(--surface-hover)]'}`}>
-                <Icon className="w-3.5 h-3.5" /> {lbl}
-              </button>
-            ))}
-          </div>
-
-          {/* ── Draw Panel ── */}
-          {method === 'draw' && (
-            <div className="glass-panel rounded-xl p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-bold">Draw your signature</p>
-                <button onClick={() => sigPad?.clear()} className="text-[10px] text-[var(--accent)] font-bold hover:underline">Clear</button>
-              </div>
-              <div className="rounded-lg overflow-hidden border border-[var(--border)] bg-white" style={{ height: 130 }}>
-                <canvas ref={drawCanvasRef} className="w-full h-full" style={{ touchAction: 'none', cursor: 'crosshair', display: 'block' }} />
-              </div>
-              <p className="text-[10px] opacity-50">Use mouse or touch to sign</p>
-              <button onClick={captureDrawSig} className="w-full h-8 rounded-lg bg-[var(--accent)] text-white font-bold text-xs hover:bg-[var(--accent-hover)] flex items-center justify-center gap-1.5 transition-colors">
-                <Check className="w-3.5 h-3.5" /> Use This Signature
-              </button>
+            {/* Method Tabs */}
+            <div className="flex rounded-xl bg-[var(--surface)] p-1 gap-1 flex-shrink-0">
+              {([['draw', PenTool, 'Draw'], ['type', Type, 'Type'], ['upload', ImageIcon, 'Upload']] as const).map(([m, Icon, lbl]) => (
+                <button key={m} onClick={() => { setMethod(m); setPendingSigUrl(null) }}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${method === m ? 'bg-[var(--accent)] text-white shadow' : 'hover:bg-[var(--surface-hover)]'}`}>
+                  <Icon className="w-3.5 h-3.5" /> {lbl}
+                </button>
+              ))}
             </div>
-          )}
 
-          {/* ── Type Panel ── */}
-          {method === 'type' && (
-            <div className="glass-panel rounded-xl p-3 space-y-2">
-              <p className="text-xs font-bold">Type your name</p>
-              <input
-                type="text" placeholder="Your name…" value={typedText}
-                onChange={e => setTypedText(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-sm focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent outline-none"
-              />
-              <p className="text-[10px] font-bold opacity-50 uppercase tracking-wider">Font</p>
-              <div className="space-y-1.5 max-h-40 overflow-y-auto pr-0.5">
-                {SIGNATURE_FONTS.map((f, i) => (
-                  <button key={f.name} onClick={() => setSelectedFont(i)}
-                    className={`w-full text-left px-3 py-2 rounded-lg border text-lg transition-all ${selectedFont === i ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-[var(--border)] hover:bg-[var(--surface)]'}`}
-                    style={{ fontFamily: f.css }}>
-                    {typedText || 'Your Name'}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] opacity-60 font-bold">Size</span>
-                <input type="range" min={24} max={80} value={fontSize} onChange={e => setFontSize(+e.target.value)} className="flex-1 accent-[var(--accent)]" />
-                <span className="text-[10px] font-bold w-6">{fontSize}</span>
-              </div>
-              <button onClick={captureTypedSig} className="w-full h-8 rounded-lg bg-[var(--accent)] text-white font-bold text-xs hover:bg-[var(--accent-hover)] flex items-center justify-center gap-1.5 transition-colors">
-                <Check className="w-3.5 h-3.5" /> Use This Signature
-              </button>
-            </div>
-          )}
-
-          {/* ── Upload Panel ── */}
-          {method === 'upload' && (
-            <div className="glass-panel rounded-xl p-3 space-y-2">
-              <p className="text-xs font-bold">Upload signature image</p>
-              <div
-                className="rounded-lg border-2 border-dashed border-[var(--border)] p-6 text-center cursor-pointer hover:border-[var(--accent)] hover:bg-[var(--surface)] transition-all"
-                onClick={() => sigImgInputRef.current?.click()}>
-                <ImageIcon className="w-7 h-7 mx-auto mb-2 opacity-40" />
-                <p className="text-xs font-semibold">Click to upload</p>
-                <p className="text-[10px] opacity-50 mt-1">PNG (transparent) · JPG</p>
-              </div>
-              <input ref={sigImgInputRef} type="file" accept="image/png,image/jpeg,image/jpg" className="hidden" onChange={handleSigUpload} />
-            </div>
-          )}
-
-          {/* ── Pending Sig Preview ── */}
-          {pendingSigUrl && (
-            <div className="glass-panel rounded-xl p-3 space-y-2 border-2 border-[var(--accent)]/30">
-              <p className="text-xs font-bold text-[var(--accent)]">Preview</p>
-              <div className="rounded-lg bg-[repeating-conic-gradient(#e5e7eb_0%_25%,white_0%_50%)] bg-[length:14px_14px] overflow-hidden border border-[var(--border)]" style={{ minHeight: 56 }}>
-                <img src={pendingSigUrl} alt="sig" className="max-h-20 mx-auto object-contain block" />
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => setPendingSigUrl(null)} className="flex-1 h-8 rounded-lg border border-[var(--border)] text-xs font-semibold hover:bg-[var(--surface-hover)] transition-colors">Cancel</button>
-                <button onClick={placeSig} className="flex-1 h-8 rounded-lg bg-[var(--accent)] text-white text-xs font-bold hover:bg-[var(--accent-hover)] flex items-center justify-center gap-1 transition-colors">
-                  <Plus className="w-3.5 h-3.5" /> Place on PDF
+            {/* ── Draw Panel ── */}
+            {method === 'draw' && (
+              <div className="bg-[var(--surface)] rounded-xl p-3 space-y-2 border border-[var(--border)]">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-bold">Draw your signature</p>
+                  <button onClick={() => sigPad?.clear()} className="text-[10px] text-[var(--accent)] font-bold hover:underline">Clear</button>
+                </div>
+                <div className="rounded-lg overflow-hidden border border-[var(--border)] bg-white" style={{ height: 130 }}>
+                  <canvas ref={drawCanvasRef} className="w-full h-full" style={{ touchAction: 'none', cursor: 'crosshair', display: 'block' }} />
+                </div>
+                <p className="text-[10px] opacity-50">Use mouse or touch to sign</p>
+                <button onClick={captureDrawSig} className="w-full h-8 rounded-lg bg-[var(--accent)] text-white font-bold text-xs hover:bg-[var(--accent-hover)] flex items-center justify-center gap-1.5 transition-colors">
+                  <Check className="w-3.5 h-3.5" /> Use This Signature
                 </button>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* ── Rotation control for selected ── */}
-          {selectedSig && (
-            <div className="glass-panel rounded-xl p-3 space-y-1.5">
-              <p className="text-[10px] font-bold opacity-50 uppercase tracking-wider">Selected Signature</p>
-              <div className="flex items-center gap-2">
-                <RotateCw className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
-                <input type="range" min={-180} max={180} value={selectedSig.rotation} onChange={e => updateSig(selectedSig.id, { rotation: +e.target.value })} className="flex-1 accent-[var(--accent)]" />
-                <span className="text-[10px] font-bold w-9 text-right">{selectedSig.rotation}°</span>
-              </div>
-            </div>
-          )}
-
-          {/* ── Placed signatures list ── */}
-          {signatures.length > 0 && (
-            <div className="glass-panel rounded-xl p-3">
-              <p className="text-[10px] font-bold opacity-50 uppercase tracking-wider mb-2">All Signatures ({signatures.length})</p>
-              <div className="space-y-1.5">
-                {signatures.map(sig => (
-                  <div
-                    key={sig.id}
-                    onClick={() => { setCurrentPage(sig.pageIndex + 1); setSelectedSigId(sig.id) }}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-all ${selectedSigId === sig.id ? 'bg-[var(--accent-soft)] border border-[var(--accent)]/30' : 'hover:bg-[var(--surface-hover)]'}`}>
-                    <div className="w-10 h-7 rounded overflow-hidden bg-white border border-[var(--border)] flex-shrink-0 flex items-center justify-center">
-                      <img src={sig.dataUrl} alt="" className="max-w-full max-h-full object-contain" />
-                    </div>
-                    <span className="flex-1 text-[10px] font-bold">Page {sig.pageIndex + 1}</span>
-                    <button onClick={e => { e.stopPropagation(); pushUndo(); setSignatures(p => p.filter(s => s.id !== sig.id)); if (selectedSigId === sig.id) setSelectedSigId(null) }}
-                      className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 transition-colors">
-                      <X className="w-3 h-3" />
+            {/* ── Type Panel ── */}
+            {method === 'type' && (
+              <div className="bg-[var(--surface)] rounded-xl p-3 space-y-2 border border-[var(--border)]">
+                <p className="text-xs font-bold">Type your name</p>
+                <input
+                  type="text" placeholder="Your name…" value={typedText}
+                  onChange={e => setTypedText(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent outline-none"
+                />
+                <p className="text-[10px] font-bold opacity-50 uppercase tracking-wider">Font</p>
+                <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                  {SIGNATURE_FONTS.map((f, i) => (
+                    <button key={f.name} onClick={() => setSelectedFont(i)}
+                      className={`w-full text-left px-3 py-2 rounded-lg border text-lg transition-all ${selectedFont === i ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-[var(--border)] hover:bg-[var(--background)]'}`}
+                      style={{ fontFamily: f.css }}>
+                      {typedText || 'Your Name'}
                     </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] opacity-60 font-bold whitespace-nowrap">Size</span>
+                  <input type="range" min={24} max={80} value={fontSize} onChange={e => setFontSize(+e.target.value)} className="flex-1 accent-[var(--accent)]" />
+                  <span className="text-[10px] font-bold w-6">{fontSize}</span>
+                </div>
+                <button onClick={captureTypedSig} className="w-full h-8 rounded-lg bg-[var(--accent)] text-white font-bold text-xs hover:bg-[var(--accent-hover)] flex items-center justify-center gap-1.5 transition-colors">
+                  <Check className="w-3.5 h-3.5" /> Use This Signature
+                </button>
               </div>
-            </div>
-          )}
-        </aside>
+            )}
 
-        {/* ── Right: PDF Preview ── */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+            {/* ── Upload Panel ── */}
+            {method === 'upload' && (
+              <div className="bg-[var(--surface)] rounded-xl p-3 space-y-2 border border-[var(--border)]">
+                <p className="text-xs font-bold">Upload signature image</p>
+                <div
+                  className="rounded-lg border-2 border-dashed border-[var(--border)] p-6 text-center cursor-pointer hover:border-[var(--accent)] hover:bg-[var(--background)] transition-all"
+                  onClick={() => sigImgInputRef.current?.click()}>
+                  <ImageIcon className="w-7 h-7 mx-auto mb-2 opacity-40" />
+                  <p className="text-xs font-semibold">Click to upload</p>
+                  <p className="text-[10px] opacity-50 mt-1">PNG (transparent) · JPG</p>
+                </div>
+                <input ref={sigImgInputRef} type="file" accept="image/png,image/jpeg,image/jpg" className="hidden" onChange={handleSigUpload} />
+              </div>
+            )}
 
-          {/* Page nav + zoom bar */}
-          <div className="flex-shrink-0 flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--background)]/60 backdrop-blur-sm gap-4 flex-wrap">
-            <div className="flex items-center gap-1.5">
-              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1}
-                className="h-7 w-7 rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center hover:bg-[var(--surface-hover)] disabled:opacity-40 transition-all">
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-xs font-bold px-2 whitespace-nowrap">Page {currentPage} / {totalPages}</span>
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}
-                className="h-7 w-7 rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center hover:bg-[var(--surface-hover)] disabled:opacity-40 transition-all">
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <button onClick={() => setZoom(z => Math.max(0.4, +(z - 0.25).toFixed(2)))}
-                className="h-7 w-7 rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all">
-                <ZoomOut className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-xs font-bold w-12 text-center">{Math.round(zoom * 100)}%</span>
-              <button onClick={() => setZoom(z => Math.min(4, +(z + 0.25).toFixed(2)))}
-                className="h-7 w-7 rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all">
-                <ZoomIn className="w-3.5 h-3.5" />
-              </button>
-              <button onClick={() => setZoom(1)} className="h-7 px-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[10px] font-bold hover:bg-[var(--surface-hover)] transition-all">
-                Fit
-              </button>
-            </div>
+            {/* ── Pending Sig Preview ── */}
+            {pendingSigUrl && (
+              <div className="bg-[var(--surface)] rounded-xl p-3 space-y-2 border-2 border-[var(--accent)]/40">
+                <p className="text-xs font-bold text-[var(--accent)]">Signature Preview</p>
+                <div className="rounded-lg overflow-hidden border border-[var(--border)]" style={{ background: 'repeating-conic-gradient(#e5e7eb 0% 25%, white 0% 50%) 0 0 / 14px 14px', minHeight: 52 }}>
+                  <img src={pendingSigUrl} alt="sig" className="max-h-16 mx-auto object-contain block" />
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => setPendingSigUrl(null)} className="flex-1 h-8 rounded-lg border border-[var(--border)] text-xs font-semibold hover:bg-[var(--surface-hover)] transition-colors">Cancel</button>
+                  <button onClick={placeSig} className="flex-1 h-8 rounded-lg bg-[var(--accent)] text-white text-xs font-bold hover:bg-[var(--accent-hover)] flex items-center justify-center gap-1 transition-colors">
+                    <Plus className="w-3.5 h-3.5" /> Place on PDF
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── Rotation for selected ── */}
+            {selectedSig && (
+              <div className="bg-[var(--surface)] rounded-xl p-3 border border-[var(--border)]">
+                <p className="text-[10px] font-bold opacity-50 uppercase tracking-wider mb-2">Rotate Signature</p>
+                <div className="flex items-center gap-2">
+                  <RotateCw className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+                  <input type="range" min={-180} max={180} value={selectedSig.rotation} onChange={e => updateSig(selectedSig.id, { rotation: +e.target.value })} className="flex-1 accent-[var(--accent)]" />
+                  <span className="text-[10px] font-bold w-10 text-right">{selectedSig.rotation}°</span>
+                </div>
+              </div>
+            )}
+
+            {/* ── Signatures list ── */}
+            {signatures.length > 0 && (
+              <div className="bg-[var(--surface)] rounded-xl p-3 border border-[var(--border)]">
+                <p className="text-[10px] font-bold opacity-50 uppercase tracking-wider mb-2">Signatures ({signatures.length})</p>
+                <div className="space-y-1.5">
+                  {signatures.map(sig => (
+                    <div
+                      key={sig.id}
+                      onClick={() => { setCurrentPage(sig.pageIndex + 1); setSelectedSigId(sig.id) }}
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-all ${selectedSigId === sig.id ? 'bg-[var(--accent-soft)] border border-[var(--accent)]/30' : 'hover:bg-[var(--background)]'}`}>
+                      <div className="w-10 h-7 rounded overflow-hidden bg-white border border-[var(--border)] flex-shrink-0 flex items-center justify-center">
+                        <img src={sig.dataUrl} alt="" className="max-w-full max-h-full object-contain" />
+                      </div>
+                      <span className="flex-1 text-[10px] font-bold">Page {sig.pageIndex + 1}</span>
+                      <button onClick={e => { e.stopPropagation(); pushUndo(); setSignatures(p => p.filter(s => s.id !== sig.id)); if (selectedSigId === sig.id) setSelectedSigId(null) }}
+                        className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 transition-colors">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Scrollable PDF canvas area */}
-          <div
-            ref={previewScrollRef}
-            className="flex-1 overflow-auto p-6"
-            style={{ background: 'var(--surface)', opacity: 1 }}
-            onClick={() => setSelectedSigId(null)}
-          >
-            <div className="flex justify-center min-h-full">
-              {isRendering ? (
-                <div className="flex items-center justify-center" style={{ width: renderedW || 500, height: renderedH || 300, minHeight: 300 }}>
-                  <div className="flex flex-col items-center gap-3">
+          {/* ── Right: PDF Preview ── */}
+          <div className="glass-panel rounded-2xl border border-[var(--border)] flex flex-col overflow-hidden" style={{ minHeight: 500, maxHeight: 'calc(100vh - 200px)' }}>
+
+            {/* Page nav + zoom toolbar */}
+            <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)] gap-4 flex-wrap">
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1}
+                  className="h-7 w-7 rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center hover:bg-[var(--surface-hover)] disabled:opacity-40 transition-all">
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-xs font-bold px-1 whitespace-nowrap">Page {currentPage} / {totalPages}</span>
+                <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}
+                  className="h-7 w-7 rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center hover:bg-[var(--surface-hover)] disabled:opacity-40 transition-all">
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => setZoom(z => Math.max(0.4, +(z - 0.25).toFixed(2)))}
+                  className="h-7 w-7 rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all">
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-xs font-bold w-10 text-center">{Math.round(zoom * 100)}%</span>
+                <button onClick={() => setZoom(z => Math.min(4, +(z + 0.25).toFixed(2)))}
+                  className="h-7 w-7 rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all">
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+                <button onClick={() => setZoom(1)} className="h-7 px-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[10px] font-bold hover:bg-[var(--surface-hover)] transition-all">
+                  Fit
+                </button>
+              </div>
+              {signatures.length > 0 && (
+                <span className="text-[10px] opacity-40 font-semibold hidden sm:block">
+                  {pageSigs.length} sig{pageSigs.length !== 1 ? 's' : ''} on page · {signatures.length} total
+                </span>
+              )}
+            </div>
+
+            {/* Scrollable PDF area */}
+            <div
+              ref={previewScrollRef}
+              className="flex-1 overflow-auto p-6 bg-[var(--surface)]/40"
+              onClick={() => setSelectedSigId(null)}
+            >
+              <div className="flex justify-center items-start min-h-full">
+                {isRendering ? (
+                  <div className="flex flex-col items-center justify-center gap-3 py-20">
                     <Loader2 className="w-8 h-8 animate-spin text-[var(--accent)]" />
                     <span className="text-xs font-bold opacity-50">Rendering…</span>
                   </div>
-                </div>
-              ) : renderedPageUrl ? (
-                // Page container — exact rendered dimensions
-                <div
-                  ref={pageContainerRef}
-                  className="relative select-none flex-shrink-0 shadow-2xl"
-                  style={{ width: renderedW, height: renderedH }}
-                  onPointerMove={onPagePointerMove}
-                  onPointerUp={onPagePointerUp}
-                >
-                  {/* Rendered PDF page image */}
-                  <img
-                    src={renderedPageUrl}
-                    alt={`Page ${currentPage}`}
-                    draggable={false}
-                    style={{ display: 'block', width: renderedW, height: renderedH }}
-                  />
+                ) : renderedPageUrl ? (
+                  <div
+                    ref={pageContainerRef}
+                    className="relative select-none flex-shrink-0 shadow-2xl rounded overflow-hidden"
+                    style={{ width: renderedW, height: renderedH }}
+                    onPointerMove={onPagePointerMove}
+                    onPointerUp={onPagePointerUp}
+                  >
+                    <img
+                      src={renderedPageUrl}
+                      alt={`Page ${currentPage}`}
+                      draggable={false}
+                      style={{ display: 'block', width: renderedW, height: renderedH }}
+                    />
 
-                  {/* Signature overlays */}
-                  {pageSigs.map(sig => {
-                    const isSel = sig.id === selectedSigId
-                    const left = sig.x * renderedW
-                    const top = sig.y * renderedH
-                    const w = sig.width * renderedW
-                    const h = sig.height * renderedH
-
-                    return (
-                      <div
-                        key={sig.id}
-                        className={`absolute ${isSel ? 'ring-2 ring-[var(--accent)]' : 'ring-1 ring-blue-400/50'}`}
-                        style={{ left, top, width: w, height: h, transform: `rotate(${sig.rotation}deg)`, transformOrigin: 'center', cursor: 'move', touchAction: 'none' }}
-                        onPointerDown={e => onSigPointerDown(e, sig)}
-                        onClick={e => { e.stopPropagation(); setSelectedSigId(sig.id) }}
-                      >
-                        <img src={sig.dataUrl} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }} />
-
-                        {/* Resize handles */}
-                        {isSel && (['nw', 'ne', 'sw', 'se'] as const).map(h => (
-                          <div
-                            key={h}
-                            className="absolute w-3 h-3 bg-white border-2 border-[var(--accent)] rounded-sm shadow"
-                            style={{
-                              top: h.includes('n') ? -6 : undefined,
-                              bottom: h.includes('s') ? -6 : undefined,
-                              left: h.includes('w') ? -6 : undefined,
-                              right: h.includes('e') ? -6 : undefined,
-                              cursor: `${h}-resize`,
-                            }}
-                            onPointerDown={e => onResizePointerDown(e, sig, h)}
-                          />
-                        ))}
-
-                        {/* Delete button */}
-                        {isSel && (
-                          <button
-                            className="absolute -top-4 -right-4 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow hover:bg-red-600 transition-colors"
-                            onClick={e => { e.stopPropagation(); pushUndo(); setSignatures(p => p.filter(s => s.id !== sig.id)); setSelectedSigId(null) }}
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <div className="flex items-center justify-center opacity-30 py-20">
-                  <FileText className="w-12 h-12" />
-                </div>
-              )}
+                    {pageSigs.map(sig => {
+                      const isSel = sig.id === selectedSigId
+                      const left = sig.x * renderedW
+                      const top = sig.y * renderedH
+                      const w = sig.width * renderedW
+                      const h = sig.height * renderedH
+                      return (
+                        <div
+                          key={sig.id}
+                          className={`absolute ${isSel ? 'ring-2 ring-[var(--accent)]' : 'ring-1 ring-blue-400/50'}`}
+                          style={{ left, top, width: w, height: h, transform: `rotate(${sig.rotation}deg)`, transformOrigin: 'center', cursor: 'move', touchAction: 'none' }}
+                          onPointerDown={e => onSigPointerDown(e, sig)}
+                          onClick={e => { e.stopPropagation(); setSelectedSigId(sig.id) }}
+                        >
+                          <img src={sig.dataUrl} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }} />
+                          {isSel && (['nw', 'ne', 'sw', 'se'] as const).map(h => (
+                            <div
+                              key={h}
+                              className="absolute w-3 h-3 bg-white border-2 border-[var(--accent)] rounded-sm shadow"
+                              style={{
+                                top: h.includes('n') ? -6 : undefined,
+                                bottom: h.includes('s') ? -6 : undefined,
+                                left: h.includes('w') ? -6 : undefined,
+                                right: h.includes('e') ? -6 : undefined,
+                                cursor: `${h}-resize`,
+                              }}
+                              onPointerDown={e => onResizePointerDown(e, sig, h)}
+                            />
+                          ))}
+                          {isSel && (
+                            <button
+                              className="absolute -top-4 -right-4 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow hover:bg-red-600 transition-colors"
+                              onClick={e => { e.stopPropagation(); pushUndo(); setSignatures(p => p.filter(s => s.id !== sig.id)); setSelectedSigId(null) }}
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center opacity-20 py-20">
+                    <FileText className="w-12 h-12" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-
-          {/* Status bar */}
-          {signatures.length > 0 && (
-            <div className="flex-shrink-0 px-4 py-1.5 border-t border-[var(--border)] bg-[var(--background)]/60 backdrop-blur-sm">
-              <p className="text-[10px] opacity-50 font-semibold">
-                {pageSigs.length} signature{pageSigs.length !== 1 ? 's' : ''} on this page · {signatures.length} total
-                {selectedSigId ? ' · 1 selected' : ''}
-              </p>
-            </div>
-          )}
         </div>
+
+        {/* Bottom padding */}
+        <div className="pb-4" />
       </div>
     </div>
   )
