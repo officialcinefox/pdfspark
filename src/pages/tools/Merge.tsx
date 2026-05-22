@@ -587,7 +587,13 @@ export function MergeTool() {
 
          </div>
 
-         {/* ── High-Fidelity Page Preview Modal ── */}
+         
+
+                  {/* Bottom spacer */}
+         <div className="pb-4" />
+       </div>
+
+      {/* ── High-Fidelity Page Preview Modal ── */}
          <AnimatePresence>
            {activePreview && (
              <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
@@ -650,10 +656,6 @@ export function MergeTool() {
              </div>
            )}
          </AnimatePresence>
-
-         {/* Bottom spacer */}
-         <div className="pb-4" />
-       </div>
-     </div>
+    </div>
    )
  }
