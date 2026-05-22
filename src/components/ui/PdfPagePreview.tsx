@@ -81,7 +81,7 @@ export function PdfPagePreview({
         const heightScale = maxHeight / baseViewport.height
         const cssScale = Math.max(0.1, Math.min(widthScale, heightScale, scale))
         const cssViewport = page.getViewport({ scale: cssScale, rotation: page.rotate })
-        const pixelRatio = Math.max(window.devicePixelRatio || 1, 1)
+        const pixelRatio = Math.max(window.devicePixelRatio || 1, 2.5)
         const renderViewport = page.getViewport({ scale: cssScale * pixelRatio, rotation: page.rotate })
 
         canvas.width = Math.floor(renderViewport.width)

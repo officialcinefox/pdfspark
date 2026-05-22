@@ -203,6 +203,7 @@ export function MergeTool() {
   const [items, setItems] = useState<MergeFileItem[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [isDraggingFile, setIsDraggingFile] = useState(false)
+  const [normalizePageSize, setNormalizePageSize] = useState(true)
   const [activePreview, setActivePreview] = useState<{
     file: File
     fileName: string
@@ -306,8 +307,36 @@ export function MergeTool() {
         
         // pdf-lib requires 0-indexed indices
         const indicesToCopy = pagesList.map(p => p - 1)
-        const copiedPages = await mergedDoc.copyPages(sourceDoc, indicesToCopy)
-        copiedPages.forEach(p => mergedDoc.addPage(p))
+        
+        if (normalizePageSize) {
+          const a4Width = 595.28
+          const a4Height = 841.89
+          
+          for (const pageIdx of indicesToCopy) {
+            const [embeddedPage] = await mergedDoc.embedPages([sourceDoc.getPages()[pageIdx]])
+            const newPage = mergedDoc.addPage([a4Width, a4Height])
+            
+            const srcWidth = embeddedPage.width
+            const srcHeight = embeddedPage.height
+            
+            const scale = Math.min(a4Width / srcWidth, a4Height / srcHeight)
+            const dWidth = srcWidth * scale
+            const dHeight = srcHeight * scale
+            
+            const x = (a4Width - dWidth) / 2
+            const y = (a4Height - dHeight) / 2
+            
+            newPage.drawPage(embeddedPage, {
+              x,
+              y,
+              width: dWidth,
+              height: dHeight,
+            })
+          }
+        } else {
+          const copiedPages = await mergedDoc.copyPages(sourceDoc, indicesToCopy)
+          copiedPages.forEach(p => mergedDoc.addPage(p))
+        }
       }
 
       const outBytes = await mergedDoc.save({ useObjectStreams: true })
@@ -443,6 +472,25 @@ export function MergeTool() {
             </p>
             <p className="text-[10px] opacity-50 px-1">Drag files to change compile order. Set custom page ranges for individual files.</p>
 
+            {/* ── Page Normalization Option ── */}
+            <div className="border border-[var(--border)] bg-[var(--surface-hover)]/30 rounded-xl p-3 flex flex-col gap-2 mt-0.5 mx-0.5 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs font-bold text-[var(--foreground)]">Uniform Page Size (A4)</span>
+                  <span className="text-[9px] opacity-50 block mt-0.5">Resizes all pages to A4 for a uniform layout</span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={normalizePageSize}
+                    onChange={(e) => setNormalizePageSize(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-gray-200 dark:bg-zinc-800 rounded-full peer peer-checked:bg-[var(--accent)] transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
+                </label>
+              </div>
+            </div>
+
             <Reorder.Group axis="y" values={items} onReorder={handleReorder} className="space-y-3">
               <AnimatePresence>
                 {items.map(item => (
@@ -544,7 +592,7 @@ export function MergeTool() {
            {activePreview && (
              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                <div 
-                 className="bg-[var(--surface)] border border-[var(--border)] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-200"
+                 className="bg-[var(--surface)] border border-[var(--border)] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-200"
                  style={{ maxHeight: '90vh' }}
                >
                  {/* Modal Header */}
@@ -566,13 +614,13 @@ export function MergeTool() {
                  </div>
 
                  {/* Modal Body / Large Canvas Preview */}
-                 <div className="flex-1 bg-white p-6 overflow-auto flex items-center justify-center min-h-[350px]">
+                 <div className="flex-1 bg-white p-6 overflow-auto flex items-center justify-center min-h-[450px]">
                    <PdfPagePreview
                      file={activePreview.file}
                      pageNumber={activePreview.pageNumber}
-                     maxHeight={400}
-                     scale={1.2}
-                     className="shadow-md border border-gray-100 max-h-[400px]"
+                     maxHeight={650}
+                     scale={2.0}
+                     className="shadow-md border border-gray-100 max-h-[650px]"
                    />
                  </div>
 
