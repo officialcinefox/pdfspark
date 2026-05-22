@@ -620,7 +620,7 @@ export function MergeTool() {
                  </div>
 
                  {/* Modal Body / Large Canvas Preview */}
-                 <div className="flex-1 bg-white p-6 overflow-auto flex items-center justify-center min-h-[450px]">
+                 <div className="flex-1 bg-white p-6 overflow-auto flex items-start justify-center min-h-[450px]">
                    <PdfPagePreview
                      file={activePreview.file}
                      pageNumber={activePreview.pageNumber}
