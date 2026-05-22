@@ -168,6 +168,8 @@ export function WatermarkTool() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const wmImageInputRef = useRef<HTMLInputElement>(null)
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null)
+  const colorInputRef = useRef<HTMLInputElement>(null)
+
 
   // ── Mount ──
   useEffect(() => { loadGoogleFonts() }, [])
@@ -535,7 +537,7 @@ export function WatermarkTool() {
                 </div>
 
                 <p className="text-[10px] font-bold opacity-50 uppercase tracking-wider mt-2">Color</p>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1.5 items-center">
                   {WATERMARK_COLORS.map(c => (
                     <button
                       key={c.name}
@@ -547,7 +549,56 @@ export function WatermarkTool() {
                       {wmConfig.textColor === c.hex && <Check className="w-3.5 h-3.5 mix-blend-difference text-white" />}
                     </button>
                   ))}
+
+                  {/* Custom color circle */}
+                  {(() => {
+                    const isPreset = WATERMARK_COLORS.some(c => c.hex.toLowerCase() === wmConfig.textColor.toLowerCase())
+                    return (
+                      <>
+                        <button
+                          onClick={() => colorInputRef.current?.click()}
+                          className={`w-6 h-6 rounded-full border border-black/10 flex items-center justify-center transition-all hover:scale-110 relative ${!isPreset ? 'ring-2 ring-[var(--accent)]' : ''}`}
+                          style={{
+                            background: 'conic-gradient(from 0deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)'
+                          }}
+                          title="Custom Color"
+                        >
+                          {!isPreset && <Check className="w-3.5 h-3.5 mix-blend-difference text-white" />}
+                        </button>
+                        <input
+                          ref={colorInputRef}
+                          type="color"
+                          value={wmConfig.textColor.startsWith('#') && wmConfig.textColor.length === 7 ? wmConfig.textColor : '#ef4444'}
+                          onChange={e => setWmConfig(p => ({ ...p, textColor: e.target.value }))}
+                          className="hidden"
+                        />
+                      </>
+                    )
+                  })()}
                 </div>
+
+                {/* Direct hex input box */}
+                <div className="flex items-center gap-2 mt-2 bg-[var(--background)] border border-[var(--border)] rounded-lg px-2.5 py-1">
+                  <span className="text-[10px] font-bold opacity-45 uppercase">Hex</span>
+                  <input
+                    type="text"
+                    value={wmConfig.textColor}
+                    onChange={e => {
+                      let val = e.target.value
+                      if (val && !val.startsWith('#')) val = '#' + val
+                      if (/^#[0-9A-Fa-f]{0,7}$/.test(val)) {
+                        setWmConfig(p => ({ ...p, textColor: val }))
+                      }
+                    }}
+                    className="w-full bg-transparent text-xs font-semibold outline-none border-none p-0 text-[var(--foreground)]"
+                    placeholder="#ef4444"
+                  />
+                  <div
+                    className="w-4 h-4 rounded-full border border-black/10 flex-shrink-0"
+                    style={{ backgroundColor: wmConfig.textColor }}
+                  />
+                </div>
+
 
                 <div className="flex items-center gap-2 pt-1">
                   <span className="text-[10px] opacity-60 font-bold whitespace-nowrap">Text Size</span>
