@@ -6,7 +6,7 @@ import {
   Upload, Trash2, Download, X, Check, Loader2, FileText,
   Plus, GripVertical, Sliders, Type, Grid, Layers, RefreshCw
 } from 'lucide-react'
-import { Reorder, AnimatePresence } from 'motion/react'
+import { Reorder, AnimatePresence, useDragControls } from 'motion/react'
 import { SEO } from '../../components/SEO'
 import { Background } from '../../components/Background'
 import { formatBytes } from '../../lib/utils'
@@ -107,12 +107,111 @@ function getFilePagesList(item: MergeFileItem): number[] {
   return parsePageRange(item.customRange || '', item.totalPages)
 }
 
+// ─── Reorder Card Sub-component for Smooth Drag & Drop ───────────────────────
+
+interface FileReorderItemProps {
+  item: MergeFileItem
+  setItems: React.Dispatch<React.SetStateAction<MergeFileItem[]>>
+  getFilePagesList: (item: MergeFileItem) => number[]
+}
+
+function FileReorderItem({ item, setItems, getFilePagesList }: FileReorderItemProps) {
+  const dragControls = useDragControls()
+
+  return (
+    <Reorder.Item
+      value={item}
+      dragListener={false}
+      dragControls={dragControls}
+      className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-3 flex flex-col gap-2 hover:border-[var(--border-hover)] transition-colors shadow-sm select-none"
+    >
+      {/* Header info */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          {/* Drag handle */}
+          <div
+            onPointerDown={(e) => dragControls.start(e)}
+            className="w-8 h-8 rounded-lg bg-[var(--background)] hover:bg-[var(--surface-hover)] border border-[var(--border)] flex items-center justify-center cursor-grab active:cursor-grabbing shrink-0 transition-colors"
+            title="Drag to reorder"
+          >
+            <GripVertical className="w-4 h-4 text-gray-400" />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-bold truncate text-[var(--foreground)]" title={item.file.name}>{item.file.name}</p>
+            <p className="text-[9px] opacity-45 uppercase font-bold tracking-wider mt-0.5">
+              {item.totalPages} Pages · {formatBytes(item.size)}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            setItems(p => p.filter(i => i.id !== item.id))
+          }}
+          className="p-1.5 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-all shrink-0 cursor-pointer"
+          title="Remove file"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Range Tabs */}
+      <div className="grid grid-cols-4 rounded-xl bg-[var(--background)] p-1 gap-1 border border-[var(--border)] mt-1">
+        {([['all', 'All'], ['odd', 'Odd'], ['even', 'Even'], ['custom', 'Range']] as const).map(([mode, label]) => (
+          <button
+            key={mode}
+            onClick={(e) => {
+              e.stopPropagation()
+              setItems(prev =>
+                prev.map(i => i.id === item.id ? { ...i, rangeMode: mode } : i)
+              )
+            }}
+            className={`py-1 rounded-lg text-[9px] font-bold transition-all ${item.rangeMode === mode ? 'bg-[var(--accent)] text-white shadow' : 'hover:bg-[var(--surface-hover)]'}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Custom range input field */}
+      {item.rangeMode === 'custom' && (
+        <div className="space-y-1 mt-1 animate-in slide-in-from-top-2 duration-150" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center justify-between text-[8px] uppercase tracking-wider font-bold opacity-45 px-0.5">
+            <span>Enter Page Ranges</span>
+            <span>Selected: {getFilePagesList(item).length} pages</span>
+          </div>
+          <input
+            type="text"
+            value={item.customRange}
+            onChange={(e) => {
+              const val = e.target.value
+              setItems(prev =>
+                prev.map(i => i.id === item.id ? { ...i, customRange: val } : i)
+              )
+            }}
+            className="w-full bg-[var(--background)] p-1.5 rounded-lg text-xs border border-[var(--border)] focus:ring-1 focus:ring-[var(--accent)] focus:border-transparent outline-none"
+            placeholder="e.g. 1-3, 5, 7-10"
+          />
+        </div>
+      )}
+    </Reorder.Item>
+  )
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export function MergeTool() {
   const [items, setItems] = useState<MergeFileItem[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [isDraggingFile, setIsDraggingFile] = useState(false)
+  const [activePreview, setActivePreview] = useState<{
+    file: File
+    fileName: string
+    pageNumber: number
+    totalPages: number
+  } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const appendInputRef = useRef<HTMLInputElement>(null)
   
@@ -350,75 +449,12 @@ export function MergeTool() {
             <Reorder.Group axis="y" values={items} onReorder={handleReorder} className="space-y-3">
               <AnimatePresence>
                 {items.map(item => (
-                  <Reorder.Item
+                  <FileReorderItem
                     key={item.id}
-                    value={item}
-                    className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-3 flex flex-col gap-2 cursor-grab active:cursor-grabbing hover:border-[var(--border-hover)] transition-all shadow-sm"
-                  >
-                    {/* Header info */}
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <GripVertical className="w-4 h-4 text-gray-400 shrink-0" />
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold truncate text-[var(--foreground)]">{item.file.name}</p>
-                          <p className="text-[9px] opacity-45 uppercase font-bold tracking-wider mt-0.5">
-                            {item.totalPages} Pages · {formatBytes(item.size)}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setItems(p => p.filter(i => i.id !== item.id))
-                        }}
-                        className="p-1 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-all shrink-0 cursor-pointer"
-                        title="Remove file"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    {/* Range Tabs */}
-                    <div className="grid grid-cols-4 rounded-xl bg-[var(--background)] p-1 gap-1 border border-[var(--border)] mt-1">
-                      {([['all', 'All'], ['odd', 'Odd'], ['even', 'Even'], ['custom', 'Range']] as const).map(([mode, label]) => (
-                        <button
-                          key={mode}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setItems(prev =>
-                              prev.map(i => i.id === item.id ? { ...i, rangeMode: mode } : i)
-                            )
-                          }}
-                          className={`py-1.5 rounded-lg text-[9px] font-bold transition-all ${item.rangeMode === mode ? 'bg-[var(--accent)] text-white shadow' : 'hover:bg-[var(--surface-hover)]'}`}
-                        >
-                          {label}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Custom range input field */}
-                    {item.rangeMode === 'custom' && (
-                      <div className="space-y-1 mt-1" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center justify-between text-[8px] uppercase tracking-wider font-bold opacity-45 px-0.5">
-                          <span>Enter Page Ranges</span>
-                          <span>Selected: {getFilePagesList(item).length} pages</span>
-                        </div>
-                        <input
-                          type="text"
-                          value={item.customRange}
-                          onChange={(e) => {
-                            const val = e.target.value
-                            setItems(prev =>
-                              prev.map(i => i.id === item.id ? { ...i, customRange: val } : i)
-                            )
-                          }}
-                          className="w-full bg-[var(--background)] p-1.5 rounded-lg text-xs border border-[var(--border)] focus:ring-1 focus:ring-[var(--accent)] focus:border-transparent outline-none"
-                          placeholder="e.g. 1-3, 5, 7-10"
-                        />
-                      </div>
-                    )}
-                  </Reorder.Item>
+                    item={item}
+                    setItems={setItems}
+                    getFilePagesList={getFilePagesList}
+                  />
                 ))}
               </AnimatePresence>
             </Reorder.Group>
@@ -434,69 +470,145 @@ export function MergeTool() {
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">Visual Sequence Preview</span>
               </div>
               <span className="text-[10px] opacity-40 font-semibold hidden md:block">
-                This shows the exact resulting page cards. Hover and click Trash to instantly exclude.
+                This shows the exact resulting page cards. Click to preview or hover and click Trash to exclude.
               </span>
             </div>
 
             {/* Scrollable grid area */}
             <div className="flex-1 overflow-auto p-6 bg-[var(--surface)]/40">
-              {previewPages.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                  {previewPages.map((page, index) => (
-                    <div
-                      key={`${page.fileItemId}-${page.pageNumber}-${index}`}
-                      className="group bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] rounded-xl overflow-hidden shadow-sm relative transition-all"
-                    >
-                      {/* Top bar on card */}
-                      <div className="bg-[var(--background)] border-b border-[var(--border)] px-2 py-1 text-[9px] font-bold flex items-center justify-between gap-1 select-none">
-                        <span className="truncate opacity-65 flex-1">{page.fileName}</span>
-                        <span className="text-[var(--accent)] shrink-0">P. {page.pageNumber}</span>
-                      </div>
+               {previewPages.length > 0 ? (
+                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                   {previewPages.map((page, index) => (
+                     <div
+                       key={`${page.fileItemId}-${page.pageNumber}-${index}`}
+                       onClick={() => {
+                         const fileItem = items.find(i => i.id === page.fileItemId)
+                         setActivePreview({
+                           file: page.file,
+                           fileName: page.fileName,
+                           pageNumber: page.pageNumber,
+                           totalPages: fileItem ? fileItem.totalPages : 1
+                         })
+                       }}
+                       className="group bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] rounded-xl overflow-hidden shadow-sm relative transition-all cursor-pointer flex flex-col w-full"
+                     >
+                       {/* Top bar on card */}
+                       <div className="bg-[var(--background)] border-b border-[var(--border)] px-2 py-1.5 text-[9px] font-bold flex items-center justify-between gap-1 select-none shrink-0">
+                         <span className="truncate opacity-65 flex-1">{page.fileName}</span>
+                         <span className="text-[var(--accent)] shrink-0 bg-[var(--accent-soft)] px-1 rounded-sm">P. {page.pageNumber}</span>
+                       </div>
 
-                      {/* Image Preview Canvas */}
-                      <div className="p-3 bg-white flex justify-center items-center relative" style={{ minHeight: 140 }}>
-                        <PdfPagePreview
-                          file={page.file}
-                          pageNumber={page.pageNumber}
-                          maxHeight={140}
-                          scale={0.5}
-                          className="shadow-sm border border-gray-100"
-                        />
+                       {/* Image Preview Canvas Wrapper with Fixed Size */}
+                       <div className="h-[120px] bg-white flex justify-center items-center relative overflow-hidden p-2 select-none">
+                         <PdfPagePreview
+                           file={page.file}
+                           pageNumber={page.pageNumber}
+                           maxHeight={110}
+                           scale={0.35}
+                           className="shadow-sm border border-gray-100 max-h-[110px]"
+                         />
 
-                        {/* Interactive Exclude Hover Button */}
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                          <button
-                            onClick={() => handleRemovePreviewPage(page.fileItemId, page.pageNumber)}
-                            className="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg transition-transform hover:scale-110 pointer-events-auto cursor-pointer"
-                            title="Exclude this page"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
+                         {/* Interactive Exclude Hover Button */}
+                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                           <button
+                             onClick={(e) => {
+                               e.stopPropagation()
+                               handleRemovePreviewPage(page.fileItemId, page.pageNumber)
+                             }}
+                             className="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg transition-transform hover:scale-110 pointer-events-auto cursor-pointer"
+                             title="Exclude this page"
+                           >
+                             <Trash2 className="w-4 h-4" />
+                           </button>
+                         </div>
+                       </div>
 
-                      {/* Bottom position count */}
-                      <div className="bg-[var(--background)]/40 border-t border-[var(--border)]/40 text-center py-1 text-[8px] font-bold uppercase tracking-wider opacity-35 select-none">
-                        Merged Pos {index + 1}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-20 opacity-30 gap-3">
-                  <FileText className="w-12 h-12" />
-                  <p className="text-sm font-bold">No pages selected to merge.</p>
-                </div>
-              )}
-            </div>
+                       {/* Bottom position count */}
+                       <div className="bg-[var(--background)]/40 border-t border-[var(--border)]/40 text-center py-1 text-[8px] font-bold uppercase tracking-wider opacity-35 select-none shrink-0">
+                         Merged Pos {index + 1}
+                       </div>
+                     </div>
+                   ))}
+                 </div>
+               ) : (
+                 <div className="flex flex-col items-center justify-center py-20 opacity-30 gap-3">
+                   <FileText className="w-12 h-12" />
+                   <p className="text-sm font-bold">No pages selected to merge.</p>
+                 </div>
+               )}
+             </div>
 
-          </div>
+           </div>
 
-        </div>
+         </div>
 
-        {/* Bottom spacer */}
-        <div className="pb-4" />
-      </div>
-    </div>
-  )
-}
+         {/* ── High-Fidelity Page Preview Modal ── */}
+         <AnimatePresence>
+           {activePreview && (
+             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+               <div 
+                 className="bg-[var(--surface)] border border-[var(--border)] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-200"
+                 style={{ maxHeight: '90vh' }}
+               >
+                 {/* Modal Header */}
+                 <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] bg-[var(--background)]">
+                   <div className="min-w-0 flex-1 pr-4">
+                     <h3 className="text-sm font-bold truncate text-[var(--foreground)]" title={activePreview.fileName}>
+                       {activePreview.fileName}
+                     </h3>
+                     <p className="text-[10px] opacity-45 uppercase font-bold tracking-wider mt-0.5">
+                       Page {activePreview.pageNumber} of {activePreview.totalPages}
+                     </p>
+                   </div>
+                   <button
+                     onClick={() => setActivePreview(null)}
+                     className="w-8 h-8 rounded-full border border-[var(--border)] hover:bg-[var(--surface-hover)] flex items-center justify-center transition-all shrink-0 cursor-pointer"
+                   >
+                     <X className="w-4 h-4 text-[var(--foreground)]" />
+                   </button>
+                 </div>
+
+                 {/* Modal Body / Large Canvas Preview */}
+                 <div className="flex-1 bg-white p-6 overflow-auto flex items-center justify-center min-h-[350px]">
+                   <PdfPagePreview
+                     file={activePreview.file}
+                     pageNumber={activePreview.pageNumber}
+                     maxHeight={400}
+                     scale={1.2}
+                     className="shadow-md border border-gray-100 max-h-[400px]"
+                   />
+                 </div>
+
+                 {/* Modal Footer / Pagination Controls */}
+                 {activePreview.totalPages > 1 && (
+                   <div className="flex items-center justify-center gap-4 px-4 py-3 border-t border-[var(--border)] bg-[var(--background)] select-none">
+                     <button
+                       disabled={activePreview.pageNumber <= 1}
+                       onClick={() => setActivePreview(prev => prev ? { ...prev, pageNumber: prev.pageNumber - 1 } : null)}
+                       className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-xs font-bold transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1 cursor-pointer"
+                     >
+                       Previous
+                     </button>
+                     <span className="text-xs font-bold text-[var(--foreground)]">
+                       {activePreview.pageNumber} / {activePreview.totalPages}
+                     </span>
+                     <button
+                       disabled={activePreview.pageNumber >= activePreview.totalPages}
+                       onClick={() => setActivePreview(prev => prev ? { ...prev, pageNumber: prev.pageNumber + 1 } : null)}
+                       className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-xs font-bold transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1 cursor-pointer"
+                     >
+                       Next
+                     </button>
+                   </div>
+                 )}
+               </div>
+             </div>
+           )}
+         </AnimatePresence>
+
+         {/* Bottom spacer */}
+         <div className="pb-4" />
+       </div>
+     </div>
+   )
+ }
