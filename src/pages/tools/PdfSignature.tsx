@@ -359,6 +359,13 @@ export function PdfSignatureTool() {
       a.download = `${pdfFile.name.replace(/\.pdf$/i, '')}-signed.pdf`
       a.click()
       URL.revokeObjectURL(url)
+      
+      // Reset workspace/settings on successful download
+      setPdfFile(null)
+      setSignatures([])
+      setUndoStack([])
+      setSelectedSigId(null)
+
       toast.success('Signed PDF downloaded!')
     } catch (e: any) {
       toast.error(e?.message || 'Failed to generate PDF.')

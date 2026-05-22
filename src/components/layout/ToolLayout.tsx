@@ -79,7 +79,7 @@ export function ToolLayout({
     if (files.length === 0) return
     try {
       await onProcess(files)
-      // clear or show completion based on tool need
+      setFiles([])
     } catch (error: any) {
       toast.error(error.message || "An error occurred during processing.")
     }

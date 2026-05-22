@@ -30,6 +30,7 @@ export function UnlockTool() {
         const savedBytes = await pdfDoc.save({ useObjectStreams: true })
         downloadBytes(savedBytes, `unlocked_${baseName(file)}.pdf`)
         toast.success(`PDF unlocked at original quality! (${pdfDoc.getPageCount()} pages)`)
+        setPassword('')
         return
       } catch (pdfLibErr: any) {
         // pdf-lib failed (likely AES-256) — fall through to pdfjs canvas path
@@ -95,6 +96,7 @@ export function UnlockTool() {
       const unlockedBytes = await newPdf.save({ useObjectStreams: true })
       downloadBytes(unlockedBytes, `unlocked_${baseName(file)}.pdf`)
       toast.success(`PDF unlocked successfully! (${pdfJsDoc.numPages} pages)`)
+      setPassword('')
     } catch (error: any) {
       console.error('Unlock error:', error)
       throw new Error(error.message || 'Failed to unlock PDF. Please check the password and try again.')

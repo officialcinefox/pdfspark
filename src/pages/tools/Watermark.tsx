@@ -299,6 +299,7 @@ export function WatermarkTool() {
   function onPagePointerUp() { dragRef.current = null }
 
   function resetSettings() {
+    setPdfFile(null)
     setWmConfig({
       type: 'text',
       text: 'CONFIDENTIAL',
