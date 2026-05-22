@@ -72,7 +72,7 @@ export function UnlockTool() {
         canvas.height = Math.round(viewport.height)
         const ctx = canvas.getContext('2d')!
 
-        await page.render({ canvasContext: ctx, viewport }).promise
+        await page.render({ canvasContext: ctx, viewport, canvas }).promise
 
         const pngBytes = await new Promise<Uint8Array>((resolve, reject) => {
           canvas.toBlob(

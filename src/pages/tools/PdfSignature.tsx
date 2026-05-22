@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 import SignaturePad from 'signature_pad'
-import { PDFDocument, rgb } from 'pdf-lib'
+import { PDFDocument, rgb, degrees } from 'pdf-lib'
 import * as pdfjsLib from 'pdfjs-dist'
 import toast from 'react-hot-toast'
 import {
@@ -153,12 +153,12 @@ export function PdfSignatureTool() {
     setIsRendering(true)
     try {
       const page = await doc.getPage(pageNum)
-      const vp = page.getViewport({ scale })
+      const viewport = page.getViewport({ scale })
       const canvas = document.createElement('canvas')
-      canvas.width = Math.round(vp.width)
-      canvas.height = Math.round(vp.height)
+      canvas.width = Math.round(viewport.width)
+      canvas.height = Math.round(viewport.height)
       const ctx = canvas.getContext('2d')!
-      const task = page.render({ canvasContext: ctx, viewport: vp })
+      const task = page.render({ canvasContext: ctx, viewport, canvas })
       renderTaskRef.current = task
       await task.promise
       const url = canvas.toDataURL('image/png')
@@ -441,7 +441,7 @@ export function PdfSignatureTool() {
           y: sigY,
           width: sigW,
           height: sigH,
-          rotate: { type: 'degrees' as const, angle: -sig.rotation },
+          rotate: degrees(-sig.rotation),
           opacity: 1,
         })
       }
