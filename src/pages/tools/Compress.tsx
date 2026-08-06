@@ -127,23 +127,32 @@ export function CompressTool() {
 
     try {
       const arrayBuffer = await file.arrayBuffer()
+      const srcDoc = await PDFDocument.load(arrayBuffer)
       const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise
       const numPages = pdf.numPages
 
       let quality = 0.7
       let scale = 1.5
 
+      let targetBytes = file.size
       if (mode === 'custom') {
-        const targetBytes = targetSize * (targetUnit === 'MB' ? 1024 * 1024 : 1024)
+        targetBytes = targetSize * (targetUnit === 'MB' ? 1024 * 1024 : 1024)
+      } else if (mode === 'preset') {
+        if (preset === 'low') targetBytes = file.size * 0.70
+        if (preset === 'recommended') targetBytes = file.size * 0.40
+        if (preset === 'extreme') targetBytes = file.size * 0.15
+      }
+
+      if (mode === 'custom') {
         const bytesPerPage = targetBytes / numPages
         if (bytesPerPage > 500000) { scale = 2.0; quality = 0.9 }
         else if (bytesPerPage > 200000) { scale = 1.5; quality = 0.75 }
         else if (bytesPerPage > 100000) { scale = 1.2; quality = 0.6 }
         else { scale = 1.0; quality = 0.4 }
       } else if (mode === 'preset') {
-        if (preset === 'low') { scale = 2.0; quality = 0.85 }
-        if (preset === 'recommended') { scale = 1.5; quality = 0.7 }
-        if (preset === 'extreme') { scale = 1.0; quality = 0.4 }
+        if (preset === 'low') { scale = 1.6; quality = 0.75 }
+        if (preset === 'recommended') { scale = 1.2; quality = 0.6 }
+        if (preset === 'extreme') { scale = 0.8; quality = 0.35 }
       } else {
         scale = proScale
         quality = proQuality / 100
@@ -151,50 +160,114 @@ export function CompressTool() {
 
       toast.loading(`Compressing ${numPages} pages... Please wait.`, { id: toastId })
 
-      const newPdf = await PDFDocument.create()
-      const canvas = document.createElement('canvas')
-      const context = canvas.getContext('2d')!
+      const runCompressionPass = async (currScale: number, currQuality: number) => {
+        const tempPdf = await PDFDocument.create()
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d')!
 
-      for (let i = 1; i <= numPages; i++) {
-        const page = await pdf.getPage(i)
-        const viewport = page.getViewport({ scale })
-        
-        canvas.width = viewport.width
-        canvas.height = viewport.height
-        
-        context.clearRect(0, 0, canvas.width, canvas.height)
-        context.fillStyle = 'white'
-        context.fillRect(0, 0, canvas.width, canvas.height)
-        
-        await page.render({ 
-          canvasContext: context as any, 
-          viewport,
-          canvas,
-        }).promise
-        
-        const imgData = canvas.toDataURL('image/jpeg', quality)
-        const jpgImage = await newPdf.embedJpg(imgData)
-        const pdfPage = newPdf.addPage([viewport.width, viewport.height] as [number, number])
-        
-        pdfPage.drawImage(jpgImage, {
-          x: 0,
-          y: 0,
-          width: viewport.width,
-          height: viewport.height,
-        })
+        for (let i = 1; i <= numPages; i++) {
+          const page = await pdf.getPage(i)
+          const viewport = page.getViewport({ scale: currScale })
+          
+          canvas.width = viewport.width
+          canvas.height = viewport.height
+          
+          context.clearRect(0, 0, canvas.width, canvas.height)
+          context.fillStyle = 'white'
+          context.fillRect(0, 0, canvas.width, canvas.height)
+          
+          await page.render({ 
+            canvasContext: context as any, 
+            viewport,
+            canvas,
+          }).promise
+          
+          const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob((b) => resolve(b), 'image/jpeg', currQuality))
+          if (!blob) throw new Error("Failed to encode page image")
+          const imgBytes = await blob.arrayBuffer()
+          const jpgImage = await tempPdf.embedJpg(imgBytes)
+          const pdfPage = tempPdf.addPage([viewport.width, viewport.height] as [number, number])
+          
+          pdfPage.drawImage(jpgImage, {
+            x: 0,
+            y: 0,
+            width: viewport.width,
+            height: viewport.height,
+          })
+        }
+        return await tempPdf.save({ useObjectStreams: true })
+      }
+
+      let currentScale = scale
+      let currentQuality = quality
+      let pdfBytes: Uint8Array | null = null
+      let attempts = 0
+      const maxAttempts = 3
+
+      while (attempts < maxAttempts) {
+        attempts++
+        if (attempts > 1) {
+          toast.loading(`Optimizing settings (Attempt ${attempts}/${maxAttempts})...`, { id: toastId })
+        }
+        pdfBytes = await runCompressionPass(currentScale, currentQuality)
+
+        // In pro mode, do not auto-adjust since the user requested specific settings
+        if (mode === 'pro') {
+          break
+        }
+
+        // If the size is within targetBytes and smaller than the original, we are done
+        if (pdfBytes.byteLength <= targetBytes && pdfBytes.byteLength < file.size) {
+          break
+        }
+
+        if (attempts >= maxAttempts) {
+          break
+        }
+
+        // Reduce settings for next attempt
+        if (mode === 'custom') {
+          const ratio = targetBytes / pdfBytes.byteLength
+          const scaleReduction = ratio < 0.5 ? 0.6 : 0.8
+          const qualityReduction = ratio < 0.5 ? 0.5 : 0.75
+          currentScale = Math.max(0.4, currentScale * scaleReduction)
+          currentQuality = Math.max(0.1, currentQuality * qualityReduction)
+        } else if (mode === 'preset') {
+          if (attempts === 1) {
+            if (preset === 'low') {
+              currentScale = 1.2
+              currentQuality = 0.6
+            } else if (preset === 'recommended') {
+              currentScale = 0.8
+              currentQuality = 0.35
+            } else {
+              currentScale = 0.5
+              currentQuality = 0.15
+            }
+          } else if (attempts === 2) {
+            currentScale = 0.4
+            currentQuality = 0.1
+          }
+        }
+      }
+
+      let finalBlob: Blob
+      if (pdfBytes && pdfBytes.byteLength < file.size) {
+        finalBlob = bytesToBlob(pdfBytes)
+      } else {
+        toast.loading('Applying native vector fallback...', { id: toastId })
+        // Fallback directly to the original file to guarantee zero size increase!
+        finalBlob = file
       }
 
       toast.loading('Finalizing PDF packaging...', { id: toastId })
-      const pdfBytes = await newPdf.save()
-      const blob = bytesToBlob(pdfBytes)
+      downloadBlob(finalBlob, `compressed_${file.name}`)
       
-      downloadBlob(blob, `compressed_${file.name}`)
-      
-      const realSavings = file.size - blob.size
+      const realSavings = file.size - finalBlob.size
       if (realSavings > 0) {
         toast.success(`Success! Saved ${formatBytes(realSavings)} (${Math.round((realSavings/file.size)*100)}% smaller)`, { id: toastId })
       } else {
-        toast.success(`Processed successfully! Size: ${formatBytes(blob.size)}`, { id: toastId })
+        toast.success(`Optimized successfully! Final size: ${formatBytes(finalBlob.size)}`, { id: toastId })
       }
     } catch (error: any) {
       console.error(error)

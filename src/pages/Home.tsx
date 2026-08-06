@@ -80,7 +80,7 @@ export function Home() {
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="lg:col-span-7 flex flex-col items-start relative z-10"
+            className="lg:col-span-6 flex flex-col items-start relative z-10"
           >
             {/* Elegant Pill Badge */}
             <motion.div
@@ -160,14 +160,14 @@ export function Home() {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.15 }}
-            className="lg:col-span-5 relative flex items-center justify-center lg:pl-6"
+            className="lg:col-span-6 relative flex items-center lg:justify-end justify-center lg:pl-6"
           >
             {/* Elegant Background Glow and blobs */}
             <div className="absolute w-[360px] h-[360px] rounded-full bg-[var(--accent)]/5 blur-[80px] -z-10 animate-pulse duration-4000"></div>
             <div className="absolute w-[240px] h-[240px] rounded-full bg-red-400/5 blur-[60px] -z-10 -top-10 -right-10"></div>
 
             {/* Outer wrapper - badges position hogi yahaan, NO overflow-hidden */}
-            <div className="relative max-w-md w-full mx-6">
+            <div className="relative max-w-md w-full lg:mx-0 mx-6">
 
               {/* Premium Professional Character inside glass frame */}
               <div className="relative group rounded-[2.5rem] border border-[var(--border)] bg-[var(--surface)]/30 backdrop-blur-md p-3 w-full hover:scale-[1.01] hover:border-red-500/20 transition-all duration-700 shadow-2xl">

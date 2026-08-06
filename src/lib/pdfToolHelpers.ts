@@ -34,8 +34,7 @@ export function downloadBlob(blob: Blob, filename: string) {
 }
 
 export function bytesToBlob(bytes: Uint8Array, type: string = 'application/pdf') {
-  const copy = bytes.slice()
-  return new Blob([copy.buffer as ArrayBuffer], { type })
+  return new Blob([bytes], { type })
 }
 
 export function downloadBytes(bytes: Uint8Array, filename: string, type: string = 'application/pdf') {

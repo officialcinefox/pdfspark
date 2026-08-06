@@ -175,7 +175,7 @@ export const PagesManager: React.FC = () => {
                 <div>
                   <label className="block text-[10px] font-bold text-zinc-700 dark:text-zinc-350 mb-1.5">Live Slug URL</label>
                   <div className="flex items-center gap-1 bg-zinc-50 dark:bg-[#0c0e10] border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-1.5">
-                    <span className="text-zinc-400 dark:text-zinc-500 text-xs select-none">pdfspark.com/</span>
+                    <span className="text-zinc-400 dark:text-zinc-500 text-xs select-none">pdfsparkk.vercel.app/</span>
                     <input 
                       type="text"
                       value={editingPage.slug}
